@@ -10,7 +10,23 @@
 #include <readline/history.h>
 #include "libft/libft.h"
 
+typedef struct s_env
+{
+	char	*key;
+	char	*value;
+}				t_env;
+
+typedef struct s_cmd
+{
+	char			**args;
+	int				infd;
+	int				outfd;
+	struct s_cmd	*next;
+}				t_cmd;
+
 // Function prototypes
+t_env *init_env(char **envp);
+void add_env_node(t_env **env_list, char *env_str);
 char	**split_args(char *input);
 void	free_args(char **args);
 char	*find_command(char *cmd);
