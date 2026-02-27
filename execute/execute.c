@@ -3,12 +3,21 @@
 extern char **environ;
 
 // Execute command
-void execute_command(char **args)
+void execute_command(char **args, t_env **my_env)
 {
     char *cmd_path;
     pid_t pid;
     int status;
 
+    if (!args || !args[0])
+        return ;
+    
+    if (is_builtin(args[0]))
+    {
+        execute_builtin(args, my_env);
+        return ;
+    }
+    
     cmd_path = find_command(args[0]);
     if (!cmd_path)
     {

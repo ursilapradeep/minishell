@@ -30,8 +30,13 @@ void add_env_node(t_env **env_list, char *env_str);
 char	**split_args(char *input);
 void	free_args(char **args);
 char	*find_command(char *cmd);
-void	execute_command(char **args);
+void	execute_command(char **args, t_env **my_env);
 char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd);
 char	*check_command_in_dir(char *dir, char *cmd);
+int		is_builtin(char *cmd);
+int		execute_builtin(char **args, t_env **my_env);
+int		builtin_cd(char **args, t_env *env);
+char	*get_env_value(t_env *env, char *key);
+void	set_env_value(t_env **env, char *key, char *value);
 
 #endif

@@ -5,7 +5,9 @@ SRCS = main.c \
        handle_args/handle_args.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
-       execute/execute.c
+       execute/execute.c \
+       builtins/builtins.c \
+       builtins/builtin_utils.c
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
 
