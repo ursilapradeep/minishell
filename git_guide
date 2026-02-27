@@ -1,0 +1,49 @@
+To see the new "built ins" branch in your local repository, run:
+
+```bash
+git fetch origin
+```
+
+This fetches updates from the remote. Then, to see all branches (local and remote):
+
+```bash
+git branch -a
+```
+
+To switch to and track the remote "built ins" branch locally:
+
+```bash
+git checkout --track origin/"built ins"
+```
+
+Or if the branch name has spaces, you might need quotes in some contexts:
+
+```bash
+git checkout --track origin/built\ ins
+```
+GIT FETCH v/s GIT PULL:
+
+git fetch - Safe, no merge
+
+Downloads changes from remote
+Updates what you know about the remote branch
+Doesn't change your current branch
+You can review changes before deciding what to do
+
+git pull - Fetch + Merge automatically
+
+Downloads changes from remote
+Automatically merges them into your current branch
+If there are conflicts, you have to resolve them
+
+Why fetch over pull for group work:
+
+git fetch origin              # See what changed
+git diff origin/"built ins"   # Review differences safely
+git merge origin/"built ins"  # Merge only when ready
+
+Why pull if you trust your teammates:
+git pull origin "built ins"   # One command, done
+
+TL;DR: Use fetch if you want control and to review changes first. 
+Use pull if you want speed and trust the changes. For group projects, fetch is safer.
