@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/02/27 11:25:22 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/02/28 13:14:46 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void add_env_node(t_env **env_list, char *env_str)
 {
@@ -44,7 +44,7 @@ t_env *init_env(char **envp)
 
 	while (envp[i])
 	{
-		add_env(&env_list, envp[i]);
+		add_env_node(&env_list, envp[i]);
 		i++;
 	}
 	return (env_list);

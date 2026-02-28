@@ -3,6 +3,8 @@
 int main(int argc, char **argv, char **envp)
 {
     t_env *my_env;
+    char *input;
+    char **args;
     (void)argc;
     (void)argv;
 

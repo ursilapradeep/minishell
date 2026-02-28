@@ -47,3 +47,28 @@ git pull origin "built ins"   # One command, done
 
 TL;DR: Use fetch if you want control and to review changes first. 
 Use pull if you want speed and trust the changes. For group projects, fetch is safer.
+
+=> Adding changes from buletin and built-ins branches top main branch
+
+Ran terminal command:  git branch -a
+
+You have `built-ins` (local), `buletin` (remote only), and `main` branches. Here are the **merge steps**:
+
+```bash
+# 1. Ensure you're on main and it's up to date
+git checkout main
+git pull origin main
+
+# 2. Merge built-ins branch into main
+git merge built-ins
+
+# 3. Merge buletin branch into main
+git merge origin/buletin
+```
+
+If there are **conflicts**, git will tell you. Resolve them manually in conflicted files, then:
+```bash
+git add <resolved-files>
+git commit -m "Merge built-ins and buletin into main"
+git push origin main
+```

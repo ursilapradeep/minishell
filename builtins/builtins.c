@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/02/28 14:54:41 by spaipur-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <unistd.h>
 
@@ -68,6 +80,60 @@ int builtin_cd(char **args, t_env *env)
 	return (0);
 }
 
+// Execute pwd builtin
+int	builtin_pwd(char **args)
+{
+	char	cwd[4096];
+
+	(void)args;
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror("pwd");
+		return (1);
+	}
+	ft_putstr_fd(cwd, 1);
+	ft_putstr_fd("\n", 1);
+	return (0);
+}
+// Execute echo builtin
+
+static int is_n_flag(char *arg)
+{
+	int i;
+
+	i = 0;
+	if (!arg || arg[0] != '-')
+		return (0);
+	i++;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+int builtin_echo(char **args)
+{
+	int i = 1;
+	int new_line = 1;
+	while (args[i] && is_n_flag(args[i]))
+	{
+		new_line = 0;
+		i++;
+	}
+	while (args[i])
+	{
+		ft_putstr_fd(args[i], 1);
+		if (args[i + 1])
+			ft_putstr_fd(" ", 1);
+		i++;
+	}
+	if (new_line)
+		ft_putstr_fd("\n", 1);
+	return (0);
+}
+
 // Check if command is a builtin
 int is_builtin(char *cmd)
 {
@@ -97,19 +163,11 @@ int execute_builtin(char **args, t_env **my_env)
 		return (0);
 	
 	if (ft_strncmp(args[0], "echo", 5) == 0 && args[0][4] == '\0')
-	{
-		// TODO: implement echo builtin
-		printf("echo: builtin not yet implemented\n");
-		return (1);
-	}
+		return (builtin_echo(args));
 	if (ft_strncmp(args[0], "cd", 3) == 0 && args[0][2] == '\0')
 		return (builtin_cd(args, *my_env));
 	if (ft_strncmp(args[0], "pwd", 4) == 0 && args[0][3] == '\0')
-	{
-		// TODO: implement pwd builtin
-		printf("pwd: builtin not yet implemented\n");
-		return (1);
-	}
+		return (builtin_pwd(args));
 	if (ft_strncmp(args[0], "export", 7) == 0 && args[0][6] == '\0')
 	{
 		// TODO: implement export builtin

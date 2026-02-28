@@ -2,6 +2,7 @@ NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
+       env/env_utils.c \
        handle_args/handle_args.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
