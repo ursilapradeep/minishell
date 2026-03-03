@@ -31,6 +31,7 @@ int main(int argc, char **argv, char **envp)
 {
     char *input;
     char **args;
+    char **pipeline;
     (void)argc;
     (void)argv;
 
@@ -49,11 +50,24 @@ int main(int argc, char **argv, char **envp)
         }
         add_history(input);
         
-        args = split_args(input);
-        if (args)
+        // Check for pipes
+        if (contains_pipe(input))
         {
-            execute_command(args, envp);
-            free_args(args);
+            pipeline = parse_pipeline(input);
+            if (pipeline)
+            {
+                execute_pipeline(pipeline, envp);
+                free_args(pipeline);
+            }
+        }
+        else
+        {
+            args = split_args(input);
+            if (args)
+            {
+                execute_command(args, envp);
+                free_args(args);
+            }
         }
         free(input);
     }
