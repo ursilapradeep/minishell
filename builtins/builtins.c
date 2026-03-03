@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/02/28 14:54:41 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/03 14:52:57 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/*split each built-ins into different files and additional code if any implementation is missing*/
 #include "../minishell.h"
 #include <unistd.h>
 
@@ -95,6 +96,128 @@ int	builtin_pwd(char **args)
 	ft_putstr_fd("\n", 1);
 	return (0);
 }
+
+// Execute export builtin
+int	builtin_export(char **args, t_env **env)
+{
+	int		i;
+	char	*equal_sign;
+	char	*key;
+	char	*value;
+
+	if (!args[1])
+	{
+		// export with no args: print all env variables (sorted, but we'll skip sorting for now)
+		t_env *temp = *env;
+		while (temp)
+		{
+			if (temp->value)
+				printf("declare -x %s=\"%s\"\n", temp->key, temp->value);
+			else
+				printf("declare -x %s\n", temp->key);
+			temp = temp->next;
+		}
+		return (0);
+	}
+
+	i = 1;
+	while (args[i])
+	{
+		equal_sign = ft_strchr(args[i], '=');
+		if (equal_sign)
+		{
+			// export VAR=value
+			key = ft_substr(args[i], 0, equal_sign - args[i]);
+			value = ft_strdup(equal_sign + 1);
+			if (!key || !value)
+			{
+				free(key);
+				free(value);
+				return (1);
+			}
+			set_env_value(env, key, value);
+			free(key);
+			free(value);
+		}
+		else
+		{
+			// export VAR (just mark/ensure it exists)
+			if (!get_env_value(*env, args[i]))
+				set_env_value(env, args[i], NULL);
+		}
+		i++;
+	}
+	return (0);
+}
+// Execute unset builtin
+int	builtin_unset(char **args, t_env **env)
+{
+	int		i;
+	t_env	*current;
+	t_env	*prev;
+
+	if (!args[1])
+		return (0);
+
+	i = 1;
+	while (args[i])
+	{
+		current = *env;
+		prev = NULL;
+		while (current)
+		{
+			if (current->key && ft_strncmp(current->key, args[i], 
+				ft_strlen(args[i]) + 1) == 0)
+			{
+				if (prev)
+					prev->next = current->next;
+				else
+					*env = current->next;
+				free(current->key);
+				free(current->value);
+				free(current);
+				break ;
+			}
+			prev = current;
+			current = current->next;
+		}
+		i++;
+	}
+	return (0);
+}
+
+// Execute exit builtin
+int	builtin_exit(char **args)
+{
+	int	exit_code;
+
+	if (!args[1])
+		exit(0);
+	exit_code = ft_atoi(args[1]);
+	exit(exit_code);
+	return (-1);
+}
+
+// Execute env builtin
+int	builtin_env(char **args, t_env *env)
+{
+	t_env	*current;
+
+	if (args[1])
+	{
+		ft_putstr_fd("env: too many arguments\n", 2);
+		return (1);
+	}
+	current = env;
+	while (current)
+	{
+		if (current->key && current->value)
+			printf("%s=%s\n", current->key, current->value);
+		current = current->next;
+	}
+	return (0);
+}
+
 // Execute echo builtin
 
 static int is_n_flag(char *arg)
@@ -169,28 +292,14 @@ int execute_builtin(char **args, t_env **my_env)
 	if (ft_strncmp(args[0], "pwd", 4) == 0 && args[0][3] == '\0')
 		return (builtin_pwd(args));
 	if (ft_strncmp(args[0], "export", 7) == 0 && args[0][6] == '\0')
-	{
-		// TODO: implement export builtin
-		printf("export: builtin not yet implemented\n");
-		return (1);
-	}
+		return (builtin_export(args, my_env));
 	if (ft_strncmp(args[0], "unset", 6) == 0 && args[0][5] == '\0')
-	{
-		// TODO: implement unset builtin
-		printf("unset: builtin not yet implemented\n");
-		return (1);
-	}
+		return (builtin_unset(args, my_env));
 	if (ft_strncmp(args[0], "env", 4) == 0 && args[0][3] == '\0')
-	{
-		// TODO: implement env builtin
-		printf("env: builtin not yet implemented\n");
-		return (1);
-	}
+		return (builtin_env(args, *my_env));
 	if (ft_strncmp(args[0], "exit", 5) == 0 && args[0][4] == '\0')
 	{
-		// TODO: implement exit builtin
-		printf("exit: builtin not yet implemented\n");
-		return (1);
+		return (builtin_exit(args));
 	}
 	return (0);
 }
