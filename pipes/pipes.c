@@ -70,17 +70,23 @@ static void	fork_and_execute_all(char **pipeline, char **envp, int pipes[][2],
 }
 
 // Execute pipeline
+/*pipeline (array of command strings, envp: variable passed to executed commands))*/
+//pipes[i] has 2 ends: [0] read end, [1] write end
 void	execute_pipeline(char **pipeline, char **envp)
 {
-	int		cmd_count;
-	int		pipes[1024][2];
+	int		cmd_count; //stores how many cmds are in the pipeline
+	int		pipes[1024][2]; //storage for pipe descriptors
 	int		i;
 
 	i = 0;
 	cmd_count = 0;
-	while (pipeline[cmd_count])
+	while (pipeline[cmd_count]) //loops until a null entry is found
 		cmd_count++;
 	i = 0;
+	/*Because for N commands, you need N - 1 pipes to connect them.
+	Example:
+	cmd1 | cmd2 = 2 commands → 1 pipe needed
+	cmd1 | cmd2 | cmd3 = 3 commands → 2 pipes needed */
 	while (i < cmd_count - 1)
 	{
 		if (pipe(pipes[i]) == -1)
