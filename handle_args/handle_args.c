@@ -95,9 +95,8 @@ static int count_args(char *input)
     Skip spaces → find "-la" → copy into args[1]
     Skip spaces → find "/tmp" → copy into args[2]
     Set args[3] = NULL */
-static int add_word(char **args, char *input, int start,int end, int index)
+static int add_word(char **args, char *input, int start, int end, int index)
 {
-    int end;
 	int	len;
 
     len = word_len_without_quotes(input, start, end);

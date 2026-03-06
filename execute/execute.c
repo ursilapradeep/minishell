@@ -12,9 +12,10 @@
 
 #include "../minishell.h"
 
-static void	execute_child(const char *cmd_path, char **args, char **envp)
+static void	execute_child(const char *cmd_path, char **args, t_env **envp)
 {
-    execve(cmd_path, args, envp);
+	(void)envp;
+    execve(cmd_path, args, NULL);
     perror("execve");
     exit(127);
 }

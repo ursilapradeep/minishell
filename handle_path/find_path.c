@@ -52,13 +52,13 @@ char *get_path_from_env(char **envp)
 	return (NULL);
 }
 
-char *find_command(char *cmd, char **envp)
+char *find_command(char *cmd, t_env **envp)
 {
 	char *path_env;
 
 	if (access(cmd, X_OK) == 0) // Check if cmd is executable
 		return (ft_strdup(cmd));
-	path_env = get_path_from_env(envp);
+	path_env = get_env_value(*envp, "PATH");
 	if (!path_env)
 		return (NULL); //path does not exist
 	return (search_in_path(path_env, cmd));

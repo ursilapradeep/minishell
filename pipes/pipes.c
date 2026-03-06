@@ -13,7 +13,7 @@ static void	close_all_pipes(int pipes[][2], int cmd_count)
 	}
 }
 
-static void	execute_child(char **pipeline, char **envp, int pipes[][2],
+static void	execute_child(char **pipeline, t_env **envp, int pipes[][2],
 		int cmd_count, int i)
 {
 	char	**args;
@@ -30,7 +30,7 @@ static void	execute_child(char **pipeline, char **envp, int pipes[][2],
 		cmd_path = find_command(args[0], envp);
 		if (cmd_path)
 		{
-			execve(cmd_path, args, envp);
+			execve(cmd_path, args, NULL);
 			perror("execve");
 			free(cmd_path);
 		}
@@ -41,7 +41,7 @@ static void	execute_child(char **pipeline, char **envp, int pipes[][2],
 	exit(127);
 }
 
-static void	fork_and_execute_all(char **pipeline, char **envp, int pipes[][2],
+static void	fork_and_execute_all(char **pipeline, t_env **envp, int pipes[][2],
 		int cmd_count)
 {
 	pid_t	pid;
@@ -72,7 +72,7 @@ static void	fork_and_execute_all(char **pipeline, char **envp, int pipes[][2],
 // Execute pipeline
 /*pipeline (array of command strings, envp: variable passed to executed commands))*/
 //pipes[i] has 2 ends: [0] read end, [1] write end
-void	execute_pipeline(char **pipeline, char **envp)
+void	execute_pipeline(char **pipeline, t_env **envp)
 {
 	int		cmd_count; //stores how many cmds are in the pipeline
 	int		pipes[1024][2]; //storage for pipe descriptors

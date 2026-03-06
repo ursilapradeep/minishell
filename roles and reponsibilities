@@ -82,7 +82,7 @@ Recognize:
 - Single quotes: `'$VAR'` → literal `$VAR` (don't expand)
 - Double quotes: `"$VAR"` → expand variable
 - Backslash: `\$` → literal `$`
-- Backticks/`$()`: Command substitution (advanced)
+- Backticks/`$()`: Command substitution (advance$ export TEST=hellod)
 
 ---
 
@@ -90,7 +90,7 @@ Recognize:
 
 Determine execution order:
 
-```bash
+```bash$ export TEST=hello
 cmd1 ; cmd2 && cmd3 | cmd4
 ```
 

@@ -29,7 +29,7 @@ void free_args(char **args)
 
 int main(int argc, char **argv, char **envp)
 {
-    t_env *envp;
+    t_env *my_env;
     char *input;
     char **args;
     char **pipeline;
@@ -39,7 +39,7 @@ int main(int argc, char **argv, char **envp)
     (void)argv;
 
     exit_code = 0;
-    envp = init_env(envp);
+    my_env = init_env(envp);
 
     while (1)
     {
@@ -62,7 +62,7 @@ int main(int argc, char **argv, char **envp)
             pipeline = parse_pipeline(input);
             if (pipeline)
             {
-                execute_pipeline(pipeline, envp);
+                execute_pipeline(pipeline, &my_env);
                 free_args(pipeline);
             }
         }
@@ -71,7 +71,7 @@ int main(int argc, char **argv, char **envp)
             args = split_args(input);
             if (args)
             {
-                exit_code = execute_command(args, &envp);
+                exit_code = execute_command(args, &my_env);
                 if (exit_code == -1)
                 {
                     free_args(args);
