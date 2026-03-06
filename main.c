@@ -1,9 +1,17 @@
 #include "minishell.h"
 
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
+    t_env *my_env;
     char *input;
     char **args;
+    int exit_code;
+
+    (void)argc;
+    (void)argv;
+
+    exit_code = 0;
+    my_env = init_env(envp);
 
     while (1)
     {
@@ -23,7 +31,9 @@ int main(void)
         args = split_args(input);
         if (args)
         {
-            execute_command(args);
+            exit_code = execute_command(args, &my_env);
+            if (exit_code == -1)
+                break;
             free_args(args);
         }
         free(input);

@@ -4,10 +4,74 @@ static int is_space(char c)
 {
     return (c == ' ' || c == '\t' || c == '\n');
 }
+
+static int	word_end(char *input, int i)
+{
+    char	quote;
+
+    quote = '\0';
+    while (input[i])
+    {
+        if (!quote && (input[i] == '\'' || input[i] == '"'))
+            quote = input[i];
+        else if (quote && input[i] == quote)
+            quote = '\0';
+        else if (!quote && is_space(input[i]))
+            break ;
+        i++;
+    }
+    return (i);
+}
+
+static int	word_len_without_quotes(char *input, int start, int end)
+{
+    int		len;
+    int		i;
+    char	quote;
+
+    len = 0;
+    i = start;
+    quote = '\0';
+    while (i < end)
+    {
+        if (!quote && (input[i] == '\'' || input[i] == '"'))
+            quote = input[i];
+        else if (quote && input[i] == quote)
+            quote = '\0';
+        else
+            len++;
+        i++;
+    }
+    return (len);
+}
+
+static void	copy_without_quotes(char *dst, char *input, int start, int end)
+{
+    int		j;
+    int		i;
+    char	quote;
+
+    j = 0;
+    i = start;
+    quote = '\0';
+    while (i < end)
+    {
+        if (!quote && (input[i] == '\'' || input[i] == '"'))
+            quote = input[i];
+        else if (quote && input[i] == quote)
+            quote = '\0';
+        else
+            dst[j++] = input[i];
+        i++;
+    }
+    dst[j] = '\0';
+}
+
 static int count_args(char *input)
 {
     int count;
     int i; // Index to traverse input
+    int end;
 
     count = 0;
     i = 0;
@@ -18,8 +82,8 @@ static int count_args(char *input)
         if (input[i])
         {
             count++; // Found an argument
-            while (input[i] && !is_space(input[i])) // Skip non-space characters
-                i++;
+            end = word_end(input, i);
+            i = end;
         }
     }
     return (count);
@@ -30,20 +94,18 @@ static int count_args(char *input)
     Skip spaces → find "-la" → copy into args[1]
     Skip spaces → find "/tmp" → copy into args[2]
     Set args[3] = NULL */
-static int	add_word(char **args, char *input, int start, int index)
+static int	add_word(char **args, char *input, int start, int end, int index)
 {
 	int	len;
 
-	len = 0;
-	while (input[start + len] && !is_space(input[start + len]))
-		len++;
+    len = word_len_without_quotes(input, start, end);
 	args[index] = malloc(len + 1); 
 	if (!args[index])
     {
         free_args(args); // Free previously allocated memory on failure
         return (0);
     }
-	ft_strlcpy(args[index], input + start, len + 1); // Copy word into args array
+    copy_without_quotes(args[index], input, start, end);
 	return (1);
 }
 
@@ -51,6 +113,7 @@ static int	fill_args(char **args, char *input)
 {
 	int	i;
 	int	j;
+    int	end;
 
 	i = 0;
 	j = 0;
@@ -60,10 +123,10 @@ static int	fill_args(char **args, char *input)
 			i++; // Skip leading spaces
 		if (input[i])
 		{
-			if (!add_word(args, input, i, j)) // Add word to args array
+            end = word_end(input, i);
+            if (!add_word(args, input, i, end, j)) // Add word to args array
 				return (0);
-			while (input[i] && !is_space(input[i]))
-				i++;
+            i = end;
 			j++;
 		}
 	}
