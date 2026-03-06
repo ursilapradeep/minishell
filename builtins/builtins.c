@@ -26,12 +26,9 @@ int builtin_cd(char **args, t_env *env)
 	{
 		ft_putstr_fd("cd: too many arguments\n", 2);
 		return (1);
-	}
-
-	// Get target directory
-	if (!args[1])
+	}  // Get target directory
+	if (!args[1]) //// cd with no args: go to HOME
 	{
-		// cd with no args: go to HOME
 		target_dir = get_env_value(env, "HOME");
 		if (!target_dir)
 		{
@@ -149,6 +146,7 @@ int	builtin_export(char **args, t_env **env)
 	}
 	return (0);
 }
+
 // Execute unset builtin
 int	builtin_unset(char **args, t_env **env)
 {

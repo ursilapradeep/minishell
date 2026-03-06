@@ -7,38 +7,43 @@ static void	close_all_pipes(int pipes[][2], int cmd_count)
 	i = 0;
 	while (i < cmd_count - 1)
 	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
+		close(pipes[i][0]); //close read descriptor
+		close(pipes[i][1]); //close write
 		i++;
 	}
 }
 
-static void	execute_child(char **pipeline, t_env **envp, int pipes[][2],
-		int cmd_count, int i)
+/*vAfter dup2, you close all pipe fds because:
+They are no longer needed in that process
+stdin/stdout now already point to the needed pipe ends.
+Avoid fd leaks
+Keeping extra pipe descriptors open wastes resources.*/
+static void	execute_child(char **pipeline, t_env **envp, int pipes[][2], // Child handler for one command in pipeline
+        int cmd_count, int i) // cmd_count = total commands, i = current command index
 {
-	char	**args;
-	char	*cmd_path;
+    char	**args; // Tokenized arguments for current command (e.g., ["ls", "-l", NULL])
+    char	*cmd_path; // Full executable path (e.g., "/bin/ls")
 
-	if (i > 0)
-		dup2(pipes[i - 1][0], STDIN_FILENO);
-	if (i < cmd_count - 1)
-		dup2(pipes[i][1], STDOUT_FILENO);
-	close_all_pipes(pipes, cmd_count);
-	args = split_args(pipeline[i]);
-	if (args)
-	{
-		cmd_path = find_command(args[0], envp);
-		if (cmd_path)
-		{
-			execve(cmd_path, args, NULL);
-			perror("execve");
-			free(cmd_path);
-		}
-		else
-			printf("minishell: command not found: %s\n", args[0]);
-		free_args(args);
-	}
-	exit(127);
+    if (i > 0) // If not first command, read stdin from previous pipe
+        dup2(pipes[i - 1][0], STDIN_FILENO); // Redirect STDIN to previous pipe read end
+    if (i < cmd_count - 1) // If not last command, write stdout to current pipe
+        dup2(pipes[i][1], STDOUT_FILENO); // Redirect STDOUT to current pipe write end
+    close_all_pipes(pipes, cmd_count); // Close all inherited pipe fds after dup2 setup
+    args = split_args(pipeline[i]); // Split current pipeline command string into argv array
+    if (args) // Proceed only if argument parsing succeeded
+    {
+        cmd_path = find_command(args[0], envp); // Resolve command name using PATH/environment
+        if (cmd_path) // If executable path found
+        {
+            execve(cmd_path, args, NULL); // Replace child process image with target program
+            perror("execve"); // Runs only if execve fails
+            free(cmd_path); // Free allocated command path on failure
+        }
+        else // If command path could not be resolved
+            printf("minishell: command not found: %s\n", args[0]); // Print shell-style error
+        free_args(args); // Free parsed argument array
+    }
+    exit(127); // Exit child with "command execution failed" status
 }
 
 static void	fork_and_execute_all(char **pipeline, t_env **envp, int pipes[][2],
@@ -47,21 +52,22 @@ static void	fork_and_execute_all(char **pipeline, t_env **envp, int pipes[][2],
 	pid_t	pid;
 	int		i;
 
+	// Start from first command in the pipeline
 	i = 0;
-	while (i < cmd_count)
+	while (i < cmd_count) // Create one child process per command
 	{
-		pid = fork();
-		if (pid == -1)
+		pid = fork(); 	// Fork current process
+		if (pid == -1) // If fork fails, print error and stop creating more children
 		{
 			perror("fork");
 			return ;
 		}
-		if (pid == 0)
+		if (pid == 0) 	// Child process executes its command with proper pipe redirection
 			execute_child(pipeline, envp, pipes, cmd_count, i);
-		i++;
+		i++; // Parent moves to next command
 	}
-	close_all_pipes(pipes, cmd_count);
-	i = 0;
+	close_all_pipes(pipes, cmd_count); // Parent closes all pipe file descriptors after forking all children
+	i = 0; // Wait for all child processes to finish
 	while (i < cmd_count)
 	{
 		wait(NULL);

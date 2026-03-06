@@ -12,6 +12,7 @@ static char	*build_full_path(char *dir, char *cmd)
 	free(tmp);
 	return (full_path);
 }
+
 char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd)
 {
 	char	*dir;
