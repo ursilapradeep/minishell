@@ -12,10 +12,15 @@
 
 #include "../minishell.h"
 
-extern char **environ;
+static void	execute_child(const char *cmd_path, char **args, char **envp)
+{
+    execve(cmd_path, args, envp);
+    perror("execve");
+    exit(127);
+}
 
 // Execute command
-int execute_command(char **args, t_env **my_env)
+int execute_command(char **args, t_env **envp)
 {
     char *cmd_path;
     pid_t pid;
@@ -26,16 +31,15 @@ int execute_command(char **args, t_env **my_env)
     
     if (is_builtin(args[0]))
     {
-        return (execute_builtin(args, my_env));
+        return (execute_builtin(args, envp));
     }
     
-    cmd_path = find_command(args[0]);
+    cmd_path = find_command(args[0], envp);
     if (!cmd_path)
     {
         printf("minishell: command not found: %s\n", args[0]);
         return (127);
     }
-
     pid = fork();
     if (pid == -1)
     {
@@ -43,19 +47,10 @@ int execute_command(char **args, t_env **my_env)
         free(cmd_path);
         return (1);
     }
-    
     if (pid == 0)
-    {
-        // Child process
-        execve(cmd_path, args, environ);
-        perror("execve");
-        exit(127);
-    }
+        execute_child(cmd_path, args, envp);
     else
-    {
-        // Parent process
         waitpid(pid, &status, 0);
-    }
     free(cmd_path);
     return (0);
 }

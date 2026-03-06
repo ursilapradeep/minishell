@@ -88,14 +88,16 @@ static int count_args(char *input)
     }
     return (count);
 }
+
 /*Input string: "ls  -la /tmp"
     Process:
     Skip spaces → find "ls" → copy into args[0]
     Skip spaces → find "-la" → copy into args[1]
     Skip spaces → find "/tmp" → copy into args[2]
     Set args[3] = NULL */
-static int	add_word(char **args, char *input, int start, int end, int index)
+static int add_word(char **args, char *input, int start,int end, int index)
 {
+    int end;
 	int	len;
 
     len = word_len_without_quotes(input, start, end);
@@ -109,7 +111,7 @@ static int	add_word(char **args, char *input, int start, int end, int index)
 	return (1);
 }
 
-static int	fill_args(char **args, char *input)
+static int fill_args(char **args, char *input)
 {
 	int	i;
 	int	j;
@@ -129,6 +131,7 @@ static int	fill_args(char **args, char *input)
             i = end;
 			j++;
 		}
+        
 	}
 	args[j] = NULL;
 	return (1);
@@ -161,20 +164,4 @@ char **split_args(char *input)
     }
     free(copy);
     return (args);
-}
-
-// Free arguments array
-void free_args(char **args)
-{
-    int i;
-
-    if (!args)
-        return ;
-    i = 0;
-    while (args[i])
-    {
-        free(args[i]);
-        i++;
-    }
-    free(args);
 }

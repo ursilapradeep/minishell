@@ -1,6 +1,5 @@
 #include "../minishell.h"
 // Find command in PATH
-extern char **environ;
 
 static char	*search_directories(char *path_copy, char *cmd)
 {
@@ -35,17 +34,33 @@ static char	*search_in_path(char *path_env, char *cmd)
 	free(path_copy);
 	return (result);
 }
+/*envp[0] = "USER=me"
+envp[1] = "PATH=/usr/local/bin:/usr/bin:/bin"
+envp[2] = "HOME=/home/me" //get_path_from_env(envp) scans each entry, finds the one starting with "PATH=", and returns the substring after it:*/
 
-char *find_command(char *cmd)
+char *get_path_from_env(char **envp)
 {
-    char *path_env;
+	int i;
 
-    if (access(cmd, X_OK) == 0) // Check if cmd is directly executable
-        return (ft_strdup(cmd));
-    path_env = getenv("PATH"); //When you type ls, the shell checks: /usr/local/bin/ls (not found)
-    if (!path_env)
-        return (NULL);
-    return (search_in_path(path_env, cmd));
+	i = 0;
+	while (envp && envp[i])
+	{
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
+		i++;
+	}
+	return (NULL);
 }
 
+char *find_command(char *cmd, char **envp)
+{
+	char *path_env;
+
+	if (access(cmd, X_OK) == 0) // Check if cmd is executable
+		return (ft_strdup(cmd));
+	path_env = get_path_from_env(envp);
+	if (!path_env)
+		return (NULL); //path does not exist
+	return (search_in_path(path_env, cmd));
+}
 

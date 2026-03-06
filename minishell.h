@@ -30,10 +30,13 @@ t_env *init_env(char **envp);
 void add_env_node(t_env **env_list, char *env_str);
 char	**split_args(char *input);
 void	free_args(char **args);
-char	*find_command(char *cmd);
-int		execute_command(char **args, t_env **my_env);
+char	*find_command(char *cmd, char **envp);
+int		execute_command(char **args, t_env **envp);
 char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd);
 char	*check_command_in_dir(char *dir, char *cmd);
+char *get_path_from_env(char **envp);
+
+//built- ins
 int		is_builtin(char *cmd);
 int		execute_builtin(char **args, t_env **my_env);
 int		builtin_cd(char **args, t_env *env);
@@ -43,5 +46,11 @@ int		builtin_exit(char **args);
 int		builtin_env(char **args, t_env *env);
 char	*get_env_value(t_env *env, char *key);
 void	set_env_value(t_env **env, char *key, char *value);
+
+// Pipe handling
+int		contains_pipe(char *input);
+char	**parse_pipeline(char *input);
+void	execute_pipeline(char **pipeline, char **envp);
+
 
 #endif

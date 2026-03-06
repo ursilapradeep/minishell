@@ -8,7 +8,9 @@ SRCS = main.c \
        handle_path/path_helpers.c \
        execute/execute.c \
        builtins/builtins.c \
-       builtins/builtin_utils.c
+       builtins/builtin_utils.c \
+       pipes/pipes.c \
+       pipes/pipes_utils.c
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
 
