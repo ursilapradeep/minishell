@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 int is_space(char c)
 {
@@ -11,7 +11,7 @@ int	word_end(char *input, int i)
     quote = '\0';
     while (input[i])
     {
-        if (!quote && (input[i] == '\'' || input[i] == '"'))
+         if (!quote && (input[i] == '\'' || input[i] == '"'))
             quote = input[i];
         else if (quote && input[i] == quote)
             quote = '\0';

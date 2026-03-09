@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft/libft.h"
@@ -35,6 +36,14 @@ int		execute_command(char **args, t_env **my_env);
 char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd);
 char	*check_command_in_dir(char *dir, char *cmd);
 char *get_path_from_env(char **envp);
+char *read_input(void);
+int	process_input(char *input, t_env **my_env);
+
+// Args helpers
+int is_space(char c);
+int	word_end(char *input, int i);
+int	word_len_without_quotes(char *input, int start, int end);
+void copy_without_quotes(char *dst, char *input, int start, int end);
 
 //built- ins
 int		is_builtin(char *cmd);
@@ -51,6 +60,17 @@ void	set_env_value(t_env **env, char *key, char *value);
 int		contains_pipe(char *input);
 char	**parse_pipeline(char *input);
 void	execute_pipeline(char **pipeline, t_env **envp);
-
+// Command processing
+int		handle_pipeline(char *input, t_env **my_env);
+int		handle_single_command(char *input, t_env **my_env);
+int		process_input(char *input, t_env **my_env);
+char	*read_input(void);
+// Redirection handling
+int		handle_output_redirect(char *filename);
+int		handle_append_redirect(char *filename);
+int		handle_input_redirect(char *filename);
+int		handle_heredoc(char *delimiter);
+char	*apply_redirections(char *input);
+int		contains_redirection(char *input);
 
 #endif
