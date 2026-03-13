@@ -1,5 +1,16 @@
-#include "../minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/13 14:08:13 by us                #+#    #+#             */
+/*   Updated: 2026/03/13 14:20:02 by uvadakku         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "../minishell.h"
 // Read heredoc input lines until delimiter and write to pipe
 int	read_heredoc_input(int write_fd, char *delimiter)
 {

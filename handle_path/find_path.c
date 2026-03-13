@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   find_path.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/03/13 14:19:14 by uvadakku         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 // Find command in PATH
-
 static char	*search_directories(char *path_copy, char *cmd)
 {
 	char	*dir_start;
