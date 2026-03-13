@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/02/28 13:14:46 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/13 09:01:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,9 @@ void add_env_node(t_env **env_list, char *env_str)
 	}
 	/* Insert at head of linked list: new node points to current head */
 	new_node->next = *env_list;
+	new_node->prev = NULL; // New head has no previous node
+	if (*env_list) // If list is not empty, update old head's previous pointer to new node
+		(*env_list)->prev = new_node;
 	*env_list = new_node; // update head to new node
 }
 

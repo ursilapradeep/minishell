@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/03 14:52:57 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/13 09:13:37 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,6 @@ int	builtin_unset(char **args, t_env **env)
 {
 	int		i;
 	t_env	*current;
-	t_env	*prev;
 
 	if (!args[1])
 		return (0);
@@ -161,22 +160,22 @@ int	builtin_unset(char **args, t_env **env)
 	while (args[i])
 	{
 		current = *env;
-		prev = NULL;
 		while (current)
 		{
 			if (current->key && ft_strncmp(current->key, args[i], 
 				ft_strlen(args[i]) + 1) == 0)
 			{
-				if (prev)
-					prev->next = current->next;
+				if (current->prev)
+					current->prev->next = current->next;
 				else
 					*env = current->next;
+				if (current->next)
+					current->next->prev = current->prev;
 				free(current->key);
 				free(current->value);
 				free(current);
 				break ;
 			}
-			prev = current;
 			current = current->next;
 		}
 		i++;
