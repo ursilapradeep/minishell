@@ -6,12 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:15:31 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/16 15:51:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"                                   
-
 // Restore stdin/stdout and close backup file descriptors
 static void	restore_fds(int stdin_backup, int stdout_backup)
 {
@@ -27,6 +26,7 @@ static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 {
 	char	**args;                                          // Array to store command arguments
 	char	*cleaned_input;                                 // Input string after processing redirections
+	char	*expanded_input;
 	int		exit_code;                                      // Exit status from command execution
 
 	(void)stdin_bak;                                        // Mark parameter as unused (avoid warning)
@@ -39,8 +39,12 @@ static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 	}
 	else
 		cleaned_input = ft_strdup(input);                   // No redirections, duplicate input as-is
-	args = split_args(cleaned_input);                       // Split cleaned input into argument array
+	expanded_input = expand_variables(cleaned_input, *my_env);
 	free(cleaned_input);                                    // Free cleaned input string (no longer needed)
+	if (!expanded_input)
+		return (1);
+	args = split_args(expanded_input);                      // Split cleaned input into argument array
+	free(expanded_input);
 	if (args)                                               // If argument splitting succeeded
 	{
 		exit_code = execute_command(args, my_env);          // Execute the command with arguments
@@ -67,10 +71,11 @@ int	handle_single_command(char *input, t_env **my_env)
 {
 	int	stdin_backup;                                       // File descriptor to store original stdin
 	int	stdout_backup;                                      // File descriptor to store original stdout
+	int	exit_code;
 
 	stdin_backup = dup(STDIN_FILENO);                       // Duplicate stdin to backup original
 	stdout_backup = dup(STDOUT_FILENO);                     // Duplicate stdout to backup original
-	apply_and_execute(input, my_env, stdin_backup, stdout_backup); // Process redirections and execute command
+	exit_code = apply_and_execute(input, my_env, stdin_backup, stdout_backup); // Process redirections and execute command
 	restore_fds(stdin_backup, stdout_backup);               // Restore original stdin/stdout and close backups
-	return (0);                                             // Return success status
+	return (exit_code);
 }

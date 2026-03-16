@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:38 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:19:41 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/13 15:58:06 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int	identify_and_skip_operator(char *input, int *i)
 	return (-1); // Return error if not an operator
 }
 
-// Process one complete redirection operator + target
+
 static char	*process_one_redirection(char *input, int *i, int *start)
 {
 	char	*cmd; // Store command before redirection

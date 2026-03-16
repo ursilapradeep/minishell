@@ -6,7 +6,7 @@
 #    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 14:22:29 by uvadakku          #+#    #+#              #
-#    Updated: 2026/03/13 14:22:31 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/03/16 12:29:43 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,13 +15,17 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
        env/env_utils.c \
+       env/env_executor.c \
        handle_args/handle_args.c \
        handle_args/args_helpers.c \
        handle_args/handle_cmds.c \
+       handle_args/handle_quote.c \
+       handle_args/handle_quote_utils.c \
        handle_args/handle_redirect.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        execute/execute.c \
+       execute/execute_utils.c \
        builtins/builtins.c \
        builtins/builtin_utils.c \
        pipes/pipes.c \

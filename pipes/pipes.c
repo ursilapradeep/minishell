@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:16:56 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:16:58 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/13 16:50:48 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ static void	close_all_pipes(int pipes[][2], int cmd_count)
 		i++;
 	}
 }
-
-/*vAfter dup2, you close all pipe fds because:
+/*After dup2, you close all pipe fds because:
 They are no longer needed in that process
 stdin/stdout now already point to the needed pipe ends.
 Avoid fd leaks
@@ -47,8 +46,16 @@ static void	execute_child(char **pipeline, t_env **envp, int pipes[][2], // Chil
         cmd_path = find_command(args[0], envp); // Resolve command name using PATH/environment
         if (cmd_path) // If executable path found
         {
-            execve(cmd_path, args, NULL); // Replace child process image with target program
+            char **env_array = build_env_array(*envp); // Build env array from shell's t_env list
+            execve(cmd_path, args, env_array); // Pass environment to child process
             perror("execve"); // Runs only if execve fails
+            if (env_array) // Free env array on execve failure
+            {
+                int j = 0;
+                while (env_array[j])
+                    free(env_array[j++]);
+                free(env_array);
+            }
             free(cmd_path); // Free allocated command path on failure
         }
         else // If command path could not be resolved
