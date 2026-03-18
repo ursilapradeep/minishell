@@ -29,17 +29,18 @@ void free_args(char **args)
 
 int main(int argc, char **argv, char **envp)
 {
-    t_env *my_env;
-    char *input;
-    int exit_code;
+    t_env *my_env; //store shell's internal environment list
+    /*eg: PATH=/usr/bin:/bin*/
+    char *input; //stores each line typed by user
+    int exit_code; //store result of processing command.
 
     (void)argc;
     (void)argv;
-    exit_code = 0;
-    my_env = init_env(envp);
-    while (1)
+    exit_code = 0;  //initialize status as zero for success
+    my_env = init_env(envp); //create shell internal environment from system env
+    while (1) 
     {
-        input = read_input();
+        input = read_input(); /* reads for eg: ls -l or echo hello */
         if (!input)
             break;
         exit_code = process_input(input, &my_env);

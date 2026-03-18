@@ -48,7 +48,9 @@ void 	copy_without_quotes(char *dst, char *input, int start, int end);
 //built- ins
 int		is_builtin(char *cmd);
 int		execute_builtin(char **args, t_env **my_env);
-int		builtin_cd(char **args, t_env *env);
+int		builtin_cd(char **args, t_env **env);
+int		builtin_pwd(char **args);
+int		builtin_echo(char **args);
 int		builtin_export(char **args, t_env **env);
 int		builtin_unset(char **args, t_env **env);
 int		builtin_exit(char **args);

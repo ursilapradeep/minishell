@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/16 11:43:45 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/18 11:56:04 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	fill_env_node(t_env *new_node, char *env_str)
 	char	*equal_sign;
 	size_t	key_len;
 
-	
 	equal_sign = ft_strchr(env_str, '='); // Find '=' in env string (example: "PATH=/usr/bin")
 	if (equal_sign) // Case 1: string has '=' -> split into key and value
 	{

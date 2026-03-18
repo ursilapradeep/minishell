@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:15:22 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/17 17:45:07 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,7 @@ static int fill_args(char **args, char *input)
 	return (1);
 }
 
-// Split input into arguments
-char **split_args(char *input)
+char **split_args(char *input)// Split input into arguments
 {
     char **args;
     char *copy;

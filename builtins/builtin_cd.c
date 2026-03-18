@@ -1,0 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_cd.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/18 20:02:00 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/03/18 19:55:26 by uvadakku         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+static char	*get_cd_env_target(t_env *env, char *key, char *err_msg, int *status)
+{
+	char	*target_dir;
+
+	target_dir = get_env_value(env, key);
+	if (!target_dir)
+	{
+		ft_putstr_fd(err_msg, 2);
+		*status = 1;
+		return (NULL);
+	}
+	return (target_dir);
+}
+
+static char	*resolve_cd_target(char **args, t_env *env, int *status)
+{
+	char	*target_dir;
+
+	*status = 0;
+	if (args[1] && args[2])
+	{
+		ft_putstr_fd("cd: too many arguments\n", 2);
+		*status = 1;
+		return (NULL);
+	}
+	if (!args[1])
+		return (get_cd_env_target(env, "HOME", "cd: HOME not set\n", status));
+	if (ft_strncmp(args[1], "-", 2) == 0)
+		return (get_cd_env_target(env, "OLDPWD", "cd: OLDPWD not set\n", status));
+	target_dir = args[1];
+	return (target_dir);
+}
+
+int	builtin_cd(char **args, t_env **env)
+{
+	char	*target_dir;
+	char	*old_pwd;
+	char	cwd[4096];
+	int		status;
+
+	target_dir = resolve_cd_target(args, *env, &status);
+	if (status != 0)
+		return (status);
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror("cd");
+		return (1);
+	}
+	old_pwd = ft_strdup(cwd);
+	if (chdir(target_dir) == -1)
+	{
+		perror("cd");
+		free(old_pwd);
+		return (1);
+	}
+	set_env_value(env, "OLDPWD", old_pwd);
+	free(old_pwd);
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+		set_env_value(env, "PWD", cwd);
+	return (0);
+}

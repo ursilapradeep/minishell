@@ -102,12 +102,30 @@ run_test "3-command pipe"       "ls | grep .c | wc -l"          ""   # just chec
 echo ""
 echo "--- 6. Edge Cases ---"
 
-run_test "empty input no crash"         ""              ""
-run_test "leading spaces"               "   ls"         "Makefile"
-run_test "quoted argument"              'echo "hello world"'    "hello world"
-run_test "single quote no expansion"    "echo '\$HOME'"         "\$HOME"
-run_test "double quote expansion"       'echo "$HOME"'          "$HOME"
-run_test "command not found"            "invalidcmd"    "command not found"
+run_test "cd - switches back"           "cd /tmp
+cd -
+pwd"                                   "$PWD"
+run_test "cd invalid path keeps pwd"    "pwd
+cd /definitely/not/here
+pwd"                                   "$PWD"
+run_test "export overwrite"             "export TEST=one
+export TEST=two
+env | grep TEST"                        "TEST=two"
+run_test "export bare var"              "export ONLYKEY
+export"                                 "declare -x ONLYKEY"
+run_test "unset missing var"            "unset DOES_NOT_EXIST
+echo ok"                                "ok"
+run_test "empty input no crash"         ""                       ""
+run_test "leading spaces"               "   ls"                  "Makefile"
+run_test "quoted argument"              'echo "hello world"'     "hello world"
+run_test "single quotes keep spaces"    "echo 'a b c'"           "a b c"
+run_test "double quotes keep spaces"    'echo "a b c"'           "a b c"
+run_test "mixed quoted args"            "echo 'left side' \"right side\"" "left side right side"
+run_test "multiple spaces collapse"     "echo   hello    world"  "hello world"
+run_test "single quote no expansion"    "echo '\$HOME'"          "\$HOME"
+run_test "double quote expansion"       'echo "$HOME"'           "$HOME"
+run_test "logical and short-circuit"    "false && echo should_not_print" ""
+run_test "command not found"            "invalidcmd"             "command not found"
 
 # --------------------------------------------------
 # 7. KNOWN ISSUE: pipe children env inheritance
