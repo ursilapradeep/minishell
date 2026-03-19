@@ -45,3 +45,6 @@ Redirection: Uses dup2() to swap standard input/output with files.
 
 Path Finding: Finds where the binary lives (e.g., /bin/ls).
 https://man7.org/linux/man-pages/man3/readline.3.html
+
+Redirections: https://42-cursus.gitbook.io/guide/2-rank-02/pipex/understand-pipex
+heredoc: https://linuxize.com/post/bash-heredoc/

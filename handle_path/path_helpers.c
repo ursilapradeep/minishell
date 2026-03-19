@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path_helpers.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/13 14:16:23 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/03/18 10:58:01 by uvadakku         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static char	*build_full_path(char *dir, char *cmd)
@@ -50,3 +62,4 @@ char	*check_command_in_dir(char *dir, char *cmd)
 	free(full_path);
 	return (NULL);
 }
+  
