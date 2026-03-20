@@ -6,7 +6,7 @@
 #    By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/19 17:42:53 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/03/20 12:37:14 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,13 +33,14 @@ SRCS = main.c \
        builtins/builtin_utils.c \
        pipes/pipes.c \
        pipes/pipes_utils.c \
-       parser/commands_builder.c\
-       parser/commands_builder_utils.c\
+       parser/command_builder.c\
+       parser/command_pipeline.c\
+       parser/command_builder_utils.c\
        parser/commands.c\
        parser/build_commands.c\
        parser/parser.c\
        parser/parser_utils.c\
-       parser/parse_redirect.c\
+       parser/parser_redirect.c\
        parser/quote_handler.c\
        parser/tokenizer_utils.c\
        parser/token.c\

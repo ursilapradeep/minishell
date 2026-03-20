@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int count_args(char *input)
+int count_args_from_input(char *input)
 {
     int count;
     int i; // Index to traverse input
@@ -91,7 +91,7 @@ char **split_args(char *input)// Split input into arguments
     copy = ft_strdup(input); // Duplicate input to avoid modifying original string
     if (!copy)
         return (NULL);
-    count = count_args(copy); // Count number of arguments to allocate array
+    count = count_args_from_input(copy); // Count number of arguments to allocate array
     args = malloc((sizeof(char *) * (count + 1))); // +1 for NULL terminator
     if (!args)
     {

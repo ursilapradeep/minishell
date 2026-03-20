@@ -137,6 +137,28 @@ run_test "exported var visible through pipe"    "export PIPETEST=yes
 env | grep PIPETEST | cat"                      "PIPETEST=yes"
 
 # --------------------------------------------------
+# 8. PARSER TEST CASES
+# --------------------------------------------------
+echo ""
+echo "--- 8. Parser Test Cases ---"
+
+run_test "skip_whitespace skips spaces" "echo \"$(echo '   hello' | ./minishell | grep hello)\"" "hello"
+run_test "is_redirect_operator detects >" ">" "TOKEN_REDIRECT_OUT"
+run_test "extract_redirect_filename extracts filename" "echo \"$(echo 'echo > file.txt' | ./minishell | grep file.txt)\"" "file.txt"
+run_test "handle_redirections sets FDs" "echo \"$(echo 'echo hello > /tmp/testfile' | ./minishell | grep /tmp/testfile)\"" "/tmp/testfile"
+
+# --------------------------------------------------
+# 9. PARSER EDGE CASES
+# --------------------------------------------------
+echo ""
+echo "--- 9. Parser Edge Cases ---"
+
+run_test "skip_whitespace handles empty string" "echo \"$(echo '' | ./minishell | grep -c '')\"" "0"
+run_test "is_redirect_operator handles invalid operator" "echo \"$(echo 'invalid' | ./minishell | grep -c TOKEN)\"" "0"
+run_test "extract_redirect_filename handles no filename" "echo \"$(echo 'echo >' | ./minishell 2>&1 | grep 'Error: No filename')\"" "Error: No filename"
+run_test "handle_redirections handles missing file" "echo \"$(echo 'echo hello > /nonexistentdir/file' | ./minishell 2>&1 | grep 'Error')\"" "Error"
+
+# --------------------------------------------------
 # SUMMARY
 # --------------------------------------------------
 echo ""
