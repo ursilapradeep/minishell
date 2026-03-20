@@ -6,7 +6,7 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 09:42:38 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 14:05:19 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 14:44:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * @rest_of_line: Rest of command after operator
  * Return: Pointer to position after filename, NULL on error
  */
-static int open_redirect_file(t_cmd *cmd, t_token_type operator, const char *filename)
+int open_redirect_file(t_cmd *cmd, t_token_type operator, const char *filename)
 {
 	int fd;
 
@@ -45,13 +45,14 @@ static int open_redirect_file(t_cmd *cmd, t_token_type operator, const char *fil
 	return (0);
 }
 
-static const char *handle_heredoc(const char *rest_of_line)
+const char *ret_heredoc(const char *rest_of_line)
 {
+	(void)rest_of_line;
 	write(STDERR_FILENO, "Error: HEREDOC (<<) not yet implemented\n", 41);
 	return (NULL);
 }
 
-static const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
+const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
 	const char *rest_of_line)
 {
 	char *filename;
@@ -61,11 +62,14 @@ static const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
 		return (NULL);
 	filename = extract_redirect_filename(rest_of_line);
 	if (!filename)
+	{
+		write(STDERR_FILENO, "Error: Missing or invalid filename\n", 35);
 		return (NULL);
+	}
 	if (operator == TOKEN_HEREDOC)
 	{
 		free(filename);
-		return handle_heredoc(rest_of_line);
+		return (ret_heredoc(rest_of_line));
 	}
 	if (open_redirect_file(cmd, operator, filename) < 0)
 	{
@@ -80,7 +84,7 @@ static const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
 	return (end_pos);
 }
 
-static const char	*process_redirection(t_cmd *cmd, const char *current,
+const char	*process_redirection(t_cmd *cmd, const char *current,
 	t_token_type type, int *fd_count)
 {
 	if (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
@@ -88,8 +92,12 @@ static const char	*process_redirection(t_cmd *cmd, const char *current,
 	{
 		current += (type == TOKEN_REDIRECT_APPEND) ? 2 : 1;
 		current = handle_single_redirect(cmd, type, current);
-		if (current)
-			(*fd_count)++;
+		if (!current)
+		{
+			write(STDERR_FILENO, "Error: Failed to process redirection\n", 37);
+			return (NULL);
+		}
+		(*fd_count)++;
 		return (current);
 	}
 	else if (type == TOKEN_HEREDOC)
@@ -100,3 +108,4 @@ static const char	*process_redirection(t_cmd *cmd, const char *current,
 	}
 	return (current);
 }
+

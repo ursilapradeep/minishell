@@ -1,5 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   variable_expansion_utils.c                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/20 13:04:51 by spaipur-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdlib.h> // For NULL and memory functions
-#include "minishell.h" // For t_env, t_token, and TOKEN_WORD
+#include "../minishell.h" // For t_env, t_token, and TOKEN_WORD
 
 /**
  * expand_string - Expand all variables in a string
@@ -22,7 +34,7 @@ char *expand_string(const char *input, t_env *env)
 	if (!result)
 		return (NULL);
 	result_len = 0;
-	if (process_input(input, result, &result_len, env) == -1)
+	if (proc_input(input, result, &result_len, env) == -1)
 	{
 		free(result);
 		return (NULL);
@@ -32,7 +44,7 @@ char *expand_string(const char *input, t_env *env)
 }
 
 // Helper function to process the input string
-static int process_input(const char *input, char *result, int *result_len, t_env *env)
+int proc_input(const char *input, char *result, int *result_len, t_env *env)
 {
     const char *current = input;
     int in_single_quote = 0;
@@ -96,7 +108,7 @@ int expand_token_list(t_token *tokens, t_env *env)
  * when encountering quote characters. It also advances the
  * current character pointer.
  */
-static int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote)
+int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote)
 {
 	if (**current == '\'' && !(*in_double_quote))
 	{
@@ -125,7 +137,7 @@ static int handle_quotes(const char **current, int *in_single_quote, int *in_dou
  * function and appending the result to the output string. It also
  * advances the current character pointer.
  */
-static int expand_variable_helper(const char **current, char *result, int *result_len, t_env *env)
+int expand_variable_helper(const char **current, char *result, int *result_len, t_env *env)
 {
 	char	*var_value;
 	char	*temp;

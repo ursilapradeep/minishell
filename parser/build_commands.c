@@ -6,38 +6,13 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:45:51 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:55:50 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 11:17:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-/**
- * free_args - Free argument array
- * @args: Array of strings to free
- */
-void free_args(char **args)
-{
-	int i;
 
-	if (!args)
-		return ;
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
-}
-
-// Helper function to check if a token is a valid argument or a redirect
-typedef enum e_token_check
-{
-    TOKEN_VALID_ARGUMENT,
-    TOKEN_REDIRECT
-}   t_token_check;
-
-static int check_token_type(t_token *current, t_token_check check_type)
+int check_token_type(t_token *current, t_token_check check_type)
 {
     if (check_type == TOKEN_VALID_ARGUMENT)
     {
@@ -58,7 +33,7 @@ static int check_token_type(t_token *current, t_token_check check_type)
 }
 
 // Helper function to process a single token and add to args array
-static int process_token_for_args(t_token *current, char **args, int *i)
+int process_token_for_args(t_token *current, char **args, int *i)
 {
     args[*i] = ft_strdup(current->value);
     if (!args[*i])
@@ -71,7 +46,7 @@ static int process_token_for_args(t_token *current, char **args, int *i)
 }
 
 // Helper function to iterate through tokens and build args array
-static int iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
+int iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
 {
     t_token *current = tokens;
     int     i = 0;
@@ -100,7 +75,7 @@ static int iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
  * @arg_count: Number of arguments to collect
  * Return: Newly allocated args array, NULL on error
  */
-static char **build_args_array(t_token *tokens, int arg_count)
+char **build_args_array(t_token *tokens, int arg_count)
 {
     char **args;
 

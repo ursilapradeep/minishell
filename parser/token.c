@@ -71,7 +71,7 @@ void print_tokens(t_token *tokens)
  * @head: Pointer to list head
  * @new_token: Token to add
  */
-static void add_token(t_token **head, t_token *new_token)
+void add_token(t_token **head, t_token *new_token)
 {
 	t_token *current;
 
@@ -94,7 +94,7 @@ static void add_token(t_token **head, t_token *new_token)
  * @type: Token type enum
  * Return: New token pointer, NULL on error
  */
-static t_token *create_token(char *value, t_token_type type)
+t_token *create_token(char *value, t_token_type type)
 {
 	t_token *token;
 

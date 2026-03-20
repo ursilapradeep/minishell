@@ -30,7 +30,7 @@ static char *get_env_variable(t_env *env, const char *var_name, int len)
 	current = env;
 	while (current)
 	{
-		if (current->key && ft_strlen(current->key) == len
+		if (current->key && (int)ft_strlen(current->key) == len
 			&& ft_strncmp(current->key, var_name, len) == 0)
 		{
 			return (current->value);
@@ -63,6 +63,7 @@ static int allocate_expanded_value(const char *value, int value_len, char **expa
 // Helper function to handle special cases for variable expansion
 static int handle_special_cases(const char *input, int var_len, int is_braced, char **expanded, int *consumed)
 {
+    (void)input; // Marked unused parameter
     if (var_len == 0 && !is_braced) // Handle $$ (process ID)
     {
         *expanded = ft_calloc(2, sizeof(char));
@@ -93,7 +94,7 @@ static int handle_special_cases(const char *input, int var_len, int is_braced, c
  * @consumed: Pointer to store characters consumed
  * Return: 0 on success, -1 on error
  */
-static int expand_variable(const char *input, t_env *env, 
+int expand_variable(const char *input, t_env *env, 
 	char **expanded, int *consumed)
 {
 	const char	*after_var;

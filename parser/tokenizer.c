@@ -6,7 +6,7 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:01:30 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 12:47:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @c: Character to check
  * Return: 1 if quote, 0 otherwise
  */
-static int is_quote(char c)
+int is_quote(char c)
 {
 	return (c == '\'' || c == '"');
 }
@@ -29,7 +29,7 @@ static int is_quote(char c)
  * @len: Pointer to store length
  * Return: Allocated string without quotes, NULL on error
  */
-static char *extract_quoted_string(const char *input, int *len)
+char *extract_quoted_string(const char *input, int *len)
 {
 	const char	*start;
 	const char	*end;
@@ -64,7 +64,7 @@ static char *extract_quoted_string(const char *input, int *len)
  * @len: Pointer to store consumed characters
  * Return: Allocated word string, NULL on error
  */
-static char *extract_word(const char *input, int *len)
+char *extract_word(const char *input, int *len)
 {
 	const char	*start;
 	const char	*end;
@@ -95,7 +95,7 @@ static char *extract_word(const char *input, int *len)
  * @len: Pointer to store operator length
  * Return: Operator string, NULL on error
  */
-static char *extract_redirect_operator(const char *input, int *len)
+char *extract_redirect_operator(const char *input, int *len)
 {
 	char *operator;
 
@@ -129,7 +129,7 @@ static char *extract_redirect_operator(const char *input, int *len)
  * @input: String to scan
  * Return: Pointer after whitespace
  */
-static const char *skip_whitespace_simple(const char *input)
+const char *skip_whitespace_simple(const char *input)
 {
 	if (!input)
 		return (NULL);

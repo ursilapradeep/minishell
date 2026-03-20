@@ -6,7 +6,7 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:21:40 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 17:02:41 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 11:57:43 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_cmd *build_commands(t_token *tokens)
  * This function processes the token list and builds individual commands.
  * It updates the commands linked list with new command structures.
  */
-static int process_tokens_into_commands(t_token *tokens, t_cmd **commands)
+int process_tokens_into_commands(t_token *tokens, t_cmd **commands)
 {
 	t_cmd *new_cmd;
 	t_token *current;

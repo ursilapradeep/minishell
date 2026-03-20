@@ -6,7 +6,7 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:39:10 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:45:22 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 11:59:21 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
  * create_cmd - Create a new command structure
  * Return: New t_cmd pointer, NULL on error
  */
-static t_cmd *create_cmd(void)
+t_cmd *create_cmd(void)
 {
 	t_cmd *cmd;
 
@@ -36,7 +36,7 @@ static t_cmd *create_cmd(void)
  * @head: Pointer to list head
  * @new_cmd: Command to add
  */
-static void add_cmd(t_cmd **head, t_cmd *new_cmd)
+void add_cmd(t_cmd **head, t_cmd *new_cmd)
 {
 	t_cmd *current;
 
@@ -74,7 +74,7 @@ static int is_valid_argument(t_token *current)
  * @tokens: Token list
  * Return: Number of arguments
  */
-static int count_args(t_token *tokens)
+int count_args(t_token *tokens)
 {
 	int		count;
 	t_token *current;

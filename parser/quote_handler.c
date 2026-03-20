@@ -157,7 +157,7 @@ void remove_quotes(char *str)
  * @cmd: Command string
  * Return: Number of arguments
  */
-static int count_args(const char *cmd)
+int cnt_args(const char *cmd)
 {
 	int		count;
 	char	curr_quote;
@@ -194,7 +194,7 @@ static int count_args(const char *cmd)
  * @cmd: Pointer to command string
  * Return: Newly allocated argument string
  */
-static char *get_next_arg(char **cmd)
+char *get_next_arg(char **cmd)
 {
 	char	*start_pos;
 	char	*arg;
@@ -244,7 +244,7 @@ char **parse_command_args(char *cmd_str)
 
 	if (!cmd_str || !*cmd_str)
 		return (NULL);
-	arg_count = count_args(cmd_str);
+	arg_count = cnt_args(cmd_str);
 	if (arg_count == 0)
 		return (NULL);
 	args = ft_calloc(arg_count + 1, sizeof(char *));

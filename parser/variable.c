@@ -47,7 +47,7 @@ static const char *handle_braced_var(const char *input, int *len)
  * @is_braced: 1 if ${VAR} format, 0 if $VAR format
  * Return: Pointer after variable name
  */
-static const char *extract_var_name(const char *input, int *len, int *is_braced)
+const char *extract_var_name(const char *input, int *len, int *is_braced)
 {
 	const char *start;
 	const char *end;
