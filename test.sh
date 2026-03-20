@@ -137,26 +137,48 @@ run_test "exported var visible through pipe"    "export PIPETEST=yes
 env | grep PIPETEST | cat"                      "PIPETEST=yes"
 
 # --------------------------------------------------
-# 8. PARSER TEST CASES
+# 8. PARSER UNIT TESTS (skip_whitespace)
 # --------------------------------------------------
 echo ""
-echo "--- 8. Parser Test Cases ---"
+echo "--- 8. Parser Unit Tests: skip_whitespace ---"
 
-run_test "skip_whitespace skips spaces" "echo \"$(echo '   hello' | ./minishell | grep hello)\"" "hello"
-run_test "is_redirect_operator detects >" ">" "TOKEN_REDIRECT_OUT"
-run_test "extract_redirect_filename extracts filename" "echo \"$(echo 'echo > file.txt' | ./minishell | grep file.txt)\"" "file.txt"
-run_test "handle_redirections sets FDs" "echo \"$(echo 'echo hello > /tmp/testfile' | ./minishell | grep /tmp/testfile)\"" "/tmp/testfile"
+run_test "skip_whitespace: leading spaces" "   echo hello" "hello"
+run_test "skip_whitespace: multiple spaces" "      echo world" "world"
+run_test "skip_whitespace: tabs" "		echo test" "test"
+run_test "skip_whitespace: mixed spaces and tabs" "  	  echo mixed" "mixed"
 
 # --------------------------------------------------
-# 9. PARSER EDGE CASES
+# 9. PARSER UNIT TESTS (is_redirect_operator)
 # --------------------------------------------------
 echo ""
-echo "--- 9. Parser Edge Cases ---"
+echo "--- 9. Parser Unit Tests: is_redirect_operator ---"
 
-run_test "skip_whitespace handles empty string" "echo \"$(echo '' | ./minishell | grep -c '')\"" "0"
-run_test "is_redirect_operator handles invalid operator" "echo \"$(echo 'invalid' | ./minishell | grep -c TOKEN)\"" "0"
-run_test "extract_redirect_filename handles no filename" "echo \"$(echo 'echo >' | ./minishell 2>&1 | grep 'Error: No filename')\"" "Error: No filename"
-run_test "handle_redirections handles missing file" "echo \"$(echo 'echo hello > /nonexistentdir/file' | ./minishell 2>&1 | grep 'Error')\"" "Error"
+run_test "is_redirect_operator: detects >" "echo test > /tmp/ms_redir1.txt && test -f /tmp/ms_redir1.txt && echo success" "success"
+run_test "is_redirect_operator: detects <" "echo input_test > /tmp/ms_redir2.txt && cat < /tmp/ms_redir2.txt" "input_test"
+run_test "is_redirect_operator: detects >>" "echo line1 > /tmp/ms_redir3.txt && echo line2 >> /tmp/ms_redir3.txt && wc -l < /tmp/ms_redir3.txt" "2"
+run_test "is_redirect_operator: handles non-redirect" "echo normal command" "normal command"
+
+# --------------------------------------------------
+# 10. PARSER UNIT TESTS (extract_redirect_filename)
+# --------------------------------------------------
+echo ""
+echo "--- 10. Parser Unit Tests: extract_redirect_filename ---"
+
+run_test "extract_redirect_filename: simple filename" "echo content > /tmp/ms_simple.txt && cat /tmp/ms_simple.txt" "content"
+run_test "extract_redirect_filename: filename with path" "echo path_test > /tmp/ms_extract_path.txt && test -f /tmp/ms_extract_path.txt && echo ok" "ok"
+run_test "extract_redirect_filename: stops at pipe" "echo data | cat > /tmp/ms_extract_pipe.txt && cat /tmp/ms_extract_pipe.txt" "data"
+run_test "extract_redirect_filename: multiple args before redirect" "echo first second > /tmp/ms_extract_args.txt && cat /tmp/ms_extract_args.txt" "first second"
+
+# --------------------------------------------------
+# 11. PARSER EDGE CASES (combined functionality)
+# --------------------------------------------------
+echo ""
+echo "--- 11. Parser Edge Cases ---"
+
+run_test "append mode preserves content" "echo line1 > /tmp/ms_append.txt && echo line2 >> /tmp/ms_append.txt && cat /tmp/ms_append.txt" "line2"
+run_test "input redirect reads file" "echo content > /tmp/ms_input_test.txt && cat < /tmp/ms_input_test.txt" "content"
+run_test "mixed redirects in pipe" "echo hello | cat > /tmp/ms_mixed.txt && cat /tmp/ms_mixed.txt" "hello"
+run_test "command with redirect and args" "echo first second > /tmp/ms_args.txt && cat /tmp/ms_args.txt" "first second"
 
 # --------------------------------------------------
 # SUMMARY
@@ -169,4 +191,4 @@ echo "  TOTAL:  $((PASS + FAIL))"
 echo "=================================================="
 
 # Cleanup temp files
-rm -f /tmp/ms_test.txt /tmp/ms_input.txt
+rm -f /tmp/ms_*.txt

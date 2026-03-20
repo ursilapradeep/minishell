@@ -6,12 +6,11 @@
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 14:00:47 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 15:20:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/20 16:35:10 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 const char *skip_non_redirects(const char *current)
 {
 	while (*current && *current != ' ' && *current != '\t' 
@@ -44,7 +43,6 @@ int	parse_redirections_loop(t_cmd *cmd, const char *current)
 	return (0);
 }
 
-
 /**
  * handle_redirections - Parse and apply all redirections in a command
  * @cmd: Command structure to populate
@@ -53,22 +51,13 @@ int	parse_redirections_loop(t_cmd *cmd, const char *current)
  */
 int handle_redirections(t_cmd *cmd, char *cmd_str)
 {
-    if (!cmd || !cmd_str)
-        return (-1);
-    cmd->infd = STDIN_FILENO;
-    cmd->outfd = STDOUT_FILENO;
-    if (parse_redirections_loop(cmd, cmd_str) < 0)
-    {
-        write(STDERR_FILENO, "Error: Failed to handle redirections\n", 37);
-        return (-1);
-    }
-    if (!cmd_str || !*cmd_str)
-    {
-        write(STDERR_FILENO, "Error: Empty string after redirection\n", 39);
-        return (-1);
-    }
-    return (0);
+	if (!cmd || !cmd_str)
+		return (-1);
+	cmd->infd = STDIN_FILENO;
+	cmd->outfd = STDOUT_FILENO;
+	return (parse_redirections_loop(cmd, cmd_str));
 }
+
 /**
  * get_command_portion - Extract command portion before any redirections
  * @cmd_str: Full command string

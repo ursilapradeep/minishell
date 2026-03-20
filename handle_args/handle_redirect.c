@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:42 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/17 16:29:27 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/20 16:35:46 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	find_logical_and(char *input)
+int	find_logical_and(char *input)
 {
 	int		i; 	/* Index used to scan the input string character by character. */
 	char	quote;  /* Tracks the currently open quote, or '\0' when outside quotes. */
@@ -33,7 +33,7 @@ static int	find_logical_and(char *input)
 	return (-1);
 }
 
-static int	handle_logical_and(char *input, t_env **my_env, int and_pos)
+int	handle_logical_and(char *input, t_env **my_env, int and_pos)
 {
 	char	*left; /* Stores the command text that appears before &&. */
 	char	*right; 	/* Stores the command text that appears after &&. */
@@ -82,11 +82,14 @@ char *read_input(void)
 	/* Buffer that will store the line read from the prompt. */
 	char	*input;
 
-	input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
+	if (isatty(STDIN_FILENO))
+		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
+	else
+		input = readline(NULL);
 	/* Handle EOF such as Ctrl-D by printing exit and returning NULL. */
 	if (!input)
 	{
-		printf("exit\n"); 	/* Mimic shell behavior by printing exit on end-of-file. */
+		write(STDERR_FILENO, "exit\n", 5); 	/* Mimic shell behavior by printing exit on end-of-file. */
 		return (NULL); /* Signal the caller that no more input is available. */
 	}
 	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */

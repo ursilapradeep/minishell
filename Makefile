@@ -6,7 +6,7 @@
 #    By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/20 12:37:14 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/03/20 17:04:54 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,4 +76,8 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+test_parser:
+	$(CC) $(CFLAGS) parser/test_parser.c parser/parser_redirect.o parser/parser_utils.o libft/libft.a -o test_parser
+	./test_parser
+
+.PHONY: all clean fclean re test_parser
