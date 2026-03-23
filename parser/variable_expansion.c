@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:18:05 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 11:07:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,26 @@ static int allocate_expanded_value(const char *value, int value_len, char **expa
     return (0);
 }
 
+static int	handle_status_special_case(const char *input, char **expanded,
+		int *consumed)
+{
+    if (input[1] != '?')
+        return (0);
+    *expanded = ft_itoa(g_last_status);
+    if (!*expanded)
+        return (-1);
+    *consumed = 2;
+    return (1);
+}
+
 // Helper function to handle special cases for variable expansion
 static int handle_special_cases(const char *input, int var_len, int is_braced, char **expanded, int *consumed)
 {
-    (void)input; // Marked unused parameter
+	int	status_case;
+
+	status_case = handle_status_special_case(input, expanded, consumed);
+	if (status_case != 0)
+		return (status_case);
     if (var_len == 0 && !is_braced) // Handle $$ (process ID)
     {
         *expanded = ft_calloc(2, sizeof(char));

@@ -6,12 +6,12 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 12:42:23 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 17:51:57 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"                                   
-// Restore stdin/stdout and close backup file descriptors
+
 static void	restore_fds(int stdin_backup, int stdout_backup)
 {
 	dup2(stdin_backup, STDIN_FILENO);                       // Restore original stdin from backup
@@ -20,7 +20,7 @@ static void	restore_fds(int stdin_backup, int stdout_backup)
 	close(stdout_backup);                                   // Close backup stdout file descriptor
 }
 
-// Prepare command string by applying redirections and expanding variables
+
 static char	*prepare_command_input(char *input, t_env *my_env)
 {
 	char	*cleaned_input;
@@ -72,14 +72,16 @@ static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 int	handle_pipeline(char *input, t_env **my_env)
 {
 	char	**pipeline;                                     // Array to store individual commands from pipeline
+	int		status;
 
 	pipeline = parse_pipeline(input);                       // Parse input and split by pipe characters
+	status = 1;
 	if (pipeline)                                           // If parsing succeeded
 	{
-		execute_pipeline(pipeline, my_env);                 // Execute all commands in pipeline with pipes
+		status = execute_pipeline(pipeline, my_env);        // Execute all commands in pipeline with pipes
 		free_args(pipeline);                                // Free the pipeline command array
 	}
-	return (0);                                             // Return success status
+	return (status);                                        // Return pipeline exit status
 }
 
 /*input = "echo hi > file1" (full raw command string")

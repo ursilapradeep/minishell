@@ -3,14 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:42 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/20 16:35:46 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 15:49:51 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static int	has_unclosed_quotes(char *input)
+{
+	char	quote;
+	int		i;
+
+	quote = '\0';
+	i = 0;
+	while (input[i])
+	{
+		if (!quote && (input[i] == '\'' || input[i] == '"'))
+			quote = input[i];
+		else if (quote && input[i] == quote)
+			quote = '\0';
+		i++;
+	}
+	return (quote != '\0');
+}
 
 int	find_logical_and(char *input)
 {
@@ -66,15 +84,57 @@ int	process_input(char *input, t_env **my_env)
 {
 	/* Position of the first valid && operator, if one exists. */
 	int	and_pos;
+	int	status;
 
+	if (has_unclosed_quotes(input))
+	{
+		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+		g_last_status = 2;
+		return (2);
+	}
 	and_pos = find_logical_and(input); 	/* Look for a logical AND operator outside quoted sections. */
 	/* Delegate to the && handler when the operator is present. */
 	if (and_pos != -1)
-		return (handle_logical_and(input, my_env, and_pos));   	/* Route piped input to the pipeline execution path. */
-	if (contains_pipe(input))
-		return (handle_pipeline(input, my_env)); /* Otherwise execute the input as a single command. */
+		status = handle_logical_and(input, my_env, and_pos);
+	else if (contains_pipe(input))
+		status = handle_pipeline(input, my_env);
 	else
-		return (handle_single_command(input, my_env));
+		status = handle_single_command(input, my_env);
+	g_last_status = status;
+	return (status);  	/* Route piped input to the pipeline execution path. */
+}
+
+static char	*read_non_interactive_line(void)
+{
+	char	buf;
+	char	*line;
+	char	*ch;
+	char	*joined;
+	int		bytes;
+
+	line = ft_strdup("");
+	if (!line)
+		return (NULL);
+	while (1)
+	{
+		bytes = read(STDIN_FILENO, &buf, 1);
+		if (bytes <= 0)
+			break ;
+		if (buf == '\n')
+			break ;
+		ch = ft_substr(&buf, 0, 1);
+		if (!ch)
+			return (free(line), NULL);
+		joined = ft_strjoin(line, ch);
+		free(ch);
+		free(line);
+		line = joined;
+		if (!line)
+			return (NULL);
+	}
+	if (bytes <= 0 && line[0] == '\0')
+		return (free(line), NULL);
+	return (line);
 }
 
 char *read_input(void)
@@ -83,20 +143,23 @@ char *read_input(void)
 	char	*input;
 
 	if (isatty(STDIN_FILENO))
+	{
+		g_sigint_received = 0;
+		rl_done = 0;
 		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
+	}
 	else
-		input = readline(NULL);
-	/* Handle EOF such as Ctrl-D by printing exit and returning NULL. */
+		input = read_non_interactive_line();
 	if (!input)
 	{
-		write(STDERR_FILENO, "exit\n", 5); 	/* Mimic shell behavior by printing exit on end-of-file. */
+		if (g_sigint_received)
+			return (ft_strdup(""));
+		if (isatty(STDIN_FILENO))
+			write(STDERR_FILENO, "exit\n", 5); 	/* Interactive EOF prints exit (bash-like). */
 		return (NULL); /* Signal the caller that no more input is available. */
 	}
 	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */
-	{
-		free(input); 		/* Free the empty string returned by readline. */
-		return (read_input()); 	/* Prompt again until a non-empty line or EOF is received. */
-	}
+		return (input);
 	add_history(input); /* Save the non-empty command in readline history. */
 	return (input); 	/* Return the input line to the caller for further processing. */
 }

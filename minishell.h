@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 13:07:28 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 17:49:19 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,15 @@ typedef struct s_cmd
 	struct s_cmd	*prev;
 }				t_cmd;
 
+typedef struct s_word_info {
+	char *input;
+	int start;
+	int end;
+} t_word_info;
+
+extern int	g_last_status;
+extern int	g_sigint_received;
+
 // Helper function to check if a token is a valid argument or a redirect
 typedef enum e_token_check
 {
@@ -105,7 +114,9 @@ char	**build_env_array(t_env *env);
 // Pipe handling
 int		contains_pipe(char *input);
 char	**parse_pipeline(char *input);
-void	execute_pipeline(char **pipeline, t_env **envp);
+int		execute_pipeline(char **pipeline, t_env **envp);
+int		wait_for_pipeline_children(int cmd_count, pid_t last_pid);
+void	execute_pipeline_command_or_exit(char *segment, t_env **envp);
 // Command processing
 int		handle_pipeline(char *input, t_env **my_env);
 int		handle_single_command(char *input, t_env **my_env);
@@ -197,5 +208,14 @@ int expand_variable(const char *input, t_env *env, char **expanded, int *consume
 // Added prototypes for handle_quotes and expand_variable_helper to minishell.h.
 int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote);
 int expand_variable_helper(const char **current, char *result, int *result_len, t_env *env);
+int	expanded_len(char *input, t_env *env);
+int	process_next_char(char *expanded, int *j, char *input,
+		int *i, char *quote, t_env *env);
 
+// Signal handling
+void setup_signal_handlers(void);
+void ignore_signals(void);
+void restore_signals(void);
+void signal_handler_sigint(int sig);
+void signal_handler_sigquit(int sig);
 #endif

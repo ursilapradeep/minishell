@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 09:42:38 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 14:44:52 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 12:55:04 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,11 @@ int open_redirect_file(t_cmd *cmd, t_token_type operator, const char *filename)
 	return (0);
 }
 
-const char *ret_heredoc(const char *rest_of_line)
-{
-	(void)rest_of_line;
-	write(STDERR_FILENO, "Error: HEREDOC (<<) not yet implemented\n", 41);
-	return (NULL);
-}
+// const char *ret_heredoc(const char *rest_of_line)
+// {
+// 	(void)rest_of_line;
+// 	return (NULL);
+// }
 
 const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
 	const char *rest_of_line)
@@ -69,13 +68,10 @@ const char *handle_single_redirect(t_cmd *cmd, t_token_type operator,
 	if (operator == TOKEN_HEREDOC)
 	{
 		free(filename);
-		return (ret_heredoc(rest_of_line));
-	}
-	if (open_redirect_file(cmd, operator, filename) < 0)
-	{
-		free(filename);
 		return (NULL);
 	}
+	if (open_redirect_file(cmd, operator, filename) < 0)
+		return (free(filename), NULL);
 	end_pos = skip_whitespace(rest_of_line);
 	while (*end_pos && *end_pos != ' ' && *end_pos != '\t' && *end_pos != '|'
 		&& *end_pos != '>' && *end_pos != '<')

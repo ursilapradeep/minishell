@@ -6,80 +6,72 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 12:32:05 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 14:59:37 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 17:08:47 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h" // Include minishell types, env structs, and helper prototypes.
+#include "../minishell.h"
 
-static int	count_env_entries(t_env *env) // Count only env nodes that have both key and value.
+static int	count_env_entries(t_env *env)
 {
-	int	count; // Number of valid KEY=VALUE entries.
+	int	count;
 
-	count = 0; 
-	while (env) // Traverse linked list from head to tail.
+	count = 0;
+	while (env)
 	{
-		if (env->key && env->value) /* code is counting valid nodes in env linked list*/
-			count++; 
-		env = env->next; // Move to next node.
+		if (env->key && env->value)
+			count++;
+		env = env->next;
 	}
-	return (count); // Return total valid entries.
+	return (count);
 }
 
-/*its freeing an array of pointers, not linked list*/
-void	free_partial_env_array(char **env_array, int count) // Free already-built env strings after partial failure.
+void	free_partial_env_array(char **env_array, int count)
 {
-	while (count > 0) // Free in reverse order from last valid index. 
+	while (count > 0)
 	{
-		count--; // Point to previous allocated element.
-		free(env_array[count]); // Release one KEY=VALUE string.
+		count--;
+		free(env_array[count]);
 	}
-	free(env_array); // Release the top-level pointer array.
+	free(env_array);
 }
 
-// Helper: join key and value as KEY=VALUE
-static char *make_env_entry(const char *key, const char *value) // Build one KEY=VALUE string for execve environment.
+static char	*make_env_entry(const char *key, const char *value)
 {
-	char *tmp; // Temporary string for "KEY=".
-	char *result; // Final concatenated "KEY=VALUE".
+	char	*tmp;
+	char	*result;
 
-	tmp = ft_strjoin(key, "="); // Create prefix with equals sign.
-	if (!tmp) 
-		return (NULL); 
-	result = ft_strjoin(tmp, value); // Append value to complete env entry.
-	free(tmp); // Free temporary prefix.
-	return (result); // Return newly allocated KEY=VALUE string.
+	tmp = ft_strjoin(key, "=");
+	if (!tmp)
+		return (NULL);
+	result = ft_strjoin(tmp, value);
+	free(tmp);
+	return (result);
 }
 
-	/* USER -> alice 	HOME -> /Users/alice
-	then env_array becomes:
-	
-	env_array[0] = "USER=alice"
-	env_array[1] = "HOME=/Users/alice"
-	env_array[2] = NULL */
-char	**build_env_array(t_env *env) // Convert env linked list into NULL-terminated char** for execve.
+char	**build_env_array(t_env *env)
 {
-	char	**env_array; //built from linked list passed to execve
-	int		index; // Next write position in env_array. 
+	char	**env_array;
+	int		index;
 
-	env_array = malloc(sizeof(char *) * (count_env_entries(env) + 1)); // Allocate slots + 1 for final NULL.
+	env_array = malloc(sizeof(char *) * (count_env_entries(env) + 1));
 	if (!env_array)
-		return (NULL); 
-	index = 0; // Start writing at first array position.
-	while (env) // Walk through linked-list env nodes.
+		return (NULL);
+	index = 0;
+	while (env)
 	{
-		if (env->key && env->value) // Export only complete key/value pairs.
+		if (env->key && env->value)
 		{
-			env_array[index] = make_env_entry(env->key, env->value); // Build "KEY=VALUE" element.
-			if (!env_array[index]) // Handle string allocation failure.
+			env_array[index] = make_env_entry(env->key, env->value);
+			if (!env_array[index])
 			{
-				free_partial_env_array(env_array, index); // Free everything created so far.
-				return (NULL); 
+				free_partial_env_array(env_array, index);
+				return (NULL);
 			}
-			index++; // Advance to next output slot.
+			index++;
 		}
-		env = env->next; // pointer field inside the current node
+		env = env->next;
 	}
-	env_array[index] = NULL; // Terminate array for execve contract.
-	return (env_array); // Return ready-to-use environment array.
+	env_array[index] = NULL;
+	return (env_array);
 }

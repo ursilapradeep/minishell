@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+         #
+#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/20 17:04:54 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/03/23 12:01:32 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,9 @@ SRCS = main.c \
        builtins/builtin_unset_exit.c \
        builtins/builtin_utils.c \
        pipes/pipes.c \
+       pipes/pipes_wait.c \
        pipes/pipes_utils.c \
+       signal/Signals.c \
        parser/command_builder.c\
        parser/command_pipeline.c\
        parser/command_builder_utils.c\

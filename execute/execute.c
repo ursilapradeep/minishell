@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/18 16:51:49 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 14:28:19 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,31 +54,44 @@ static int	prepare_external(char **args, t_env **envp, char **cmd_path,
 	return (0); // Preparation successful.
 }
 
+static int	wait_and_cleanup_external(pid_t pid, char **env_array,
+		char *cmd_path)
+{
+	int	exit_status;
+
+	exit_status = wait_and_get_exit_status(pid); // Parent waits and collects child exit code.
+	setup_signal_handlers();
+	free_env_array(env_array); // Parent frees env snapshot after child finished.
+	free(cmd_path); // Parent frees resolved path string.
+	return (exit_status); // Return command status to shell loop.
+}
+
 int	run_external(char **args, t_env **envp)
 {
 	char	*cmd_path; // Absolute or relative executable path to run.
 	char	**env_array; // Environment snapshot passed to execve.
 	pid_t	pid; // Child process id after fork.
 	int		prep_status; // Status from path/env preparation step.
-	int		exit_status; // Final child exit status mapped for shell.
 
 	prep_status = prepare_external(args, envp, &cmd_path, &env_array); // Prepare command path and env array.
 	if (prep_status != 0) // Stop if command/env prep failed.
 		return (prep_status);
+	ignore_signals();
 	pid = fork(); 
 	if (pid == -1) 
 	{
 		perror("fork"); // Report system fork error.
+		setup_signal_handlers();
 		free_env_array(env_array); // Cleanup prepared env array.
 		free(cmd_path); // Cleanup resolved command path.
 		return (1); // Return failure to caller.
 	}
 	if (pid == 0) // Child process branch.
+	{
+		restore_signals(); // Child should use default signal behavior (bash-like).
 		execute_child(cmd_path, args, env_array); // Execute target program in child.
-	exit_status = wait_and_get_exit_status(pid); // Parent waits and collects child exit code.
-	free_env_array(env_array); // Parent frees env snapshot after child finished.
-	free(cmd_path); // Parent frees resolved path string.
-	return (exit_status); // Return command status to shell loop.
+	}
+	return (wait_and_cleanup_external(pid, env_array, cmd_path));
 }
 
 int execute_command(char **args, t_env **envp)

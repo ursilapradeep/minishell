@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 17:09:09 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 15:33:18 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 11:27:09 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,18 @@ int	var_value_len(char *input, int i, t_env *env, int *skip) // Compute expanded
 	char	*key; // Temporary heap string containing key name.
 	char	*value; // Matched environment value for key.
 	int		len; // Length of value to add to output.
+	char	*status_str;
+
+	if (input[i + 1] == '?')
+	{
+		status_str = ft_itoa(g_last_status);
+		if (!status_str)
+			return (-1);
+		len = ft_strlen(status_str);
+		free(status_str);
+		*skip = 2;
+		return (len);
+	}
 
 	key_len = 0; // Start counting key chars.
 	while (is_var_char(input[i + 1 + key_len])) // Count valid variable-name characters.
@@ -72,7 +84,7 @@ int	count_token_len(char *input, int *i, char *quote,
 		(*i)++; // Consume closing quote (not counted in output).
 	}
 	else if (input[*i] == '$' && *quote != '\'' && (ft_isalpha(input[*i + 1])
-			|| input[*i + 1] == '_')) // Expand variable unless inside single quotes.
+			|| input[*i + 1] == '_' || input[*i + 1] == '?')) // Expand variable unless inside single quotes.
 	{
 		vlen = var_value_len(input, *i, env, &skip); // Get value length and consumed source width.
 		if (vlen < 0) // Stop on allocation/error from helper.
@@ -86,4 +98,35 @@ int	count_token_len(char *input, int *i, char *quote,
 		(*i)++; // Advance one input character.
 	}
 	return (1); // Signal success.
+}
+
+/*input = "echo \"$USER\" '$HOME' $PATH"
+env contains: USER=alice HOME = /Users/alice PATH =/usr/bin:/bin
+$USER inside double quotes expands
+$HOME inside single quotes does not expand
+$PATH outside quotes expands*/
+char	*expand_variables(char *input, t_env *env) // Return a newly allocated string with $VAR expansions applied.
+{
+	char	*expanded; // Output buffer holding expanded result.
+	char	quote; // Current quote state while scanning input.
+	int		i; // Input read index.
+	int		j; // Output write index.
+	int		len; // Required output length.
+
+	len = expanded_len(input, env); // Precompute length to allocate exact buffer size.
+	if (len < 0) // Abort on preprocessing failure.
+		return (NULL);
+	expanded = malloc(len + 1); // Allocate output (+1 for null terminator).
+	if (!expanded) // Handle allocation failure.
+		return (NULL);
+	i = 0; // Initialize input index.
+	j = 0; // Initialize output index.
+	quote = '\0'; // Start outside any quote context.
+	while (input[i]) // Process full input until null terminator.
+	{
+		if (!process_next_char(expanded, &j, input, &i, &quote, env)) // Handle one token/char at a time.
+			return (free(expanded), NULL); // Cleanup and propagate failure.
+	}
+	expanded[j] = '\0'; // Terminate resulting C string.
+	return (expanded); // Return expanded command string.
 }

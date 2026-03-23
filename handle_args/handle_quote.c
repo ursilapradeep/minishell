@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 16:10:08 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 15:12:00 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 11:24:24 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,22 @@ int	expanded_len(char *input, t_env *env) // Compute required length of expanded
 	return (len); // Return exact allocation size needed (without null terminator).
 }
 
+static int	append_last_status(char *expanded, int *j, int *i)
+{
+	char	*status_str;
+	char	*tmp;
+
+	status_str = ft_itoa(g_last_status);
+	if (!status_str)
+		return (0);
+	tmp = status_str;
+	while (*tmp)
+		expanded[(*j)++] = *tmp++;
+	free(status_str);
+	*i += 2;
+	return (1);
+}
+
 int	append_var_value(char *expanded, int *j, char *input,
 		int *i, t_env *env) // Expand $VAR at input[*i] and append its value into expanded buffer.
 {
@@ -41,6 +57,8 @@ int	append_var_value(char *expanded, int *j, char *input,
 	char	*key; // Extracted variable key (heap-allocated).
 	char	*value; // Value looked up in environment.
 
+	if (input[*i + 1] == '?')
+		return (append_last_status(expanded, j, i));
 	key_len = 0; // Begin with empty variable name length.
 	while (is_var_char(input[*i + 1 + key_len])) // Count valid variable-name characters.
 		key_len++;
@@ -67,7 +85,7 @@ int	process_next_char(char *expanded, int *j, char *input,
 		(*i)++; // Consume closing quote (not copied).
 	}
 	else if (input[*i] == '$' && *quote != '\'' && (ft_isalpha(input[*i + 1])
-			|| input[*i + 1] == '_')) // Expand variable unless inside single quotes.
+			|| input[*i + 1] == '_' || input[*i + 1] == '?')) // Expand variable unless inside single quotes.
 	{
 		if (!append_var_value(expanded, j, input, i, env)) // Append variable expansion text.
 			return (0); // Signal failure.
@@ -77,33 +95,4 @@ int	process_next_char(char *expanded, int *j, char *input,
 	return (1); // Signal success.
 }
 
-/*input = "echo \"$USER\" '$HOME' $PATH"
-env contains: USER=alice HOME = /Users/alice PATH =/usr/bin:/bin
-$USER inside double quotes expands
-$HOME inside single quotes does not expand
-$PATH outside quotes expands*/
-char	*expand_variables(char *input, t_env *env) // Return a newly allocated string with $VAR expansions applied.
-{
-	char	*expanded; // Output buffer holding expanded result.
-	char	quote; // Current quote state while scanning input.
-	int		i; // Input read index.
-	int		j; // Output write index.
-	int		len; // Required output length.
 
-	len = expanded_len(input, env); // Precompute length to allocate exact buffer size.
-	if (len < 0) // Abort on preprocessing failure.
-		return (NULL);
-	expanded = malloc(len + 1); // Allocate output (+1 for null terminator).
-	if (!expanded) // Handle allocation failure.
-		return (NULL);
-	i = 0; // Initialize input index.
-	j = 0; // Initialize output index.
-	quote = '\0'; // Start outside any quote context.
-	while (input[i]) // Process full input until null terminator.
-	{
-		if (!process_next_char(expanded, &j, input, &i, &quote, env)) // Handle one token/char at a time.
-			return (free(expanded), NULL); // Cleanup and propagate failure.
-	}
-	expanded[j] = '\0'; // Terminate resulting C string.
-	return (expanded); // Return expanded command string.
-}

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:02:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/20 11:24:16 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 16:08:43 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	*get_cd_env_target(t_env *env, char *key, char *err_msg, int *status)
+static char	*get_cd_env_target(t_env *env, char *key,
+	char *err_msg, int *status)
 {
 	char	*target_dir;
 
@@ -40,7 +41,8 @@ static char	*resolve_cd_target(char **args, t_env *env, int *status)
 	if (!args[1])
 		return (get_cd_env_target(env, "HOME", "cd: HOME not set\n", status));
 	if (ft_strncmp(args[1], "-", 2) == 0)
-		return (get_cd_env_target(env, "OLDPWD", "cd: OLDPWD not set\n", status));
+		return (get_cd_env_target(env, "OLDPWD",
+				"cd: OLDPWD not set\n", status));
 	target_dir = args[1];
 	return (target_dir);
 }

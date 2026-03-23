@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:18:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 20:04:30 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/23 16:09:07 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	unset_one_key(t_env **env, char *key)
 	while (current)
 	{
 		if (current->key && ft_strncmp(current->key, key,
-					ft_strlen(key) + 1) == 0)
+				ft_strlen(key) + 1) == 0)
 		{
 			if (prev)
 				prev->next = current->next;

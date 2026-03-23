@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 17:46:01 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/23 16:59:46 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-// Execute env builtin
+
 int	builtin_env(char **args, t_env *env)
 {
 	t_env	*current;
@@ -31,10 +31,9 @@ int	builtin_env(char **args, t_env *env)
 	return (0);
 }
 
-// Execute echo builtin
-static int is_n_flag(char *arg)
+static int	is_n_flag(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!arg || arg[0] != '-')
@@ -48,13 +47,17 @@ static int is_n_flag(char *arg)
 	}
 	return (1);
 }
-int builtin_echo(char **args)
+
+int	builtin_echo(char **args)
 {
-	int i = 1;
-	int new_line = 1;
+	int	i;
+	int	newline;
+
+	i = 1;
+	newline = 1;
 	while (args[i] && is_n_flag(args[i]))
 	{
-		new_line = 0;
+		newline = 0;
 		i++;
 	}
 	while (args[i])
@@ -64,13 +67,12 @@ int builtin_echo(char **args)
 			ft_putstr_fd(" ", 1);
 		i++;
 	}
-	if (new_line)
+	if (newline)
 		ft_putstr_fd("\n", 1);
 	return (0);
 }
 
-// Check if command is a builtin
-int is_builtin(char *cmd)
+int	is_builtin(char *cmd)
 {
 	if (!cmd)
 		return (0);
@@ -91,12 +93,10 @@ int is_builtin(char *cmd)
 	return (0);
 }
 
-// Execute builtin command (returns 1 if builtin was executed, 0 otherwise)
-int execute_builtin(char **args, t_env **my_env)
+int	execute_builtin(char **args, t_env **my_env)
 {
 	if (!args || !args[0])
 		return (0);
-	
 	if (ft_strncmp(args[0], "echo", 5) == 0 && args[0][4] == '\0')
 		return (builtin_echo(args));
 	if (ft_strncmp(args[0], "cd", 3) == 0 && args[0][2] == '\0')

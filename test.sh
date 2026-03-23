@@ -181,6 +181,119 @@ run_test "mixed redirects in pipe" "echo hello | cat > /tmp/ms_mixed.txt && cat 
 run_test "command with redirect and args" "echo first second > /tmp/ms_args.txt && cat /tmp/ms_args.txt" "first second"
 
 # --------------------------------------------------
+# 12. EXIT STATUS TRACKING ($?)
+# --------------------------------------------------
+echo ""
+echo "--- 12. Exit Status Tracking ($?) ---"
+
+run_test "status after success builtin" \
+"echo ok
+echo \$?" \
+"0"
+
+run_test "status after command not found" \
+"invalidcmd
+echo \$?" \
+"127"
+
+run_test "status after false" \
+"false
+echo \$?" \
+"1"
+
+run_test "status after true" \
+"true
+echo \$?" \
+"0"
+
+run_test "status after cd failure" \
+"cd /definitely/not/here
+echo \$?" \
+"1"
+
+run_test "status after cd success" \
+"cd /tmp
+echo \$?" \
+"0"
+
+run_test "status after pipeline uses last command" \
+"echo hello | grep hello
+echo \$?" \
+"0"
+
+run_test "status after pipeline last command fails" \
+"echo hello | grep nomatch
+echo \$?" \
+"1"
+
+run_test "status after && short-circuit failure" \
+"false && echo should_not_run
+echo \$?" \
+"1"
+
+run_test "status after && success chain" \
+"true && echo ok
+echo \$?" \
+"0"
+
+run_test "single quotes do not expand \$?" \
+"echo '\$?'" \
+"\$?"
+
+run_test "double quotes expand \$?" \
+"false
+echo \"\$?\"" \
+"1"
+
+# --------------------------------------------------
+# 13. SIGNAL HANDLING (interactive mode)
+# --------------------------------------------------
+echo ""
+echo "--- 13. Signal Handling (Interactive Mode) ---"
+
+# Note: Signal tests (Ctrl+C, Ctrl+D, Ctrl+\) require interactive TTY
+# These automated tests verify non-interactive mode doesn't crash
+# Manual testing required for actual Ctrl+C/Ctrl+D/Ctrl+\ behavior
+
+run_test "non-interactive mode: commands execute normally" \
+"echo test1
+echo test2" \
+"test2"
+
+run_test "non-interactive mode: exit code preserved" \
+"false
+echo \$?" \
+"1"
+
+run_test "non-interactive mode: pipes work" \
+"echo hello | cat" \
+"hello"
+
+run_test "non-interactive mode: redirection works" \
+"echo data > /tmp/ms_signal_test.txt
+cat /tmp/ms_signal_test.txt" \
+"data"
+
+# Note: Manual interactive tests (require terminal):
+# 1. Ctrl+C (SIGINT):
+#    $ ./minishell
+#    minishell$ echo hello
+#    hello
+#    minishell$ <Ctrl+C>
+#    minishell$ 
+#    (should show new prompt on new line)
+#
+# 2. Ctrl+D (EOF):
+#    $ ./minishell
+#    minishell$ <Ctrl+D>
+#    (shell exits)
+#
+# 3. Ctrl+\ (SIGQUIT):
+#    $ ./minishell
+#    minishell$ <Ctrl+\>
+#    (does nothing - ignore signal)
+
+# --------------------------------------------------
 # SUMMARY
 # --------------------------------------------------
 echo ""
@@ -192,3 +305,4 @@ echo "=================================================="
 
 # Cleanup temp files
 rm -f /tmp/ms_*.txt
+rm -f /tmp/ms_signal_test.txt
