@@ -6,12 +6,21 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:08:13 by us                #+#    #+#             */
-/*   Updated: 2026/03/13 14:20:02 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/18 14:39:07 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-// Read heredoc input lines until delimiter and write to pipe
+// Read heredoc input lines until delimiter and write to pipe 
+/* cat << EOF
+> hello
+> world
+> EOF
+
+read_heredoc_input() collects:
+- "hello" → write to pipe
+- "world" → write to pipe
+- "EOF" → stop (matches delimiter)*/
 int	read_heredoc_input(int write_fd, char *delimiter)
 {
 	char	*line; // Buffer to store each input line
@@ -21,8 +30,8 @@ int	read_heredoc_input(int write_fd, char *delimiter)
 		line = readline("> "); // Read one line from user with prompt
 		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0) // Check if EOF or delimiter reached
 		{
-			free(line); // Free allocated memory for line
-			break ; // Exit loop
+			free(line); 
+			break ;
 		}
 		write(write_fd, line, ft_strlen(line)); // Write line to pipe
 		write(write_fd, "\n", 1); // Write newline character to pipe
@@ -48,7 +57,7 @@ int	handle_heredoc(char *delimiter)
 		return (-1); // Return error code
 	}
 	close(pipefd[1]); // Close write end of pipe (no more writing)
-	if (dup2(pipefd[0], STDIN_FILENO) == -1) // Redirect stdin to pipe read end
+	if (dup2(pipefd[0], STDIN_FILENO) == -1) /*read end of pipe contains heredoc line, file descriptor for standart input*/
 	{
 		perror("minishell: dup2"); // Print error if dup2 fails
 		close(pipefd[0]); // Close read end of pipe

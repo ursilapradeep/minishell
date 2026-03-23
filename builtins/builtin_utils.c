@@ -1,41 +1,75 @@
+<<<<<<< HEAD
+=======
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/23 16:05:43 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/03/23 16:53:05 by uvadakku         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+>>>>>>> signal_new
 
 #include "../minishell.h"
 
-// Get environment variable value by key
-char *get_env_value(t_env *env, char *key)
+char	*get_env_value(t_env *env, char *key)
 {
-	t_env *current;
+	t_env	*current;
 
 	if (!env || !key)
 		return (NULL);
 	current = env;
 	while (current)
 	{
-		if (current->key && ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+		if (current->key
+			&& ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
 			return (current->value);
 		current = current->next;
 	}
 	return (NULL);
 }
 
-// Update or add environment variable
-void set_env_value(t_env **env, char *key, char *value)
+static int	update_existing_env_value(t_env *env, char *key, char *value)
 {
-	t_env *current;
-
-	if (!env || !key || !value)
-		return ;
-	current = *env;
-	while (current)
+	while (env)
 	{
-		if (current->key && ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+		if (env->key && ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
 		{
-			free(current->value);
-			current->value = ft_strdup(value);
-			return ;
+			if (!value)
+				return (1);
+			free(env->value);
+			env->value = ft_strdup(value);
+			return (1);
 		}
-		current = current->next;
+		env = env->next;
 	}
-	// If not found, add new env variable
-	add_env_node(env, ft_strjoin(key, "="));
+	return (0);
+}
+
+void	set_env_value(t_env **env, char *key, char *value)
+{
+	char	*entry;
+	char	*tmp;
+
+	if (!env || !key)
+		return ;
+	if (update_existing_env_value(*env, key, value))
+		return ;
+	if (value)
+	{
+		tmp = ft_strjoin(key, "=");
+		if (!tmp)
+			return ;
+		entry = ft_strjoin(tmp, value);
+		free(tmp);
+	}
+	else
+		entry = ft_strdup(key);
+	if (!entry)
+		return ;
+	add_env_node(env, entry);
+	free(entry);
 }

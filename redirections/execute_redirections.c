@@ -6,19 +6,26 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:38 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:19:41 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/18 13:13:03 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/* input: echo hi >   out.txt
+suppose caller has i at position right after >
+function does:
+	skips spaces (*i moves to o)
+	marks start = *i
+	advances until space/operator/end
+	returns substring "out.txt" */
 static char	*skip_spaces_and_extract(char *input, int *i)
 {
 	char	*token; // Buffer to store extracted token
 	int		start; // Mark start position of token
 
 	while (input[*i] == ' ' || input[*i] == '\t') // Skip whitespace characters
-		(*i)++; // Move to next character
+		(*i)++;
 	start = *i; // Mark where token begins
 	while (input[*i] && input[*i] != ' ' && input[*i] != '\t' // Continue while not whitespace or operator
 		&& input[*i] != '>' && input[*i] != '<') // Stop at redirection operators
@@ -42,32 +49,38 @@ static int	execute_redirection(int op_type, char *target)
 }
 
 // Identify redirection operator type and advance index
+/*cat > infile.txt
+> redirects stdout to file
+cat reads from terminal (stdin) and writes into infile.txt
+file is overwritten (or created)
+cat < infile.txt
+< redirects file to stdin
+cat reads from infile.txt and writes to terminal stdout*/
 static int	identify_and_skip_operator(char *input, int *i)
 {
 	if (input[*i] == '>' && input[*i + 1] == '>') // Check for >>
 	{
 		*i += 2; // Skip both characters
-		return (0); // Return type 0 (append)
+		return (0); //(write to file in append mode (keep old content), not overwrite)
 	}
-	else if (input[*i] == '>') // Check for >
+	else if (input[*i] == '>') 
 	{
-		*i += 1; // Skip one character
+		*i += 1; 
 		return (1); // Return type 1 (output)
 	}
-	else if (input[*i] == '<' && input[*i + 1] == '<') // Check for <<
+	else if (input[*i] == '<' && input[*i + 1] == '<') // Check for << cat << EOF
 	{
 		*i += 2; // Skip both characters
-		return (2); // Return type 2 (heredoc)
+		return (2); // Return type 2 (shell reads input lines from terminal until delimiter word appears heredoc)
 	}
 	else if (input[*i] == '<') // Check for <
 	{
-		*i += 1; // Skip one character
+		*i += 1; 
 		return (3); // Return type 3 (input)
 	}
 	return (-1); // Return error if not an operator
 }
 
-// Process one complete redirection operator + target
 static char	*process_one_redirection(char *input, int *i, int *start)
 {
 	char	*cmd; // Store command before redirection

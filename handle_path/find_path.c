@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:19:14 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/17 18:07:05 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ char *find_command(char *cmd, t_env **envp)
 {
 	char *path_env;
 
-	if (access(cmd, X_OK) == 0) // Check if cmd is executable
+	if (ft_strchr(cmd, '/') && access(cmd, X_OK) == 0) // Direct-path execution only when command contains '/'
 		return (ft_strdup(cmd));
-	path_env = get_env_value(*envp, "PATH");
+	path_env = get_env_value(*envp, "PATH"); //builtins
 	if (!path_env)
 		return (NULL); //path does not exist
 	return (search_in_path(path_env, cmd));
