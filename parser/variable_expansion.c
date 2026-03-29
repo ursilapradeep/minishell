@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 11:07:59 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/27 12:43:18 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * @len: Length of variable name
  * Return: Variable value or NULL if not found
  */
-static char *get_env_variable(t_env *env, const char *var_name, int len)
+char *get_env_variable(t_env *env, const char *var_name, int len)
 {
 	t_env	*current;
 
@@ -41,7 +41,7 @@ static char *get_env_variable(t_env *env, const char *var_name, int len)
 }
 
 // Helper function to allocate and copy expanded variable value
-static int allocate_expanded_value(const char *value, int value_len, char **expanded)
+int allocate_expanded_value(const char *value, int value_len, char **expanded)
 {
     if (value)
     {
@@ -60,12 +60,12 @@ static int allocate_expanded_value(const char *value, int value_len, char **expa
     return (0);
 }
 
-static int	handle_status_special_case(const char *input, char **expanded,
+int	handle_status_special_case(const char *input, char **expanded,
 		int *consumed)
 {
     if (input[1] != '?')
         return (0);
-    *expanded = ft_itoa(g_last_status);
+    *expanded = ft_itoa(g_shell.last_status);
     if (!*expanded)
         return (-1);
     *consumed = 2;

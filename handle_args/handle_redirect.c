@@ -6,13 +6,14 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:42 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 15:49:51 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/29 18:30:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <readline/readline.h>
 
-static int	has_unclosed_quotes(char *input)
+int	has_unclosed_quotes(char *input)
 {
 	char	quote;
 	int		i;
@@ -81,15 +82,14 @@ int	handle_logical_and(char *input, t_env **my_env, int and_pos)
 }
 
 int	process_input(char *input, t_env **my_env)
-{
-	/* Position of the first valid && operator, if one exists. */
+{ /* Position of the first valid && operator, if one exists. */
 	int	and_pos;
 	int	status;
 
 	if (has_unclosed_quotes(input))
 	{
 		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
-		g_last_status = 2;
+		g_shell.last_status = 2;
 		return (2);
 	}
 	and_pos = find_logical_and(input); 	/* Look for a logical AND operator outside quoted sections. */
@@ -100,7 +100,7 @@ int	process_input(char *input, t_env **my_env)
 		status = handle_pipeline(input, my_env);
 	else
 		status = handle_single_command(input, my_env);
-	g_last_status = status;
+	g_shell.last_status = status;
 	return (status);  	/* Route piped input to the pipeline execution path. */
 }
 
@@ -144,18 +144,15 @@ char *read_input(void)
 
 	if (isatty(STDIN_FILENO))
 	{
-		g_sigint_received = 0;
-		rl_done = 0;
+		g_shell.sigint_received = 0;
 		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
 	}
 	else
 		input = read_non_interactive_line();
 	if (!input)
 	{
-		if (g_sigint_received)
+		if (g_shell.sigint_received)
 			return (ft_strdup(""));
-		if (isatty(STDIN_FILENO))
-			write(STDERR_FILENO, "exit\n", 5); 	/* Interactive EOF prints exit (bash-like). */
 		return (NULL); /* Signal the caller that no more input is available. */
 	}
 	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */

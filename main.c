@@ -6,24 +6,15 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 11:02:52 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/29 12:29:37 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 
-int	g_last_status = 0;
-int	g_sigint_received = 0;
+t_shell_state g_shell = {0, 0};
 
 /*To prevent memory leaks, you must free both levels:
-
 Loop through and free each string (free(args[i])) - frees individual strings like "ls", "-la", etc.
 Free the array itself (free(args)) - frees the pointer array that held those strings */
 // Free arguments array
@@ -42,36 +33,43 @@ void free_args(char **args)
     free(args);
 }
 
-int main(int argc, char **argv, char **envp)
+// Main shell loop: handles input, processing, and exit logic
+void minishell_loop(t_env *my_env)
 {
-    t_env *my_env; //store shell's internal environment list
-    /*eg: PATH=/usr/bin:/bin*/
-    char *input; //stores each line typed by user
-    int exit_code; //store result of processing command.
+    int exit_code = 0;
+    char *input;
 
-    (void)argc;
-    (void)argv;
-    exit_code = 0;  //initialize status as zero for success
-    g_last_status = 0;
-    my_env = init_env(envp); //create shell internal environment from system env
-    rl_catch_signals = 0;
-    if (isatty(STDIN_FILENO))
-        setup_signal_handlers(); //setup signal handlers for interactive mode
-    while (1) 
+    while (1)
     {
-        input = read_input(); /* reads for eg: ls -l or echo hello */
+        input = read_input();
         if (!input)
-            break;
+        {
+            printf("exit\n");
+            exit(g_shell.last_status);
+        }
         if (*input == '\0')
         {
             free(input);
             continue;
         }
         exit_code = process_input(input, &my_env);
-        g_last_status = exit_code;
+        g_shell.last_status = exit_code;
         free(input);
         if (exit_code == -1)
             break;
     }
+}
+
+int main(int argc, char **argv, char **envp)
+{
+    t_env *my_env;
+
+    (void)argc;
+    (void)argv;
+    g_shell.last_status = 0;
+    my_env = init_env(envp); // create shell internal environment from system env
+    if (isatty(STDIN_FILENO))
+        setup_signal_handlers(); // setup signal handlers for interactive mode
+    minishell_loop(my_env);
     return (0);
 }

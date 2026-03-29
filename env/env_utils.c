@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 17:10:23 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/29 16:06:28 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ void	add_env_node(t_env **env_list, char *env_str)
 
 t_env	*init_env(char **envp)
 {
-	t_env	*env_list;
-	int		i;
+	t_env	*env_list; 
+	int		i; 
 
 	i = 0;
 	env_list = NULL;
@@ -69,4 +69,4 @@ t_env	*init_env(char **envp)
 		i++;
 	}
 	return (env_list);
-}
+} 

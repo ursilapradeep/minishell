@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 10:59:49 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 14:02:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/29 16:27:07 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,12 @@
 void	signal_handler_sigint(int sig)
 {
 	(void)sig;
-	g_last_status = 130;
-	g_sigint_received = 1;
 	write(STDOUT_FILENO, "\n", 1);
-	rl_done = 1;
+	g_shell.last_status = 130;
+	g_shell.sigint_received = 1;
+	#ifdef rl_done
+  rl_done = 1;
+	#endif
 }
 
 /*

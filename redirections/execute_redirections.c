@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:38 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 13:13:03 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/27 17:11:01 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,48 +81,83 @@ static int	identify_and_skip_operator(char *input, int *i)
 	return (-1); // Return error if not an operator
 }
 
-static char	*process_one_redirection(char *input, int *i, int *start)
-{
-	char	*cmd; // Store command before redirection
-	char	*target; // Store filename/delimiter for redirection
-	int		op_type; // Type of redirection operator
+// static char	*process_one_redirection(char *input, int *i, int *start)
+// {
+// 	char	*cmd; // Store command before redirection
+// 	char	*target; // Store filename/delimiter for redirection
+// 	int		op_type; // Type of redirection operator
 
-	cmd = ft_substr(input, *start, *i - *start); // Extract command part before operator
-	op_type = identify_and_skip_operator(input, i); // Identify operator and advance index
-	target = skip_spaces_and_extract(input, i); // Extract filename/delimiter after operator
-	if (execute_redirection(op_type, target) == -1) // Execute the redirection
-	{
-		free(target); // Free target string on error
-		free(cmd); // Free command string on error
-		return (NULL); // Return NULL to signal error
-	}
-	free(target); // Free target string on success
-	return (cmd); // Return cleaned command
-}
-
+// 	cmd = ft_substr(input, *start, *i - *start); // Extract command part before operator
+// 	op_type = identify_and_skip_operator(input, i); // Identify operator and advance index
+// 	target = skip_spaces_and_extract(input, i); // Extract filename/delimiter after operator
+// 	if (execute_redirection(op_type, target) == -1) // Execute the redirection
+// 	{
+// 		free(target); // Free target string on error
+// 		free(cmd); // Free command string on error
+// 		return (NULL); // Return NULL to signal error
+// 	}
+// 	free(target); // Free target string on success
+// 	return (cmd); // Return cleaned command
+// }
 // Parse and apply redirections from command string
 // Returns the cleaned command (without redirection tokens)
-char	*apply_redirections(char *input)
+// Helper: Remove a substring from input (from start to end, exclusive)
+char *remove_substring(const char *input, int start, int end)
 {
-	int		i; // Index to traverse input
-	int		start; // Mark start of current command segment
-	char	*cmd; // Store result command
+	char *result;
+	int len = ft_strlen(input);
+	int new_len = len - (end - start);
+	result = malloc(new_len + 1);
+	if (!result)
+		return NULL;
+	ft_memcpy(result, input, start);
+	ft_memcpy(result + start, input + end, len - end);
+	result[new_len] = '\0';
+	return result;
+}
 
-	i = 0; // Initialize index
-	start = 0; // Initialize start position
-	while (input[i]) // Loop through entire input string
+// Helper: Process a single redirection at position i in cmd, update cmd and i by reference
+static int process_and_remove_redirection(char **cmd_ptr, int *i_ptr)
+{
+	char *cmd = *cmd_ptr;
+	int i = *i_ptr;
+	int op_pos = i;
+	int op_type = identify_and_skip_operator(cmd, &i);
+	char *target = skip_spaces_and_extract(cmd, &i);
+	char *tmp;
+	if (execute_redirection(op_type, target) == -1)
 	{
-		if ((input[i] == '>' && input[i + 1] == '>') // Check for >>
-			|| input[i] == '>' // Check for >
-			|| (input[i] == '<' && input[i + 1] == '<') // Check for <<
-			|| input[i] == '<') // Check for <
-		{
-			cmd = process_one_redirection(input, &i, &start); // Process found redirection
-			if (cmd == NULL) // Check for error
-				return (NULL); // Return NULL on error
-			return (cmd); // Return cleaned command
-		}
-		i++; // Move to next character
+		free(target);
+		free(cmd);
+		*cmd_ptr = NULL;
+		return -1;
 	}
-	return (ft_strdup(input)); // Return duplicate of input if no redirections found
+	free(target);
+	tmp = remove_substring(cmd, op_pos, i);
+	free(cmd);
+	*cmd_ptr = tmp;
+	*i_ptr = op_pos;
+	return 0;
+}
+
+char *apply_redirections(char *input)
+{
+	int i = 0;
+	char *cmd = ft_strdup(input);
+	char *tmp;
+
+	while (cmd && cmd[i])
+	{
+		if ((cmd[i] == '>' && cmd[i + 1] == '>') || cmd[i] == '>' ||
+			(cmd[i] == '<' && cmd[i + 1] == '<') || cmd[i] == '<')
+		{
+			if (process_and_remove_redirection(&cmd, &i) == -1)
+				return NULL;
+			continue;
+		}
+		i++;
+	}
+	tmp = ft_strtrim(cmd, " \t");
+	free(cmd);
+	return tmp;
 }

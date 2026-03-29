@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 18:14:16 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/27 16:28:08 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,10 @@ typedef struct s_word_info {
 	int end;
 } t_word_info;
 
+#ifdef rl_done
+ rl_done = 0;
+#endif
+
 extern int	g_last_status;
 extern int	g_sigint_received;
 
@@ -73,6 +77,13 @@ typedef enum e_token_check
     TOKEN_VALID_ARGUMENT,
     TOKEN_REDIRECT
 }   t_token_check;
+
+typedef struct s_shell_state {
+	int last_status;
+	int sigint_received;
+} t_shell_state;
+
+extern t_shell_state g_shell;
 
 // Function prototypes
 t_env 	*init_env(char **envp);
