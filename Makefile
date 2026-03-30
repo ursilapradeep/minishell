@@ -50,6 +50,7 @@ SRCS = main.c \
        parser/variable_expansion.c \
        parser/variable_expansion_utils.c \
        parser/variable.c\
+       parser/var.c\
        redirections/redirections.c \
        redirections/heredoc.c \
        redirections/execute_redirections.c

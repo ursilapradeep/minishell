@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   test_variable_expansion.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 11:05:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/13 13:38:33 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/30 12:26:55 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -39,7 +39,7 @@ static int	append_last_status(char *expanded, int *j, int *i)
 	char	*status_str;
 	char	*tmp;
 
-	status_str = ft_itoa(g_last_status);
+	status_str = ft_itoa(g_shell.last_status);
 	if (!status_str)
 		return (0);
 	tmp = status_str;

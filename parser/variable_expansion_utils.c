@@ -3,15 +3,107 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion_utils.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 13:04:51 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/30 18:18:37 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h> // For NULL and memory functions
 #include "../minishell.h" // For t_env, t_token, and TOKEN_WORD
+/**
+ * expand_variable_helper - Helper function to expand variables
+ * @current: Pointer to the current character in the input string
+ * @result: The result string being built
+ * @result_len: Pointer to the length of the result string
+ * @env: Environment list
+ * Return: 1 on successful variable expansion, 0 on failure
+ *
+ * This function expands variables by calling the expand_variable
+ * function and appending the result to the output string. It also
+ * advances the current character pointer.
+ */
+int	expand_variable_helper(const char **current, char *result,
+	int *result_len, t_env *env)
+{
+	t_var_result	var_result;
+	char			*temp;
+
+	var_result.expanded = NULL;
+	var_result.consumed = 0;
+	if (expand_variable(*current, env, &var_result) == 0)
+	{
+		if (var_result.expanded)
+		{
+			temp = var_result.expanded;
+			while (*temp && *result_len < 4095)
+			{
+				result[(*result_len)++] = *temp;
+				temp++;
+			}
+			free(var_result.expanded);
+		}
+		*current += var_result.consumed;
+		return (1);
+	}
+	return (0);
+}
+
+/**
+ * handle_quotes - Helper function to manage quote states
+ * @current: Pointer to the current character in the input string
+ * @in_single_quote: Pointer to the single quote state
+ * @in_double_quote: Pointer to the double quote state
+ * Return: 1 if a quote was handled, 0 otherwise
+ *
+ * This function toggles the state of single and double quotes
+ * when encountering quote characters. It also advances the
+ * current character pointer.
+ */
+int	handle_quotes(const char **current,
+	int *in_single_quote, int *in_double_quote)
+{
+	if (**current == '\'' && !(*in_double_quote))
+	{
+		*in_single_quote = !(*in_single_quote);
+		(*current)++;
+		return (1);
+	}
+	if (**current == '"' && !(*in_single_quote))
+	{
+		*in_double_quote = !(*in_double_quote);
+		(*current)++;
+		return (1);
+	}
+	return (0);
+}
+
+int	proc_input(const char *input, char *result, int *result_len, t_env *env)
+{
+	const char	*current;
+	int			in_single_quote;
+	int			in_double_quote;
+
+	current = input;
+	in_single_quote = 0;
+	in_double_quote = 0;
+	while (current && *current && *result_len < 4095)
+	{
+		if (handle_quotes(&current, &in_single_quote, &in_double_quote))
+			continue ;
+		if (*current == '$' && !in_single_quote)
+		{
+			if (expand_variable_helper(&current, result, result_len, env))
+				continue ;
+			else
+				return (-1);
+		}
+		result[(*result_len)++] = *current;
+		current++;
+	}
+	return (0);
+}
 
 /**
  * expand_string - Expand all variables in a string
@@ -23,7 +115,7 @@
  * Inside double quotes, variables are expanded.
  * Unset variables expand to empty string.
  */
-char *expand_string(const char *input, t_env *env)
+char	*expand_string(const char *input, t_env *env)
 {
 	char		*result;
 	int			result_len;
@@ -43,44 +135,19 @@ char *expand_string(const char *input, t_env *env)
 	return (result);
 }
 
-// Helper function to process the input string
-int proc_input(const char *input, char *result, int *result_len, t_env *env)
-{
-    const char *current = input;
-    int in_single_quote = 0;
-    int in_double_quote = 0;
-
-    while (current && *current && *result_len < 4095)
-    {// Handle quotes
-        if (handle_quotes(&current, &in_single_quote, &in_double_quote))
-            continue; // Quote state was toggled, move to next character
-        if (*current == '$' && !in_single_quote)
-        {
-            if (expand_variable_helper(&current, result, result_len, env))
-                continue;
-            else
-                return (-1);
-        } // Regular character
-        result[(*result_len)++] = *current;
-        current++;
-    }
-    return (0);
-}
-
 /**
  * expand_token_list - Expand variables in all tokens
  * @tokens: Token list to expand
  * @env: Environment list
  * Return: 0 on success, -1 on error
  */
-int expand_token_list(t_token *tokens, t_env *env)
+int	expand_token_list(t_token *tokens, t_env *env)
 {
 	t_token	*current;
 	char	*expanded;
 
 	if (!tokens || !env)
 		return (0);
-	
 	current = tokens;
 	while (current)
 	{
@@ -93,72 +160,6 @@ int expand_token_list(t_token *tokens, t_env *env)
 			current->value = expanded;
 		}
 		current = current->next;
-	}
-	return (0);
-}
-
-/**
- * handle_quotes - Helper function to manage quote states
- * @current: Pointer to the current character in the input string
- * @in_single_quote: Pointer to the single quote state
- * @in_double_quote: Pointer to the double quote state
- * Return: 1 if a quote was handled, 0 otherwise
- *
- * This function toggles the state of single and double quotes
- * when encountering quote characters. It also advances the
- * current character pointer.
- */
-int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote)
-{
-	if (**current == '\'' && !(*in_double_quote))
-	{
-		*in_single_quote = !(*in_single_quote);
-		(*current)++;
-		return (1);
-	}
-	if (**current == '"' && !(*in_single_quote))
-	{
-		*in_double_quote = !(*in_double_quote);
-		(*current)++;
-		return (1);
-	}
-	return (0);
-}
-
-/**
- * expand_variable_helper - Helper function to expand variables
- * @current: Pointer to the current character in the input string
- * @result: The result string being built
- * @result_len: Pointer to the length of the result string
- * @env: Environment list
- * Return: 1 on successful variable expansion, 0 on failure
- *
- * This function expands variables by calling the expand_variable
- * function and appending the result to the output string. It also
- * advances the current character pointer.
- */
-int expand_variable_helper(const char **current, char *result, int *result_len, t_env *env)
-{
-	char	*var_value;
-	char	*temp;
-	int		consumed;
-
-	var_value = NULL;
-	consumed = 0;
-	if (expand_variable(*current, env, &var_value, &consumed) == 0)
-	{
-		if (var_value)
-		{
-			temp = var_value;
-			while (*temp && *result_len < 4095)
-			{
-				result[(*result_len)++] = *temp;
-				temp++;
-			}
-			free(var_value);
-		}
-		*current += consumed;
-		return (1);
 	}
 	return (0);
 }

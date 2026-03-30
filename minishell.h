@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 18:14:16 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/30 18:24:13 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 #include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+//#include "libft/libft.h"
 #include "libft/libft.h"
+#include <ctype.h>
 
 typedef struct s_env
 {
@@ -64,6 +66,18 @@ typedef struct s_word_info {
 	int end;
 } t_word_info;
 
+typedef struct s_var_result {
+    char *expanded;
+    int consumed;
+    const char *var_name;
+    int var_len;
+    int is_braced;
+} t_var_result;
+
+#ifdef rl_done
+ rl_done = 0;
+#endif
+
 extern int	g_last_status;
 extern int	g_sigint_received;
 
@@ -73,6 +87,13 @@ typedef enum e_token_check
     TOKEN_VALID_ARGUMENT,
     TOKEN_REDIRECT
 }   t_token_check;
+
+typedef struct s_shell_state {
+	int last_status;
+	int sigint_received;
+} t_shell_state;
+
+extern t_shell_state g_shell;
 
 // Function prototypes
 t_env 	*init_env(char **envp);
@@ -136,6 +157,18 @@ char	*get_command_portion(char *cmd_str);
 void	print_redirections(t_cmd *cmd);
 int	build_pipeline(t_cmd *commands);
 
+// Function prototypes for helpers used before definition
+
+// Only the correct prototype for get_env_variable should be present
+char *get_env_variable(t_env *env, const char *var_name, int len);
+
+// Other helper prototypes can be declared as needed, but avoid duplicates.
+int handle_empty_variable_name(int is_braced, char **expanded, int *consumed);
+int allocate_expanded_value(const char *value, int value_len, char **expanded);
+
+char *expand_and_allocate_value(t_env *env, const char *var_name, int var_len, int is_braced);
+const char *handle_braced_var(const char *input, int *len);
+
 // Prototypes for functions from commands.c
 t_cmd *create_cmd(void);
 void add_cmd(t_cmd **head, t_cmd *new_cmd);
@@ -159,6 +192,7 @@ void	print_commands(t_cmd *commands);
 int		open_redirection_file(t_cmd *cmd, char *filename, int redirection_type);
 t_token *find_next_pipe(t_token *tokens);
 int process_tokens_into_commands(t_token *tokens, t_cmd **commands);
+
 // Parser - Variable Expansion
 char	*expand_string(const char *input, t_env *env);
 int		expand_token_list(t_token *tokens, t_env *env);
@@ -174,7 +208,9 @@ const char *skip_whitespace(const char *str);
 char *extract_redirect_filename(const char *input);
 int open_input_file(const char *filename);
 int open_output_file(const char *filename, int append);
-
+int handle_special_cases(const char *input, int var_len, int is_braced, t_var_result *result);
+int	handle_status_special_case(const char *input, char **expanded,
+		int *consumed);
 // Input/Output handling
 char	*read_input(void);
 int proc_input(const char *input, char *result, int *result_len, t_env *env);
@@ -203,7 +239,7 @@ int is_quote(char c);
 
 // Prototypes for variable expansion utilities
 const char *extract_var_name(const char *input, int *len, int *is_braced);
-int expand_variable(const char *input, t_env *env, char **expanded, int *consumed);
+int expand_variable(const char *input, t_env *env, t_var_result *result);
 
 // Added prototypes for handle_quotes and expand_variable_helper to minishell.h.
 int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote);

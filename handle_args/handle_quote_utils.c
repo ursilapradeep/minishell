@@ -29,7 +29,7 @@ int	var_value_len(char *input, int i, t_env *env, int *skip) // Compute expanded
 
 	if (input[i + 1] == '?')
 	{
-		status_str = ft_itoa(g_last_status);
+		status_str = ft_itoa(g_shell.last_status);
 		if (!status_str)
 			return (-1);
 		len = ft_strlen(status_str);
