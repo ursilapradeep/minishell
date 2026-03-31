@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variable.c                                         :+:      :+:    :+:   */
+/*   variable_expansion_utils_II.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:18:36 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:20:10 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:45:49 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,26 @@
  * @c: Character to check
  * Return: 1 if valid, 0 otherwise
  */
-static int is_valid_var_char(char c)
+static int	is_valid_var_char(char c)
 {
 	return (ft_isalnum(c) || c == '_');
 }
 
 // Helper function to handle braced variable names
-static const char *handle_braced_var(const char *input, int *len)
+static const char	*handle_braced_var(const char *input, int *len)
 {
-	const char *start = input + 1;
-	const char *end = start;
+	const char	*start;
+	const char	*end;
 
+	start = input + 1;
+	end = start;
 	while (*end && *end != '}')
 		end++;
-
 	if (!*end)
 	{
 		write(STDERR_FILENO, "Error: Unclosed brace in variable\n", 35);
 		return (NULL);
 	}
-
 	*len = end - start;
 	return (end + 1);
 }
@@ -47,14 +47,13 @@ static const char *handle_braced_var(const char *input, int *len)
  * @is_braced: 1 if ${VAR} format, 0 if $VAR format
  * Return: Pointer after variable name
  */
-const char *extract_var_name(const char *input, int *len, int *is_braced)
+const char	*extract_var_name(const char *input, int *len, int *is_braced)
 {
-	const char *start;
-	const char *end;
+	const char	*start;
+	const char	*end;
 
 	if (!input || !len)
 		return (NULL);
-
 	*is_braced = 0;
 	*len = 0;
 	if (*input == '{')

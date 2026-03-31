@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:55:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 15:12:29 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:35:42 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,16 @@ int	build_pipeline(t_cmd *commands)
  * Finds the first pipe token in the remainder of the token list.
  * This sets the boundary so the next build_single_cmd() knows where to start.
  */
-t_token *find_next_pipe(t_token *tokens)
+t_token	*find_next_pipe(t_token *tokens)
 {
-    t_token *current;
+	t_token	*current;
 
-    current = tokens;
-    while (current)
-    {
-        if (current->type == TOKEN_PIPE)
-            return (current);
-        current = current->next;
-    }
-    return (NULL);
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TOKEN_PIPE)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
 }
