@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 14:28:19 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:02:02 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h" // Include command execution, env, and process helper declarations.
+// required prototypes
+int execute_commands(t_cmd *cmds, t_env **my_env);
 
 static void	free_env_array(char **env_array)
 {

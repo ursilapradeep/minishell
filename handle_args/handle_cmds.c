@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   handle_cmds.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 17:51:57 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:16:16 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"                                   
+#include "../minishell.h"
+// parse is already done in parser you just have to execute it .
+int	handle_single_command(t_cmd *cmd, t_env **my_env);
+int	handle_pipeline(t_cmd *cmd, t_env **my_env);                                 
 
 static void	restore_fds(int stdin_backup, int stdout_backup)
 {

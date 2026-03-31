@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
+#    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/23 12:01:32 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/03/31 15:19:07 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,21 +35,20 @@ SRCS = main.c \
        pipes/pipes_wait.c \
        pipes/pipes_utils.c \
        signal/Signals.c \
-       parser/command_builder.c\
-       parser/command_pipeline.c\
-       parser/command_builder_utils.c\
-       parser/commands.c\
-       parser/build_commands.c\
-       parser/parser.c\
-       parser/parser_utils.c\
-       parser/parser_redirect.c\
-       parser/quote_handler.c\
-       parser/tokenizer_utils.c\
-       parser/token.c\
-       parser/tokenizer.c\
+       parser/tokenize.c\
+       parser/tokenize_utils_I.c\
+       parser/tokenize_utils_II.c\
        parser/variable_expansion.c \
-       parser/variable_expansion_utils.c \
-       parser/variable.c\
+       parser/variable_expansion_utils_I.c \
+       parser/variable_expansion_utils_II.c \
+       parser/variable_expansion_utils_III.c \
+       parser/quote_removal.c \
+       parser/command_builder.c\
+       parser/command_builder_utils.c\
+       parser/build_redirections.c\
+       parser/build_pipeline.c\
+       parser/build_heredoc.c\
+       parser/build_arguments.c\
        redirections/redirections.c \
        redirections/heredoc.c \
        redirections/execute_redirections.c

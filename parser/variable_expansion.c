@@ -3,137 +3,134 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 11:07:59 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/31 13:07:33 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <ctype.h>
 
 /**
- * get_env_variable - Get variable value from environment
+ * expand_variable_helper - Helper function to expand variables
+ * @current: Pointer to the current character in the input string
+ * @result: The result string being built
+ * @result_len: Pointer to the length of the result string
  * @env: Environment list
- * @var_name: Variable name
- * @len: Length of variable name
- * Return: Variable value or NULL if not found
+ * Return: 1 on successful variable expansion, 0 on failure
  */
-static char *get_env_variable(t_env *env, const char *var_name, int len)
+int	expand_variable_helper(const char **current, char *result,
+	int *result_len, t_env *env)
 {
-	t_env	*current;
+	char	*var_value;
+	char	*temp;
+	int		consumed;
 
-	if (!var_name || len <= 0 || !env)
-		return (NULL);
-	
-	current = env;
-	while (current)
+	var_value = NULL;
+	consumed = 0;
+	if (expand_variable(*current, env, &var_value, &consumed) == 0)
 	{
-		if (current->key && (int)ft_strlen(current->key) == len
-			&& ft_strncmp(current->key, var_name, len) == 0)
+		if (var_value)
 		{
-			return (current->value);
+			temp = var_value;
+			while (*temp && *result_len < 4095)
+			{
+				result[(*result_len)++] = *temp;
+				temp++;
+			}
+			free(var_value);
 		}
-		current = current->next;
+		*current += consumed;
+		return (1);
 	}
-	return (NULL);
-}
-
-// Helper function to allocate and copy expanded variable value
-static int allocate_expanded_value(const char *value, int value_len, char **expanded)
-{
-    if (value)
-    {
-        *expanded = ft_calloc(value_len + 1, sizeof(char));
-        if (!*expanded)
-            return (-1);
-        ft_strlcpy(*expanded, value, value_len + 1);
-    }
-    else
-    {
-        *expanded = ft_calloc(1, sizeof(char));
-        if (!*expanded)
-            return (-1);
-        (*expanded)[0] = '\0';
-    }
-    return (0);
-}
-
-static int	handle_status_special_case(const char *input, char **expanded,
-		int *consumed)
-{
-    if (input[1] != '?')
-        return (0);
-    *expanded = ft_itoa(g_last_status);
-    if (!*expanded)
-        return (-1);
-    *consumed = 2;
-    return (1);
-}
-
-// Helper function to handle special cases for variable expansion
-static int handle_special_cases(const char *input, int var_len, int is_braced, char **expanded, int *consumed)
-{
-	int	status_case;
-
-	status_case = handle_status_special_case(input, expanded, consumed);
-	if (status_case != 0)
-		return (status_case);
-    if (var_len == 0 && !is_braced) // Handle $$ (process ID)
-    {
-        *expanded = ft_calloc(2, sizeof(char));
-        if (!*expanded)
-            return (-1);
-        (*expanded)[0] = '$';
-        (*expanded)[1] = '\0';
-        *consumed = 1;
-        return (1);
-    }
-    if (var_len == 0) // Handle empty variable name
-    {
-        *expanded = ft_calloc(1, sizeof(char));
-        if (!*expanded)
-            return (-1);
-        (*expanded)[0] = '\0';
-        *consumed = (is_braced) ? 3 : 1;
-        return (1);
-    }
-    return (0);
-}
-
-/**
- * expand_variable - Expand a single variable reference
- * @input: String starting with $ 
- * @env: Environment list
- * @expanded: Pointer to store expanded value
- * @consumed: Pointer to store characters consumed
- * Return: 0 on success, -1 on error
- */
-int expand_variable(const char *input, t_env *env, 
-	char **expanded, int *consumed)
-{
-	const char	*after_var;
-	const char	*var_name;
-	int			var_len;
-	int			is_braced;
-	char		*value;
-
-	if (!input || input[0] != '$' || !expanded || !consumed)
-		return (-1);
-	var_name = input + 1;
-	after_var = extract_var_name(var_name, &var_len, &is_braced);
-	if (!after_var)
-		return (-1);
-	int special_case = handle_special_cases(input, var_len, is_braced, expanded, consumed);
-	if (special_case != 0)
-		return (special_case == 1 ? 0 : -1);
-
-	const char *actual_var_name = (is_braced) ? var_name + 1 : var_name;
-	value = get_env_variable(env, actual_var_name, var_len);
-	if (allocate_expanded_value(value, value ? ft_strlen(value) : 0, expanded) == -1)
-		return (-1);
-	*consumed = (after_var - input);
 	return (0);
 }
 
+int	proc_input(const char *input, char *result, int *result_len, t_env *env)
+{
+	const char	*current;
+	int			in_sq;
+	int			in_dq;
+
+	current = input;
+	in_sq = 0;
+	in_dq = 0;
+	while (current && *current && *result_len < 4095)
+	{
+		if (*current == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (*current == '"' && !in_sq)
+			in_dq = !in_dq;
+		if (*current == '$' && !in_sq)
+		{
+			if (expand_variable_helper(&current, result, result_len, env))
+				continue ;
+			else
+				return (-1);
+		}
+		result[(*result_len)++] = *current;
+		current++;
+	}
+	return (0);
+}
+
+/**
+ * expand_string - Expand all variables in a string
+ * @input: Input string with potential variables
+ * @env: Environment list
+ * Return: Newly allocated expanded string, NULL on error
+ */
+char	*expand_string(const char *input, t_env *env)
+{
+	char	*result;
+	int		result_len;
+
+	if (!input || !env)
+		return (ft_strdup(input));
+	result = ft_calloc(4096, sizeof(char));
+	if (!result)
+		return (NULL);
+	result_len = 0;
+	if (proc_input(input, result, &result_len, env) == -1)
+	{
+		free(result);
+		return (NULL);
+	}
+	result[result_len] = '\0';
+	return (result);
+}
+
+/**
+ * expand_token_list - Expand variables in all tokens
+ * @tokens: Token list to expand
+ * @env: Environment list
+ * Return: 0 on success, -1 on error
+ */
+int	expand_token_list(t_token *tokens, t_env *env)
+{
+	t_token	*current;
+	char	*expanded;
+	char	*unquoted;
+
+	if (!tokens || !env)
+		return (0);
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TOKEN_WORD)
+		{
+			expanded = expand_string(current->value, env);
+			if (!expanded)
+				return (-1);
+			unquoted = remove_quotes_string(expanded);
+			free(expanded);
+			free(current->value);
+			current->value = unquoted;
+			if (!unquoted)
+				return (-1);
+		}
+		current = current->next;
+	}
+	return (0);
+}

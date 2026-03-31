@@ -1,46 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer_utils.c                                  :+:      :+:    :+:   */
+/*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:00:20 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:39:11 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-/**
- * tokenize - Parse input string into token linked list
- * @input: User input string
- * Return: Token list head, NULL on error
- *
- * Handles:
- * - Regular words (commands, arguments, filenames)
- * - Quoted strings (preserves spaces inside quotes)
- * - Pipes (|)
- * - Redirections (>, >>, <, <<)
- */
-static char *handle_redirection_token(const char **current, t_token_type *token_type, int *consumed)
+
+static const char	*skip_whitespace_simple(const char *input)
 {
-	char *token_value;
-	token_value = extract_redirect_operator(*current, consumed);
-	if (**current == '<' && (*current)[1] == '<')
-		*token_type = TOKEN_HEREDOC;
-	else if (**current == '<')
-		*token_type = TOKEN_REDIRECT_IN;
-	else if ((*current)[1] == '>')
-		*token_type = TOKEN_REDIRECT_APPEND;
-	else
-		*token_type = TOKEN_REDIRECT_OUT;
-	return token_value;
+	if (!input)
+		return (NULL);
+	while (*input && (*input == ' ' || *input == '	' || *input == '\n'))
+		input++;
+	return (input);
 }
 
-static char *determine_token_value(const char **current, t_token_type *token_type, int *consumed)
+static char	*determine_token_value(const char **current,
+		t_token_type *token_type, int *consumed)
 {
-	char *token_value = NULL;
+	char	*token_value;
 
+	token_value = NULL;
 	if (**current == '|')
 	{
 		token_value = ft_calloc(2, sizeof(char));
@@ -58,23 +44,25 @@ static char *determine_token_value(const char **current, t_token_type *token_typ
 		token_value = extract_quoted_string(*current, consumed);
 	else
 		token_value = extract_word(*current, consumed);
-	return token_value;
+	return (token_value);
 }
 
-static t_token *process_token(const char **current, t_token **tokens)
+static t_token	*process_token(const char **current, t_token **tokens)
 {
-	t_token *new_token;
-	char *token_value = NULL;
-	t_token_type token_type = TOKEN_WORD;
-	int consumed = 0;
+	t_token			*new_token;
+	char			*token_value;
+	t_token_type	token_type;
+	int				consumed;
 
+	token_value = NULL;
+	token_type = TOKEN_WORD;
+	consumed = 0;
 	token_value = determine_token_value(current, &token_type, &consumed);
 	if (!token_value)
 	{
 		(*current)++;
 		return (*tokens);
 	}
-
 	new_token = create_token(token_value, token_type);
 	if (!new_token)
 		return (NULL);
@@ -83,17 +71,12 @@ static t_token *process_token(const char **current, t_token **tokens)
 	return (*tokens);
 }
 
-static t_token *handle_tokenize_error(t_token *tokens)
+t_token	*tokenize(char *input)
 {
-	free_tokens(tokens);
-	return (NULL);
-}
+	t_token		*tokens;
+	const char	*current;
 
-t_token *tokenize(char *input)
-{
-	t_token *tokens = NULL;
-	const char *current;
-
+	tokens = NULL;
 	if (!input || !*input)
 		return (NULL);
 	current = input;
@@ -101,11 +84,12 @@ t_token *tokenize(char *input)
 	{
 		current = skip_whitespace_simple(current);
 		if (!*current)
-			break;
+			break ;
 		if (!process_token(&current, &tokens))
-			return handle_tokenize_error(tokens);
+		{
+			free_tokens(tokens);
+			return (NULL);
+		}
 	}
 	return (tokens);
 }
-
-

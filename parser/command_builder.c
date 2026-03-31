@@ -3,101 +3,98 @@
 /*                                                        :::      ::::::::   */
 /*   command_builder.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 11:27:56 by spaipur-         ###   ########.fr       */
+/*   Created: 2026/03/19 16:21:40 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/31 11:52:11 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <fcntl.h>
 
-/**
- * find_next_pipe - Find the next PIPE token
- * @tokens: Token list to search
- * Return: Pointer to PIPE token or NULL if not found
- */
-t_token *find_next_pipe(t_token *tokens)
+t_cmd	*create_cmd(void)
 {
-	t_token *current;
+	t_cmd	*cmd;
+
+	cmd = ft_calloc(1, sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->args = NULL;
+	cmd->infd = STDIN_FILENO;
+	cmd->outfd = STDOUT_FILENO;
+	cmd->heredoc_delimiter = NULL;
+	cmd->next = NULL;
+	cmd->prev = NULL;
+	return (cmd);
+}
+
+void	add_cmd(t_cmd **head, t_cmd *new_cmd)
+{
+	t_cmd	*cur;
+
+	if (!head || !new_cmd)
+		return ;
+	if (!*head)
+	{
+		*head = new_cmd;
+		return ;
+	}
+	cur = *head;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = new_cmd;
+	new_cmd->prev = cur;
+}
+
+t_cmd	*build_single_cmd(t_token **tokens)
+{
+	t_cmd	*cmd;
+
+	if (!tokens || !*tokens)
+		return (NULL);
+	cmd = create_cmd();
+	if (!cmd)
+		return (NULL);
+	if (initialize_cmd_arguments(cmd, tokens) < 0)
+		return (NULL);
+	return (cmd);
+}
+
+int	process_tokens_into_commands(t_token *tokens, t_cmd **commands)
+{
+	t_cmd		*new_cmd;
+	t_token		*curr;
+
+	curr = tokens;
+	while (curr)
+	{
+		new_cmd = build_single_cmd(&curr);
+		if (!new_cmd && *commands)
+		{
+			write(STDERR_FILENO, "Error: Failed to build cmd\n", 27);
+			return (-1);
+		}
+		if (new_cmd)
+			add_cmd(commands, new_cmd);
+		else if (!*commands)
+		{
+			write(STDERR_FILENO, "Error: No valid command\n", 24);
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+t_cmd	*build_commands(t_token *tokens)
+{
+	t_cmd	*commands;
 
 	if (!tokens)
 		return (NULL);
-	current = tokens;
-	while (current)
-	{
-		if (current->type == TOKEN_PIPE)
-			return (current);
-		current = current->next;
-	}
-	return (NULL);
+	commands = NULL;
+	if (process_tokens_into_commands(tokens, &commands) < 0)
+		return (NULL);
+	if (build_pipeline(commands) < 0)
+		return (free_cmd_list(commands), NULL);
+	return (commands);
 }
-
-/**
- * handle_redirection - Helper function to handle a specific redirection type
- * @cmd: Command to update with redirection
- * @current: Current token representing the redirection
- * @redirection_type: Type of redirection (in, out, append)
- * Return: 1 on success, -1 on error, 0 if not a redirection token
- */
-int handle_redirection(t_cmd *cmd, t_token *current, int redirection_type)
-{
-	char	*filename;
-	int		fd;
-
-	if (!current->next || current->next->type != TOKEN_WORD)
-	{
-		write(STDERR_FILENO, "Error: No filename after redirection\n", 37);
-		return (-1);
-	}
-	filename = current->next->value;
-
-	fd = open_redirection_file(cmd, filename, redirection_type);
-	if (fd < 0)
-		return (-1);
-
-	if (redirection_type == TOKEN_REDIRECT_IN)
-		cmd->infd = fd;
-	else
-		cmd->outfd = fd;
-
-	return (1);
-}
-
-/**
- * open_redirection_file - Helper function to open a file for redirection
- * @cmd: Command structure to update file descriptors
- * @filename: Name of the file to open
- * @redirection_type: Type of redirection (in, out, append)
- * Return: File descriptor on success, -1 on error
- */
-int open_redirection_file(t_cmd *cmd, char *filename, int redirection_type)
-{
-	int fd;
-
-	if (redirection_type == TOKEN_REDIRECT_IN)
-	{
-		if (cmd->infd > 2)
-			close(cmd->infd);
-		fd = open(filename, O_RDONLY);
-	}
-	else if (redirection_type == TOKEN_REDIRECT_OUT)
-	{
-		if (cmd->outfd > 2)
-			close(cmd->outfd);
-		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	}
-	else if (redirection_type == TOKEN_REDIRECT_APPEND)
-	{
-		if (cmd->outfd > 2)
-			close(cmd->outfd);
-		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	}
-	else
-		return (-1);
-	if (fd < 0)
-		perror("minishell");
-	return fd;
-}
-
