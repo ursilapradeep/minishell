@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   build_commands.c                                   :+:      :+:    :+:   */
+/*   build_arguments.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:45:51 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 11:17:40 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/29 20:02:17 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ int iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
     int     i = 0;
     int     skip_next = 0;
 
+    
     while (current && i < arg_count && current->type != TOKEN_PIPE)
     {
         if (skip_next && !(skip_next = 0) && (current = current->next))
@@ -90,5 +91,38 @@ char **build_args_array(t_token *tokens, int arg_count)
         return (NULL);
 
     return (args);
+}
+
+
+/**
+ * initialize_cmd_arguments - Helper function to initialize command arguments
+ * @cmd: Command to initialize
+ * @tokens: Pointer to token list (updated to point after pipe)
+ * Return: 0 on success, -1 on error
+ */
+int initialize_cmd_arguments(t_cmd *cmd, t_token **tokens)
+{
+	int arg_count;
+	t_token *pipe_token;
+
+	arg_count = count_args(*tokens); /* Count arguments until pipe or end */ /* Build arguments array */
+	if (arg_count > 0)
+	{
+		cmd->args = build_args_array(*tokens, arg_count);
+		if (!cmd->args && arg_count > 0)
+			return (free(cmd), -1);
+	}  /* Process redirections in this command */
+	if (process_redirections_in_tokens(cmd, *tokens) < 0)
+	{
+		free_args(cmd->args);
+		free(cmd);
+		return (-1);
+	} /* Move to next command (skip to after pipe) */
+	pipe_token = find_next_pipe(*tokens);
+	if (pipe_token)
+		*tokens = pipe_token->next;
+	else
+		*tokens = NULL;
+	return (0);
 }
 

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   parse_redirections.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 14:00:47 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 16:35:10 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/29 20:47:28 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,64 @@ const char *skip_non_redirects(const char *current)
 	while (*current && *current != ' ' && *current != '\t' 
 		&& *current != '|' && *current != '>' && *current != '<')
 		current++;
+	return (current);
+}
+
+/**
+ * is_redirect_operator - Check if string is a redirection operator
+ * @str: String to check
+ * Return: Token type if redirect, 0 otherwise
+ */
+t_token_type is_redirect_operator(const char *str)
+{
+	if (!str || !*str)
+		return (0);
+	if (ft_strncmp(str, ">>", 2) == 0)
+	{
+		write(STDERR_FILENO, "Debug: Detected TOKEN_REDIRECT_APPEND\n", 37);
+		return (TOKEN_REDIRECT_APPEND);
+	}
+	else if (ft_strncmp(str, "<<", 2) == 0)
+	{
+		write(STDERR_FILENO, "Debug: Detected TOKEN_HEREDOC\n", 31);
+		return (TOKEN_HEREDOC);
+	}
+	else if (*str == '>' && *(str + 1) != '>')
+	{
+		write(STDERR_FILENO, "Debug: Detected TOKEN_REDIRECT_OUT\n", 36);
+		return (TOKEN_REDIRECT_OUT);
+	}
+	else if (*str == '<' && *(str + 1) != '<')
+	{
+		write(STDERR_FILENO, "Debug: Detected TOKEN_REDIRECT_IN\n", 35);
+		return (TOKEN_REDIRECT_IN);
+	}
+	write(STDERR_FILENO, "Debug: No redirection operator detected\n", 41);
+	return (0);
+}
+
+const char	*process_redirection(t_cmd *cmd, const char *current,
+	t_token_type type, int *fd_count)
+{
+	if (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
+		type == TOKEN_REDIRECT_APPEND)
+	{
+		current += (type == TOKEN_REDIRECT_APPEND) ? 2 : 1;
+		current = handle_single_redirect(cmd, type, current);
+		if (!current)
+		{
+			write(STDERR_FILENO, "Error: Failed to process redirection\n", 37);
+			return (NULL);
+		}
+		(*fd_count)++;
+		return (current);
+	}
+	else if (type == TOKEN_HEREDOC)
+	{
+		current += 2;
+		write(STDERR_FILENO, "Error: HEREDOC not yet implemented\n", 35);
+		return (NULL);
+	}
 	return (current);
 }
 
@@ -56,45 +114,4 @@ int handle_redirections(t_cmd *cmd, char *cmd_str)
 	cmd->infd = STDIN_FILENO;
 	cmd->outfd = STDOUT_FILENO;
 	return (parse_redirections_loop(cmd, cmd_str));
-}
-
-/**
- * get_command_portion - Extract command portion before any redirections
- * @cmd_str: Full command string
- * Return: Allocated string with command portion, NULL on error
- */
-char *get_command_portion(char *cmd_str)
-{
-	const char	*start;
-	const char	*end;
-	char		*cmd_part;
-	int			len;
-
-	if (!cmd_str)
-		return (NULL);
-	start = skip_whitespace((const char *)cmd_str);
-	if (!*start)
-		return (NULL);
-	end = start;
-	while (*end && *end != '>' && *end != '<' && *end != '|')
-		end++;
-	len = end - start;
-	while (len > 0 && (start[len - 1] == ' ' || start[len - 1] == '\t'))
-		len--;
-	cmd_part = ft_calloc(len + 1, sizeof(char));
-	if (!cmd_part)
-		return (NULL);
-	ft_strlcpy(cmd_part, start, len + 1);
-	return (cmd_part);
-}
-
-/**
- * print_redirections - DEBUG: Print redirection info
- * @cmd: Command to inspect
- */
-void print_redirections(t_cmd *cmd)
-{
-	if (!cmd)
-		return ;
-	printf("Command FDs: infd=%d, outfd=%d\n", cmd->infd, cmd->outfd);
 }

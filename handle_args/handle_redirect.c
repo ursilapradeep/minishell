@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:42 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 15:49:51 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/30 11:13:57 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,86 +80,86 @@ int	handle_logical_and(char *input, t_env **my_env, int and_pos)
 	return (status);
 }
 
-int	process_input(char *input, t_env **my_env)
-{
-	/* Position of the first valid && operator, if one exists. */
-	int	and_pos;
-	int	status;
+// int	process_input(char *input, t_env **my_env)
+// {
+// 	/* Position of the first valid && operator, if one exists. */
+// 	int	and_pos;
+// 	int	status;
 
-	if (has_unclosed_quotes(input))
-	{
-		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
-		g_last_status = 2;
-		return (2);
-	}
-	and_pos = find_logical_and(input); 	/* Look for a logical AND operator outside quoted sections. */
-	/* Delegate to the && handler when the operator is present. */
-	if (and_pos != -1)
-		status = handle_logical_and(input, my_env, and_pos);
-	else if (contains_pipe(input))
-		status = handle_pipeline(input, my_env);
-	else
-		status = handle_single_command(input, my_env);
-	g_last_status = status;
-	return (status);  	/* Route piped input to the pipeline execution path. */
-}
+// 	if (has_unclosed_quotes(input))
+// 	{
+// 		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+// 		g_last_status = 2;
+// 		return (2);
+// 	}
+// 	and_pos = find_logical_and(input); 	/* Look for a logical AND operator outside quoted sections. */
+// 	/* Delegate to the && handler when the operator is present. */
+// 	if (and_pos != -1)
+// 		status = handle_logical_and(input, my_env, and_pos);
+// 	else if (contains_pipe(input))
+// 		status = handle_pipeline(input, my_env);
+// 	else
+// 		status = handle_single_command(input, my_env);
+// 	g_last_status = status;
+// 	return (status);  	/* Route piped input to the pipeline execution path. */
+// }
 
-static char	*read_non_interactive_line(void)
-{
-	char	buf;
-	char	*line;
-	char	*ch;
-	char	*joined;
-	int		bytes;
+// static char	*read_non_interactive_line(void)
+// {
+// 	char	buf;
+// 	char	*line;
+// 	char	*ch;
+// 	char	*joined;
+// 	int		bytes;
 
-	line = ft_strdup("");
-	if (!line)
-		return (NULL);
-	while (1)
-	{
-		bytes = read(STDIN_FILENO, &buf, 1);
-		if (bytes <= 0)
-			break ;
-		if (buf == '\n')
-			break ;
-		ch = ft_substr(&buf, 0, 1);
-		if (!ch)
-			return (free(line), NULL);
-		joined = ft_strjoin(line, ch);
-		free(ch);
-		free(line);
-		line = joined;
-		if (!line)
-			return (NULL);
-	}
-	if (bytes <= 0 && line[0] == '\0')
-		return (free(line), NULL);
-	return (line);
-}
+// 	line = ft_strdup("");
+// 	if (!line)
+// 		return (NULL);
+// 	while (1)
+// 	{
+// 		bytes = read(STDIN_FILENO, &buf, 1);
+// 		if (bytes <= 0)
+// 			break ;
+// 		if (buf == '\n')
+// 			break ;
+// 		ch = ft_substr(&buf, 0, 1);
+// 		if (!ch)
+// 			return (free(line), NULL);
+// 		joined = ft_strjoin(line, ch);
+// 		free(ch);
+// 		free(line);
+// 		line = joined;
+// 		if (!line)
+// 			return (NULL);
+// 	}
+// 	if (bytes <= 0 && line[0] == '\0')
+// 		return (free(line), NULL);
+// 	return (line);
+// }
 
-char *read_input(void)
-{
-	/* Buffer that will store the line read from the prompt. */
-	char	*input;
+// char *read_input(void)
+// {
+// 	/* Buffer that will store the line read from the prompt. */
+// 	char	*input;
 
-	if (isatty(STDIN_FILENO))
-	{
-		g_sigint_received = 0;
-		rl_done = 0;
-		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
-	}
-	else
-		input = read_non_interactive_line();
-	if (!input)
-	{
-		if (g_sigint_received)
-			return (ft_strdup(""));
-		if (isatty(STDIN_FILENO))
-			write(STDERR_FILENO, "exit\n", 5); 	/* Interactive EOF prints exit (bash-like). */
-		return (NULL); /* Signal the caller that no more input is available. */
-	}
-	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */
-		return (input);
-	add_history(input); /* Save the non-empty command in readline history. */
-	return (input); 	/* Return the input line to the caller for further processing. */
-}
+// 	if (isatty(STDIN_FILENO))
+// 	{
+// 		g_sigint_received = 0;
+// 		rl_done = 0;
+// 		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
+// 	}
+// 	else
+// 		input = read_non_interactive_line();
+// 	if (!input)
+// 	{
+// 		if (g_sigint_received)
+// 			return (ft_strdup(""));
+// 		if (isatty(STDIN_FILENO))
+// 			write(STDERR_FILENO, "exit\n", 5); 	/* Interactive EOF prints exit (bash-like). */
+// 		return (NULL); /* Signal the caller that no more input is available. */
+// 	}
+// 	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */
+// 		return (input);
+// 	add_history(input); /* Save the non-empty command in readline history. */
+// 	return (input); 	/* Return the input line to the caller for further processing. */
+// }

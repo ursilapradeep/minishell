@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/23 18:14:16 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/30 15:38:02 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ char	*apply_redirections(char *input);
 int		contains_redirection(char *input);
 
 // Parser - Redirection Handler
+int		parse_input(char *input, t_env **env);
 int		handle_redirections(t_cmd *cmd, char *cmd_str);
 char	*get_command_portion(char *cmd_str);
 void	print_redirections(t_cmd *cmd);
@@ -160,8 +161,9 @@ int		open_redirection_file(t_cmd *cmd, char *filename, int redirection_type);
 t_token *find_next_pipe(t_token *tokens);
 int process_tokens_into_commands(t_token *tokens, t_cmd **commands);
 // Parser - Variable Expansion
-char	*expand_string(const char *input, t_env *env);
-int		expand_token_list(t_token *tokens, t_env *env);
+char        *expand_string(const char *input, t_env *env);
+int         expand_token_list(t_token *tokens, t_env *env);
+char		*remove_quotes_string(const char *str);
 t_cmd *build_single_cmd(t_token **tokens);
 const char *skip_non_redirects(const char *current);
 int	parse_redirections_loop(t_cmd *cmd, const char *current);
@@ -204,6 +206,7 @@ int is_quote(char c);
 // Prototypes for variable expansion utilities
 const char *extract_var_name(const char *input, int *len, int *is_braced);
 int expand_variable(const char *input, t_env *env, char **expanded, int *consumed);
+int	handle_status_special_case(const char *input, char **exp, int *con);
 
 // Added prototypes for handle_quotes and expand_variable_helper to minishell.h.
 int handle_quotes(const char **current, int *in_single_quote, int *in_double_quote);
@@ -218,4 +221,5 @@ void ignore_signals(void);
 void restore_signals(void);
 void signal_handler_sigint(int sig);
 void signal_handler_sigquit(int sig);
+int	handle_status_special_case(const char *input, char **exp, int *con);
 #endif

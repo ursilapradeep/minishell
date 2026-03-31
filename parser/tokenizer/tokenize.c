@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer_utils.c                                  :+:      :+:    :+:   */
+/*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:00:20 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/29 17:17:44 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,19 @@
  * - Pipes (|)
  * - Redirections (>, >>, <, <<)
  */
-static char *handle_redirection_token(const char **current, t_token_type *token_type, int *consumed)
+
+ /**
+ * skip_whitespace_simple - Skip whitespace
+ * @input: String to scan
+ * Return: Pointer after whitespace
+ */
+const char *skip_whitespace_simple(const char *input)
 {
-	char *token_value;
-	token_value = extract_redirect_operator(*current, consumed);
-	if (**current == '<' && (*current)[1] == '<')
-		*token_type = TOKEN_HEREDOC;
-	else if (**current == '<')
-		*token_type = TOKEN_REDIRECT_IN;
-	else if ((*current)[1] == '>')
-		*token_type = TOKEN_REDIRECT_APPEND;
-	else
-		*token_type = TOKEN_REDIRECT_OUT;
-	return token_value;
+	if (!input)
+		return (NULL);
+	while (*input && isspace(*input))
+		input++;
+	return (input);
 }
 
 static char *determine_token_value(const char **current, t_token_type *token_type, int *consumed)
@@ -74,7 +74,6 @@ static t_token *process_token(const char **current, t_token **tokens)
 		(*current)++;
 		return (*tokens);
 	}
-
 	new_token = create_token(token_value, token_type);
 	if (!new_token)
 		return (NULL);

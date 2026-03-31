@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*   tokenize_utils_I.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 12:47:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/30 12:25:22 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @c: Character to check
  * Return: 1 if quote, 0 otherwise
  */
-int is_quote(char c)
+int	is_quote(char c)
 {
 	return (c == '\'' || c == '"');
 }
@@ -29,32 +29,27 @@ int is_quote(char c)
  * @len: Pointer to store length
  * Return: Allocated string without quotes, NULL on error
  */
-char *extract_quoted_string(const char *input, int *len)
+char	*extract_quoted_string(const char *input, int *len)
 {
-	const char	*start;
 	const char	*end;
-	char		quote_char;
 	char		*result;
-	int			result_len;
 
 	if (!input || !is_quote(*input))
 		return (NULL);
-	quote_char = *input;
-	start = input + 1;
-	end = start;
-	while (*end && *end != quote_char)
+	end = input + 1;
+	while (*end && *end != *input)
 		end++;
 	if (!*end)
 	{
 		write(STDERR_FILENO, "Error: Unclosed quote\n", 23);
 		return (NULL);
 	}
-	result_len = end - start;
-	result = ft_calloc(result_len + 1, sizeof(char));
+	end++;
+	result = ft_calloc((end - input) + 1, sizeof(char));
 	if (!result)
 		return (NULL);
-	ft_strlcpy(result, start, result_len + 1);
-	*len = (end - input) + 1;
+	ft_strlcpy(result, input, (end - input) + 1);
+	*len = end - input;
 	return (result);
 }
 
@@ -64,29 +59,41 @@ char *extract_quoted_string(const char *input, int *len)
  * @len: Pointer to store consumed characters
  * Return: Allocated word string, NULL on error
  */
-char *extract_word(const char *input, int *len)
+char	*extract_word(const char *input, int *len)
 {
-	const char	*start;
 	const char	*end;
-	int			word_len;
 	char		*word;
 
 	if (!input || !*input)
 		return (NULL);
-	start = input;
-	end = start;
-	while (*end && !isspace(*end) && *end != '|' && *end != '>' && *end != '<'
-		&& !is_quote(*end))
+	end = input;
+	while (*end && !isspace(*end) && *end != '|'
+		&& *end != '>' && *end != '<' && !is_quote(*end))
 		end++;
-	if (start == end)
+	if (input == end)
 		return (NULL);
-	word_len = end - start;
-	word = ft_calloc(word_len + 1, sizeof(char));
+	word = ft_calloc((end - input) + 1, sizeof(char));
 	if (!word)
 		return (NULL);
-	ft_strlcpy(word, start, word_len + 1);
-	*len = word_len;
+	ft_strlcpy(word, input, (end - input) + 1);
+	*len = end - input;
 	return (word);
+}
+
+char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
+{
+	char	*token_value;
+
+	token_value = extract_redirect_operator(*cur, len);
+	if (**cur == '<' && (*cur)[1] == '<')
+		*typ = TOKEN_HEREDOC;
+	else if (**cur == '<')
+		*typ = TOKEN_REDIRECT_IN;
+	else if ((*cur)[1] == '>')
+		*typ = TOKEN_REDIRECT_APPEND;
+	else
+		*typ = TOKEN_REDIRECT_OUT;
+	return (token_value);
 }
 
 /**
@@ -95,45 +102,28 @@ char *extract_word(const char *input, int *len)
  * @len: Pointer to store operator length
  * Return: Operator string, NULL on error
  */
-char *extract_redirect_operator(const char *input, int *len)
+char	*extract_redirect_operator(const char *input, int *len)
 {
-	char *operator;
+	char	*op;
 
 	if (!input || (*input != '>' && *input != '<'))
 		return (NULL);
-	if ((input[0] == '>' && input[1] == '>') ||
-		(input[0] == '<' && input[1] == '<'))
+	if ((input[0] == '>' && input[1] == '>')
+		|| (input[0] == '<' && input[1] == '<'))
 	{
-		operator = ft_calloc(3, sizeof(char));
-		if (!operator)
+		op = ft_calloc(3, sizeof(char));
+		if (!op)
 			return (NULL);
-		operator[0] = input[0];
-		operator[1] = input[1];
-		operator[2] = '\0';
+		ft_strlcpy(op, input, 3);
 		*len = 2;
 	}
 	else
 	{
-		operator = ft_calloc(2, sizeof(char));
-		if (!operator)
+		op = ft_calloc(2, sizeof(char));
+		if (!op)
 			return (NULL);
-		operator[0] = input[0];
-		operator[1] = '\0';
+		ft_strlcpy(op, input, 2);
 		*len = 1;
 	}
-	return (operator);
-}
-
-/**
- * skip_whitespace_simple - Skip whitespace
- * @input: String to scan
- * Return: Pointer after whitespace
- */
-const char *skip_whitespace_simple(const char *input)
-{
-	if (!input)
-		return (NULL);
-	while (*input && isspace(*input))
-		input++;
-	return (input);
+	return (op);
 }

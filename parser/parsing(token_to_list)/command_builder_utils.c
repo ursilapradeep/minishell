@@ -1,57 +1,72 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commands.c                                         :+:      :+:    :+:   */
+/*   command_builder_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/19 16:39:10 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 11:59:21 by spaipur-         ###   ########.fr       */
+/*   Created: 2026/03/29 19:28:23 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/29 19:50:12 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
 /**
- * create_cmd - Create a new command structure
- * Return: New t_cmd pointer, NULL on error
+ * print_commands - DEBUG: Print all commands and their settings
+ * @commands: Command list to print
  */
-t_cmd *create_cmd(void)
+void print_commands(t_cmd *commands)
 {
-	t_cmd *cmd;
+	t_cmd *current;
+	int	i;
+	int cmd_num;
 
-	cmd = ft_calloc(1, sizeof(t_cmd));
-	if (!cmd)
-		return (NULL);
-	cmd->args = NULL;
-	cmd->infd = STDIN_FILENO;
-	cmd->outfd = STDOUT_FILENO;
-	cmd->next = NULL;
-	cmd->prev = NULL;
-	return (cmd);
+	if (!commands) 
+		return ((void)printf("No commands\n"));
+	current = commands;
+	cmd_num = 1;
+	while (current)
+	{
+		printf("Command %d:\n", cmd_num);
+		if (current->args)
+		{
+			i = 0;
+			while (current->args[i]) 
+				printf("[%s] ", current->args[i++]);
+		}
+		else
+			printf("(none)");
+		printf("Input FD: %d\n  Output FD: %d\n\n", current->infd, current->outfd);
+		current = current->next;
+		cmd_num++;
+	}
 }
 
 /**
- * add_cmd - Add command to end of linked list
- * @head: Pointer to list head
- * @new_cmd: Command to add
+ * free_cmd_list - Free entire command list
+ * @cmd: Command list head
  */
-void add_cmd(t_cmd **head, t_cmd *new_cmd)
+void free_cmd_list(t_cmd *cmd)
 {
 	t_cmd *current;
+	t_cmd *next;
 
-	if (!head || !new_cmd)
+	if (!cmd)
 		return ;
-	if (!*head)
+	current = cmd;
+	while (current)
 	{
-		*head = new_cmd;
-		return ;
+		next = current->next;
+		if (current->args)
+			free_args(current->args);
+		if (current->infd > 2)
+			close(current->infd);
+		if (current->outfd > 2)
+			close(current->outfd);
+		free(current);
+		current = next;
 	}
-	current = *head;
-	while (current->next)
-		current = current->next;
-	current->next = new_cmd;
-	new_cmd->prev = current;
 }
 
 // Helper function to check if a token is a redirect
@@ -101,5 +116,3 @@ int count_args(t_token *tokens)
 	}
 	return (count);
 }
-
-
