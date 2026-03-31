@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/29 17:17:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:09:33 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
  * @input: String to scan
  * Return: Pointer after whitespace
  */
-const char *skip_whitespace_simple(const char *input)
+static const char *skip_whitespace_simple(const char *input)
 {
 	if (!input)
 		return (NULL);
@@ -82,12 +82,6 @@ static t_token *process_token(const char **current, t_token **tokens)
 	return (*tokens);
 }
 
-static t_token *handle_tokenize_error(t_token *tokens)
-{
-	free_tokens(tokens);
-	return (NULL);
-}
-
 t_token *tokenize(char *input)
 {
 	t_token *tokens = NULL;
@@ -102,7 +96,10 @@ t_token *tokenize(char *input)
 		if (!*current)
 			break;
 		if (!process_token(&current, &tokens))
-			return handle_tokenize_error(tokens);
+		{
+			free_tokens(tokens);
+			return (NULL);
+		}
 	}
 	return (tokens);
 }

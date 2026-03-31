@@ -6,18 +6,18 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 15:52:06 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:23:09 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <unistd.h>
+// #include <sys/wait.h>
+// #include <readline/readline.h>
+// #include <readline/history.h>
 
 int	g_last_status = 0;
 int	g_sigint_received = 0;
@@ -27,20 +27,20 @@ int	g_sigint_received = 0;
 Loop through and free each string (free(args[i])) - frees individual strings like "ls", "-la", etc.
 Free the array itself (free(args)) - frees the pointer array that held those strings */
 // Free arguments array
-void free_args(char **args)
-{
-    int i;
+// void free_args(char **args)
+// {
+//     int i;
 
-    if (!args)
-        return ;
-    i = 0;
-    while (args[i])
-    {
-        free(args[i]);
-        i++;
-    }
-    free(args);
-}
+//     if (!args)
+//         return ;
+//     i = 0;
+//     while (args[i])
+//     {
+//         free(args[i]);
+//         i++;
+//     }
+//     free(args);
+// }
 
 int parse_input(char *input, t_env **my_env)
 {
@@ -56,11 +56,11 @@ int parse_input(char *input, t_env **my_env)
 		free_tokens(tokens);
 		return (2);
 	}
-	cmds = build_cmd_list(tokens);
+	cmds = build_commands(tokens);
 	free_tokens(tokens);
 	if (!cmds)
 		return (2);
-	status = execute_cmd_list(cmds, my_env);//TODO: create execute_cmd_list to run builtins/execve
+	status = execute_commands(cmds, my_env);//TODO: create execute_cmd_list to run builtins/execve
 	free_cmd_list(cmds);
 	return (status);
 }

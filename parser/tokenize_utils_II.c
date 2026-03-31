@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   token.c                                            :+:      :+:    :+:   */
+/*   tokenize_utils_II.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:59:07 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/19 16:01:04 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:17:44 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,39 +31,6 @@ void free_tokens(t_token *tokens)
 		free(current);
 		current = next;
 	}
-}
-
-/**
- * print_tokens - DEBUG: Print all tokens
- * @tokens: Token list head
- */
-void print_tokens(t_token *tokens)
-{
-	t_token *current;
-	char *type_str;
-
-	if (!tokens)
-		return ((void)printf("No tokens\n"));
-
-	current = tokens;
-	printf("=== TOKENS ===\n");
-	while (current)
-	{
-		type_str = "WORD";
-		if (current->type == TOKEN_PIPE)
-			type_str = "PIPE";
-		else if (current->type == TOKEN_REDIRECT_IN)
-			type_str = "REDIRECT_IN (<)";
-		else if (current->type == TOKEN_REDIRECT_OUT)
-			type_str = "REDIRECT_OUT (>)";
-		else if (current->type == TOKEN_REDIRECT_APPEND)
-			type_str = "REDIRECT_APPEND (>>)";
-		else if (current->type == TOKEN_HEREDOC)
-			type_str = "HEREDOC (<<)";
-		printf("[%s]: \"%s\"\n", type_str, current->value);
-		current = current->next;
-	}
-	printf("=============\n");
 }
 
 /**

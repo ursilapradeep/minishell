@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:16:56 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 14:28:17 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:43:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+int execute_ast_pipeline(t_cmd *cmds, t_env **my_env);
 
 static void	close_all_pipes(int pipes[][2], int cmd_count)
 {

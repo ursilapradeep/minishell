@@ -1,0 +1,55 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_builder_utils.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/29 19:28:23 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/31 12:34:03 by spaipur-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+static int	is_redirect_token(t_token *token)
+{
+	return (token->type == TOKEN_REDIRECT_IN
+		|| token->type == TOKEN_REDIRECT_OUT
+		|| token->type == TOKEN_REDIRECT_APPEND
+		|| token->type == TOKEN_HEREDOC);
+}
+
+static int	is_valid_argument(t_token *current)
+{
+	return (current->type == TOKEN_WORD && (!current->prev
+			|| !is_redirect_token(current->prev)));
+}
+
+int	count_args(t_token *tokens)
+{
+	int		count;
+	t_token	*current;
+	int		skip_next;
+
+	if (!tokens)
+		return (0);
+	count = 0;
+	current = tokens;
+	skip_next = 0;
+	while (current && current->type != TOKEN_PIPE)
+	{
+		if (skip_next)
+		{
+			skip_next = 0;
+			current = current->next;
+			continue ;
+		}
+		if (is_valid_argument(current))
+			count++;
+		else if (is_redirect_token(current))
+			skip_next = 1;
+		current = current->next;
+	}
+	return (count);
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:53:12 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 13:07:33 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,9 +126,9 @@ int	expand_token_list(t_token *tokens, t_env *env)
 			unquoted = remove_quotes_string(expanded);
 			free(expanded);
 			free(current->value);
+			current->value = unquoted;
 			if (!unquoted)
 				return (-1);
-			current->value = unquoted;
 		}
 		current = current->next;
 	}
