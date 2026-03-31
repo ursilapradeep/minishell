@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:18:36 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 18:20:19 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 10:49:22 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ const char	*handle_braced_var(const char *input, int *len)
 	start = input + 1;
 	end = start;
 	while (*end && is_valid_var_char(*end))
-    end++;
 		end++;
 	if (!*end)
 	{

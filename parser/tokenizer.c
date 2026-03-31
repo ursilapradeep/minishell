@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/20 12:47:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 10:59:19 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @c: Character to check
  * Return: 1 if quote, 0 otherwise
  */
-int is_quote(char c)
+int	is_quote(char c)
 {
 	return (c == '\'' || c == '"');
 }
@@ -29,7 +29,7 @@ int is_quote(char c)
  * @len: Pointer to store length
  * Return: Allocated string without quotes, NULL on error
  */
-char *extract_quoted_string(const char *input, int *len)
+char	*extract_quoted_string(const char *input, int *len)
 {
 	const char	*start;
 	const char	*end;
@@ -64,7 +64,7 @@ char *extract_quoted_string(const char *input, int *len)
  * @len: Pointer to store consumed characters
  * Return: Allocated word string, NULL on error
  */
-char *extract_word(const char *input, int *len)
+char	*extract_word(const char *input, int *len)
 {
 	const char	*start;
 	const char	*end;
@@ -95,14 +95,14 @@ char *extract_word(const char *input, int *len)
  * @len: Pointer to store operator length
  * Return: Operator string, NULL on error
  */
-char *extract_redirect_operator(const char *input, int *len)
+char	*extract_redirect_operator(const char *input, int *len)
 {
-	char *operator;
+	char	*operator;
 
 	if (!input || (*input != '>' && *input != '<'))
 		return (NULL);
-	if ((input[0] == '>' && input[1] == '>') ||
-		(input[0] == '<' && input[1] == '<'))
+	if ((input[0] == '>' && input[1] == '>')
+		|| (input[0] == '<' && input[1] == '<'))
 	{
 		operator = ft_calloc(3, sizeof(char));
 		if (!operator)
@@ -129,7 +129,7 @@ char *extract_redirect_operator(const char *input, int *len)
  * @input: String to scan
  * Return: Pointer after whitespace
  */
-const char *skip_whitespace_simple(const char *input)
+const char	*skip_whitespace_simple(const char *input)
 {
 	if (!input)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 18:27:41 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 10:48:20 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	*get_env_variable(t_env *env, const char *var_name, int len)
 	return (NULL);
 }
 
-char *expand_and_allocate_value(t_env *env, const char *var_name,
+char	*expand_and_allocate_value(t_env *env, const char *var_name,
 	int var_len, int is_braced)
 {
 	const char	*actual_var_name;

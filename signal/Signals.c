@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 10:59:49 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/29 16:27:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 16:36:09 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 ** In interactive mode: displays a new prompt on a new line
 ** Behavior matches bash
 */
-void	signal_handler_sigint(int sig)
+void	signal_handler_sigint(int signo)
 {
-	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
+	(void)signo;
+	write(1, "\nminishell$ ", 12);
 	g_shell.last_status = 130;
 	g_shell.sigint_received = 1;
 	#ifdef rl_done

@@ -6,12 +6,12 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/17 18:07:05 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/03/31 17:03:39 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-// Find command in PATH
+
 static char	*search_directories(char *path_copy, char *cmd)
 {
 	char	*dir_start;
@@ -67,11 +67,11 @@ char *find_command(char *cmd, t_env **envp)
 {
 	char *path_env;
 
-	if (ft_strchr(cmd, '/') && access(cmd, X_OK) == 0) // Direct-path execution only when command contains '/'
+	if (ft_strchr(cmd, '/') && access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
-	path_env = get_env_value(*envp, "PATH"); //builtins
+	path_env = get_env_value(*envp, "PATH");
 	if (!path_env)
-		return (NULL); //path does not exist
+		return (NULL);
 	return (search_in_path(path_env, cmd));
 }
 

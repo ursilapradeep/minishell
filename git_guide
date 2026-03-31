@@ -72,3 +72,11 @@ git add <resolved-files>
 git commit -m "Merge built-ins and buletin into main"
 git push origin main
 ```
+
+test
+
+builtins -->builtins.c--> echo -n, echo -nnn, echo -nna, (check for leading or trailing newline)
+
+parser -->variable_expansion.c --> -- echo $?, echo $, echo {}
+
+echo 
