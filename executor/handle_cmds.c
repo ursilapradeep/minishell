@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/31 15:16:16 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 21:00:58 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,46 +23,12 @@ static void	restore_fds(int stdin_backup, int stdout_backup)
 	close(stdout_backup);                                   // Close backup stdout file descriptor
 }
 
-
-static char	*prepare_command_input(char *input, t_env *my_env)
-{
-	char	*cleaned_input;
-	char	*expanded_input;
-
-	if (contains_redirection(input))
-	{
-		cleaned_input = apply_redirections(input);
-		if (!cleaned_input)
-			return (NULL);
-	}
-	else
-		cleaned_input = ft_strdup(input);
-	if (!cleaned_input)
-		return (NULL);
-	expanded_input = expand_variables(cleaned_input, my_env);
-	free(cleaned_input);
-	return (expanded_input);
-}
-
-
-/*redirection part handles > file1
-command part becomes echo hi
-args become {"echo", "hi", NULL}
-execute command afterward, stdout/stderr restored by restore_fds()*/
 static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 		int stdout_bak)
 {
 	char	**args;                                          // Array to store command arguments
-	char	*expanded_input;
-	int		exit_code;                                      // Exit status from command execution
-
-	(void)stdin_bak;                                        // Mark parameter as unused (avoid warning)
-	(void)stdout_bak;                                       
-	expanded_input = prepare_command_input(input, *my_env);
-	if (!expanded_input)
-		return (1);
-	args = split_args(expanded_input);                      // Split cleaned input into argument array
-	free(expanded_input);
+	int		exit_code;
+	
 	if (args)                                               // If argument splitting succeeded
 	{
 		exit_code = execute_command(args, my_env);          // Execute the command with arguments
@@ -76,8 +42,7 @@ int	handle_pipeline(char *input, t_env **my_env)
 {
 	char	**pipeline;                                     // Array to store individual commands from pipeline
 	int		status;
-
-	pipeline = parse_pipeline(input);                       // Parse input and split by pipe characters
+	                   // Parse input and split by pipe characters
 	status = 1;
 	if (pipeline)                                           // If parsing succeeded
 	{

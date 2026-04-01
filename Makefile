@@ -6,7 +6,7 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/31 15:19:07 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/03/31 18:00:53 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,12 +16,7 @@ CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
        env/env_utils.c \
        env/env_executor.c \
-       handle_args/handle_args.c \
-       handle_args/args_helpers.c \
        handle_args/handle_cmds.c \
-       handle_args/handle_quote.c \
-       handle_args/handle_quote_utils.c \
-       handle_args/handle_redirect.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        execute/execute.c \

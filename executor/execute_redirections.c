@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirections.c                                     :+:      :+:    :+:   */
+/*   execute_redirections.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 14:20:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:21:17 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/13 14:19:38 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/03/31 20:35:51 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <fcntl.h>
 
 // Handle output redirection (>)
 int	handle_output_redirect(char *filename)
@@ -76,17 +75,35 @@ int	handle_input_redirect(char *filename)
 	return (0); // Return success
 }
 
-// Check if input contains redirections
-int	contains_redirection(char *input)
+// Determine operator type and execute appropriate handler
+int	execute_redirection(int op_type, char *target)
 {
-	int	i; // Loop counter
+	if (op_type == 0) // Append redirection >>
+		return (handle_append_redirect(target)); // Call append handler
+	else if (op_type == 1) // Output redirection >
+		return (handle_output_redirect(target)); // Call output handler
+	else if (op_type == 2) // Heredoc <<
+		return (handle_heredoc(target)); // Call heredoc handler
+	else if (op_type == 3) // Input redirection <
+		return (handle_input_redirect(target)); // Call input handler
+	return (-1); // Return error if unknown operator
+}
 
-	i = 0; // Initialize counter
-	while (input[i]) // Loop through entire input string
+static char	*process_one_redirection(char *input, int *i, int *start)
+{
+	char	*cmd; // Store command before redirection
+	char	*target; // Store filename/delimiter for redirection
+	int		op_type; // Type of redirection operator
+
+	cmd = ft_substr(input, *start, *i - *start); // Extract command part before operator
+	op_type = identify_and_skip_operator(input, i); // Identify operator and advance index
+	target = skip_spaces_and_extract(input, i); // Extract filename/delimiter after operator
+	if (execute_redirection(op_type, target) == -1) // Execute the redirection
 	{
-		if (input[i] == '>' || input[i] == '<') // Check for redirection operators
-			return (1); // Return 1 (true) if found
-		i++; // Move to next character
+		free(target); // Free target string on error
+		free(cmd); // Free command string on error
+		return (NULL); // Return NULL to signal error
 	}
-	return (0); // Return 0 (false) if no redirections found
+	free(target); // Free target string on success
+	return (cmd); // Return cleaned command
 }

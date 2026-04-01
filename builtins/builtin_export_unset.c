@@ -1,16 +1,66 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_unset_exit.c                               :+:      :+:    :+:   */
+/*   builtin_export_unset.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:18:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 16:09:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:06:03 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static int	export_one_arg(char *arg, t_env **env)
+{
+	char	*equal_sign;
+	char	*key;
+	char	*value;
+
+	equal_sign = ft_strchr(arg, '=');
+	if (equal_sign)
+	{
+		key = ft_substr(arg, 0, equal_sign - arg);
+		value = ft_strdup(equal_sign + 1);
+		if (!key || !value)
+			return (free(key), free(value), 1);
+		set_env_value(env, key, value);
+		free(key);
+		free(value);
+	}
+	else if (!get_env_value(*env, arg))
+		set_env_value(env, arg, NULL);
+	return (0);
+}
+
+int	builtin_export(char **args, t_env **env)
+{
+	int		i;
+	t_env	*temp;
+
+	if (!args[1])
+	{
+		temp = *env;
+		while (temp)
+		{
+			if (temp->value)
+				printf("declare -x %s=\"%s\"\n", temp->key, temp->value);
+			else
+				printf("declare -x %s\n", temp->key);
+			temp = temp->next;
+		}
+		return (0);
+	}
+	i = 1;
+	while (args[i])
+	{
+		if (export_one_arg(args[i], env) != 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 static void	unset_one_key(t_env **env, char *key)
 {
@@ -53,13 +103,4 @@ int	builtin_unset(char **args, t_env **env)
 	return (0);
 }
 
-int	builtin_exit(char **args)
-{
-	int	exit_code;
 
-	if (!args[1])
-		exit(0);
-	exit_code = ft_atoi(args[1]);
-	exit(exit_code);
-	return (-1);
-}

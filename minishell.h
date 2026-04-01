@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 15:05:43 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:42:06 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,6 @@ typedef struct s_cmd
 	struct s_cmd	*prev;
 }				t_cmd;
 
-typedef struct s_word_info {
-	char *input;
-	int start;
-	int end;
-} t_word_info;
-
 extern int	g_last_status;
 extern int	g_sigint_received;
 
@@ -77,13 +71,25 @@ typedef enum e_token_check
 
 // process input 
 char	*read_input(void);
+int		parse_input(char *input, t_env **my_env);
+t_env 	*init_env(char **envp);
+void 	add_env_node(t_env **env_list, char *env_str);
+
+//tokenizer
+t_token	*tokenize(const char *input);
+char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len);
+char	*extract_word(const char *input, int *len);
+char	*extract_quoted_string(const char *input, int *len);
+t_token	*create_token(char *value, t_token_type type);
+void	add_token(t_token **head, t_token *new_token);
+void	free_tokens(t_token *tokens);
 
 //variable_expansion
-int	expand_token_list(t_token *tokens, t_env *env);
-int	expand_variable(const char *input, t_env *env, char **exp, int *con);
-const char *extract_var_name(const char *input, int *len, int *is_braced);
-int	handle_special_cases(const char *in, int *args,char **exp, int *con);
-char	*remove_quotes_string(const char *str);
+int			expand_token_list(t_token *tokens, t_env *env);
+int			expand_variable(const char *input, t_env *env, char **exp, int *con);
+const char	*extract_var_name(const char *input, int *len, int *is_braced);
+int			handle_special_cases(const char *in, int *args,char **exp, int *con);
+char		*remove_quotes_string(const char *str);
 
 //parsing
 t_cmd	*build_commands(t_token *tokens);
@@ -91,6 +97,7 @@ int		build_pipeline(t_cmd *commands);
 int		initialize_cmd_arguments(t_cmd *cmd, t_token **tokens);
 int		count_args(t_token *tokens);
 int		handle_redirection(t_cmd *cmd, t_token *current, int type);
+void	free_cmd_list(t_cmd *cmd);
 
 //built- ins
 int		is_builtin(char *cmd);
@@ -119,26 +126,21 @@ int		wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 void	execute_pipeline_command_or_exit(char *segment, t_env **envp);
 
 // Signal handling
-void setup_signal_handlers(void);
-void ignore_signals(void);
-void restore_signals(void);
-void signal_handler_sigint(int sig);
-void signal_handler_sigquit(int sig);
-int	handle_status_special_case(const char *input, char **exp, int *con);
+void	setup_signal_handlers(void);
+void	ignore_signals(void);
+void	restore_signals(void);
+void	signal_handler_sigint(int sig);
+void	signal_handler_sigquit(int sig);
+int		handle_status_special_case(const char *input, char **exp, int *con);
 #endif
 
-// Function prototypes : TODO:need to cleanup
-t_env 	*init_env(char **envp);
-void 	add_env_node(t_env **env_list, char *env_str);
-char	**split_args(char *input);
-void	free_args(char **args);
-int		is_space(char c);
-int		word_end(char *input, int i);
-int		word_len_without_quotes(char *input, int start, int end);
-void	copy_without_quotes(char *dst, char *input, int start, int end);
+// path handling
+
 char	*find_command(char *cmd, t_env **envp);
 char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd);
 char	*check_command_in_dir(char *dir, char *cmd);
 char 	*get_path_from_env(char **envp);
-char 	*read_input(void);
-int		process_input(char *input, t_env **my_env);
+
+
+//error handling
+void	free_args(char **args);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_I.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:25:22 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/03/31 17:42:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,22 +80,6 @@ char	*extract_word(const char *input, int *len)
 	return (word);
 }
 
-char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
-{
-	char	*token_value;
-
-	token_value = extract_redirect_operator(*cur, len);
-	if (**cur == '<' && (*cur)[1] == '<')
-		*typ = TOKEN_HEREDOC;
-	else if (**cur == '<')
-		*typ = TOKEN_REDIRECT_IN;
-	else if ((*cur)[1] == '>')
-		*typ = TOKEN_REDIRECT_APPEND;
-	else
-		*typ = TOKEN_REDIRECT_OUT;
-	return (token_value);
-}
-
 /**
  * extract_redirect_operator - Extract redirect operator (>, >>, <, <<)
  * @input: Input string
@@ -127,3 +111,21 @@ char	*extract_redirect_operator(const char *input, int *len)
 	}
 	return (op);
 }
+
+char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
+{
+	char	*token_value;
+
+	token_value = extract_redirect_operator(*cur, len);
+	if (**cur == '<' && (*cur)[1] == '<')
+		*typ = TOKEN_HEREDOC;
+	else if (**cur == '<')
+		*typ = TOKEN_REDIRECT_IN;
+	else if ((*cur)[1] == '>')
+		*typ = TOKEN_REDIRECT_APPEND;
+	else
+		*typ = TOKEN_REDIRECT_OUT;
+	return (token_value);
+}
+
+

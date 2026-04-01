@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_pwd_export.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:10:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 19:59:52 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:06:14 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,52 +27,43 @@ int	builtin_pwd(char **args)
 	return (0);
 }
 
-static int	export_one_arg(char *arg, t_env **env)
+static int	is_n_flag(char *arg)
 {
-	char	*equal_sign;
-	char	*key;
-	char	*value;
+	int	i;
 
-	equal_sign = ft_strchr(arg, '=');
-	if (equal_sign)
-	{
-		key = ft_substr(arg, 0, equal_sign - arg);
-		value = ft_strdup(equal_sign + 1);
-		if (!key || !value)
-			return (free(key), free(value), 1);
-		set_env_value(env, key, value);
-		free(key);
-		free(value);
-	}
-	else if (!get_env_value(*env, arg))
-		set_env_value(env, arg, NULL);
-	return (0);
-}
-
-int	builtin_export(char **args, t_env **env)
-{
-	int		i;
-	t_env	*temp;
-
-	if (!args[1])
-	{
-		temp = *env;
-		while (temp)
-		{
-			if (temp->value)
-				printf("declare -x %s=\"%s\"\n", temp->key, temp->value);
-			else
-				printf("declare -x %s\n", temp->key);
-			temp = temp->next;
-		}
+	i = 0;
+	if (!arg || arg[0] != '-')
 		return (0);
-	}
-	i = 1;
-	while (args[i])
+	i++;
+	while (arg[i])
 	{
-		if (export_one_arg(args[i], env) != 0)
-			return (1);
+		if (arg[i] != 'n')
+			return (0);
 		i++;
 	}
+	return (1);
+}
+
+int	builtin_echo(char **args)
+{
+	int	i;
+	int	newline;
+
+	i = 1;
+	newline = 1;
+	while (args[i] && is_n_flag(args[i]))
+	{
+		newline = 0;
+		i++;
+	}
+	while (args[i])
+	{
+		ft_putstr_fd(args[i], 1);
+		if (args[i + 1])
+			ft_putstr_fd(" ", 1);
+		i++;
+	}
+	if (newline)
+		ft_putstr_fd("\n", 1);
 	return (0);
 }
