@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:13:49 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 16:34:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ void minishell_loop(t_env *my_env)
         input = read_input();
         if (!input)
         {
-            printf("exit\n");
+            if (isatty(STDIN_FILENO))
+                printf("\nexit\n");
             exit(g_shell.last_status);
         }
         if (*input == '\0')

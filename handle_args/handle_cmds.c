@@ -6,13 +6,17 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/31 18:39:49 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:08:37 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h" 
 
-static void	restore_fds(int stdin_backup, int stdout_backup)
+/*1. Save original stdin/stdout with dup()
+2. Redirect stdin/stdout for the command
+3. Execute command
+4. restore_fds() puts stdin/stdout back to normal*/
+void	restore_fds(int stdin_backup, int stdout_backup)
 {
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
@@ -20,31 +24,11 @@ static void	restore_fds(int stdin_backup, int stdout_backup)
 	close(stdout_backup);
 }
 
-static char	*prepare_command_input(char *input, t_env *my_env)
-{
-	char	*cleaned_input;
-	char	*expanded_input;
-
-	if (contains_redirection(input))
-	{
-		cleaned_input = apply_redirections(input);
-		if (!cleaned_input)
-			return (NULL);
-	}
-	else
-		cleaned_input = ft_strdup(input);
-	if (!cleaned_input)
-		return (NULL);
-	expanded_input = expand_variables(cleaned_input, my_env);
-	free(cleaned_input);
-	return (expanded_input);
-}
-
 /*redirection part handles > file1
 command part becomes echo hi
 args become {"echo", "hi", NULL}
 execute command afterward, stdout/stderr restored by restore_fds()*/
-static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
+int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 		int stdout_bak)
 {
 	char	**args;
@@ -53,7 +37,7 @@ static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 
 	(void)stdin_bak;
 	(void)stdout_bak;
-	expanded_input = prepare_command_input(input, *my_env);
+	expanded_input = prepare_pipeline_segment(input, *my_env);
 	if (!expanded_input)
 		return (1);
 	args = split_args(expanded_input);
@@ -67,26 +51,11 @@ static int	apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 	return (0);
 }
 
-int	handle_pipeline(char *input, t_env **my_env)
-{
-	char	**pipeline;
-	int		status;
+/*Input: "echo hi > file.txt"
 
-	pipeline = parse_pipeline(input);
-	status = 1;
-	if (pipeline)
-	{
-		status = execute_pipeline(pipeline, my_env);
-		free_args(pipeline);
-	}
-	return (status);
-}
-
-/*input = "echo hi > file1" (full raw command string")
-my_env = pointer to your environment list (not "echo")
-stdin_backup = result of dup(0) (often 3, but can vary)
-stdout_backup = result of dup(1) (often 4, but can vary) */
-
+Before:  stdin = original terminal input
+After:   stdin = redirected, stdout = file.txt
+restore_fds(): Uses stdin_backup to put stdin back to original*/
 int	handle_single_command(char *input, t_env **my_env)
 {
 	int	stdin_backup;

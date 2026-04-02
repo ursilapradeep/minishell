@@ -6,12 +6,14 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/31 16:59:31 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:35:21 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/*Child runs ls successfully → normal exit 0 → function returns 0.
+Child killed by SIGINT (2) → function returns 130 (128 + 2*/
 int	wait_and_get_exit_status(pid_t pid)
 {
 	int	status;

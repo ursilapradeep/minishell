@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipes_wait.c                                       :+:      :+:    :+:   */
+/*   pipes_executable_c.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/23 11:30:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 11:16:59 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/04/01 15:28:28 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/04/02 12:41:07 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <signal.h>
 
-static void	free_env_array(char **env_array)
+void	free_env_array(char **env_array)
 {
 	int	j;
 
@@ -25,7 +24,11 @@ static void	free_env_array(char **env_array)
 	free(env_array);
 }
 
-static char	*prepare_pipeline_segment(char *segment, t_env *env)
+/*Input: "echo $USER > out.txt"
+It applies > redirection, expands $USER, and 
+returns cleaned command like "echo uvadakku" for execution.
+*/
+char	*prepare_pipeline_segment(char *segment, t_env *env)
 {
 	char	*cleaned;
 	char	*expanded;
@@ -45,20 +48,11 @@ static char	*prepare_pipeline_segment(char *segment, t_env *env)
 	return (expanded);
 }
 
-void	execute_pipeline_command_or_exit(char *segment, t_env **envp)
+void	exec_or_fail(char **args, t_env **envp)
 {
-	char	**args;
-	char	*prepared;
 	char	*cmd_path;
 	char	**env_array;
 
-	prepared = prepare_pipeline_segment(segment, *envp);
-	if (!prepared)
-		exit(1);
-	args = split_args(prepared);
-	free(prepared);
-	if (!args)
-		exit(127);
 	cmd_path = find_command(args[0], envp);
 	if (!cmd_path)
 	{
@@ -75,39 +69,17 @@ void	execute_pipeline_command_or_exit(char *segment, t_env **envp)
 	exit(127);
 }
 
-static int	child_status_to_exit_code(int status)
+void	execute_pipeline_command_or_exit(char *segment, t_env **envp)
 {
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-	{
-		if (WTERMSIG(status) == 2)
-			write(STDOUT_FILENO, "\n", 1);
-		return (128 + WTERMSIG(status));
-	}
-	return (1);
-}
+	char	**args;
+	char	*prepared;
 
-int	wait_for_pipeline_children(int cmd_count, pid_t last_pid)
-{
-	pid_t	waited_pid;
-	int		status;
-	int		last_status;
-	int		i;
-
-	i = 0;
-	last_status = 1;
-	while (i < cmd_count)
-	{
-		waited_pid = waitpid(-1, &status, 0);
-		if (waited_pid == -1)
-		{
-			perror("waitpid");
-			return (1);
-		}
-		if (waited_pid == last_pid)
-			last_status = child_status_to_exit_code(status);
-		i++;
-	}
-	return (last_status);
+	prepared = prepare_pipeline_segment(segment, *envp);
+	if (!prepared)
+		exit(1);
+	args = split_args(prepared);
+	free(prepared);
+	if (!args)
+		exit(127);
+	exec_or_fail(args, envp);
 }

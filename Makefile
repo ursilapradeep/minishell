@@ -6,7 +6,7 @@
 #    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/23 12:01:32 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/04/02 14:55:33 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,9 @@ SRCS = main.c \
        handle_args/handle_cmds.c \
        handle_args/handle_quote.c \
        handle_args/handle_quote_utils.c \
-       handle_args/handle_redirect.c \
+       handle_args/handle_quote_helper.c \
+       handle_args/process_input_utils.c \
+       handle_args/process_input.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        execute/execute.c \
@@ -32,25 +34,11 @@ SRCS = main.c \
        builtins/builtin_unset_exit.c \
        builtins/builtin_utils.c \
        pipes/pipes.c \
-       pipes/pipes_wait.c \
-       pipes/pipes_utils.c \
+       pipes/pipes_utils_a.c \
+       pipes/pipes_utils_b.c \
+       pipes/pipes_executable_c.c \
+       pipes/pipes_wait_d.c \
        signal/Signals.c \
-       parser/command_builder.c\
-       parser/command_pipeline.c\
-       parser/command_builder_utils.c\
-       parser/commands.c\
-       parser/build_commands.c\
-       parser/parser.c\
-       parser/parser_utils.c\
-       parser/parser_redirect.c\
-       parser/quote_handler.c\
-       parser/tokenizer_utils.c\
-       parser/token.c\
-       parser/tokenizer.c\
-       parser/variable_expansion.c \
-       parser/variable_expansion_utils.c \
-       parser/variable.c\
-       parser/var.c\
        redirections/redirections.c \
        redirections/heredoc.c \
        redirections/execute_redirections.c

@@ -6,87 +6,134 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:20:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/13 14:21:17 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 12:23:30 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <fcntl.h>
 
-// Handle output redirection (>)
-int	handle_output_redirect(char *filename)
+/* input: echo hi > out.txt
+suppose caller has i at position right after >
+function does:
+	skips spaces (*i moves to o)
+	marks start = *i
+	advances until space/operator/end
+	returns substring "out.txt" */
+char	*skip_spaces_and_extract(char *input, int *i)
 {
-	int	fd; // File descriptor for output file
+	char	*token;
+	int		start;
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644); // Open file for writing, create if not exists, truncate if exists
-	if (fd == -1) // Check if open failed
-	{
-		perror("minishell: output redirect"); // Print error message
-		return (-1); // Return error code
-	}
-	if (dup2(fd, STDOUT_FILENO) == -1) // Redirect stdout to file descriptor
-	{
-		perror("minishell: dup2"); // Print error if dup2 fails
-		close(fd); // Close file descriptor
-		return (-1); // Return error code
-	}
-	close(fd); // Close file descriptor (stdout now points to file)
-	return (0); // Return success
+	while (input[*i] == ' ' || input[*i] == '\t')
+		start = *i;
+	while (input[*i] && input[*i] != ' ' && input[*i] != '\t'
+		&& input[*i] != '>' && input[*i] != '<')
+		(*i)++;
+	token = ft_substr(input, start, *i - start);
+	return (token);
 }
 
-// Handle append redirection (>>)
-int	handle_append_redirect(char *filename)
+// Identify redirection operator type and advance index
+/*Input: "echo hi >> out.txt" at > → detects >>, moves *i by 2, 
+returns 0; caller then reads out.txt.
+>> → returns 0, advances by 2
+> → returns 1, advances by 1
+<< → returns 2, advances by 2
+< → returns 3, advances by 1
+none → returns -1*/
+int	identify_and_skip_operator(char *input, int *i)
 {
-	int	fd; // File descriptor for append file
-
-	fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644); // Open file for appending, create if not exists
-	if (fd == -1) // Check if open failed
+	if (input[*i] == '>' && input[*i + 1] == '>')
 	{
-		perror("minishell: append redirect"); // Print error message
-		return (-1); // Return error code
+		*i += 2;
+		return (0);
 	}
-	if (dup2(fd, STDOUT_FILENO) == -1) // Redirect stdout to file descriptor
+	else if (input[*i] == '>')
 	{
-		perror("minishell: dup2"); // Print error if dup2 fails
-		close(fd); // Close file descriptor
-		return (-1); // Return error code
+		*i += 1;
+		return (1);
 	}
-	close(fd); // Close file descriptor (stdout now points to file)
-	return (0); // Return success
+	else if (input[*i] == '<' && input[*i + 1] == '<')
+	{
+		*i += 2;
+		return (2);
+	}
+	else if (input[*i] == '<')
+	{
+		*i += 1;
+		return (3);
+	}
+	return (-1);
 }
 
-// Handle input redirection (<)
-int	handle_input_redirect(char *filename)
-{
-	int	fd; // File descriptor for input file
+/*Input cmd: "echo hi > out.txt" at i pointing to >
 
-	fd = open(filename, O_RDONLY); // Open file for reading only
-	if (fd == -1) // Check if open failed
+detects > and target out.txt
+calls redirection execution (dup2 flow inside helpers)
+removes " > out.txt" from cmd
+result cmd becomes "echo hi" and returns 0*/
+int	process_and_remove_redirection(char **cmd_ptr, int *i_ptr)
+{
+	t_redir_proc_ctx	ctx;
+
+	ctx.cmd = *cmd_ptr;
+	ctx.i = *i_ptr;
+	ctx.op_pos = ctx.i;
+	ctx.op_type = identify_and_skip_operator(ctx.cmd, &ctx.i);
+	ctx.target = skip_spaces_and_extract(ctx.cmd, &ctx.i);
+	if (execute_redirection(ctx.op_type, ctx.target) == -1)
 	{
-		perror("minishell: input redirect"); // Print error message
-		return (-1); // Return error code
+		free(ctx.target);
+		free(ctx.cmd);
+		*cmd_ptr = NULL;
+		return (-1);
 	}
-	if (dup2(fd, STDIN_FILENO) == -1) // Redirect stdin to file descriptor
-	{
-		perror("minishell: dup2"); // Print error if dup2 fails
-		close(fd); // Close file descriptor
-		return (-1); // Return error code
-	}
-	close(fd); // Close file descriptor (stdin now points to file)
-	return (0); // Return success
+	free(ctx.target);
+	ctx.tmp = remove_substring(ctx.cmd, ctx.op_pos, ctx.i);
+	free(ctx.cmd);
+	*cmd_ptr = ctx.tmp;
+	*i_ptr = ctx.op_pos;
+	return (0);
 }
 
-// Check if input contains redirections
+/*Input: "echo hi > out.txt" → it applies > to redirect stdout to out.txt, 
+removes redirection text from command, 
+trims spaces, and returns "echo hi". */
+char	*apply_redirections(char *input)
+{
+	int		i;
+	char	*cmd;
+	char	*tmp;
+
+	i = 0;
+	cmd = ft_strdup(input);
+	while (cmd && cmd[i])
+	{
+		if ((cmd[i] == '>' && cmd[i + 1] == '>') || cmd[i] == '>'
+			|| (cmd[i] == '<' && cmd[i + 1] == '<') || cmd[i] == '<')
+		{
+			if (process_and_remove_redirection(&cmd, &i) == -1)
+				return (NULL);
+			continue ;
+		}
+		i++;
+	}
+	tmp = ft_strtrim(cmd, " \t");
+	free(cmd);
+	return (tmp);
+}
+
+/*scans the string and return 1 if it find  > or < else none 0*/
 int	contains_redirection(char *input)
 {
-	int	i; // Loop counter
+	int	i;
 
-	i = 0; // Initialize counter
-	while (input[i]) // Loop through entire input string
+	i = 0;
+	while (input[i])
 	{
-		if (input[i] == '>' || input[i] == '<') // Check for redirection operators
-			return (1); // Return 1 (true) if found
-		i++; // Move to next character
+		if (input[i] == '>' || input[i] == '<')
+			return (1);
+		i++;
 	}
-	return (0); // Return 0 (false) if no redirections found
+	return (0);
 }

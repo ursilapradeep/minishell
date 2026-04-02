@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+ /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
@@ -6,28 +6,13 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 18:21:59 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 16:03:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	free_env_array(char **env_array)
-{
-	int	index;
-
-	if (!env_array)
-		return ;
-	index = 0;
-	while (env_array[index])
-	{
-		free(env_array[index]);
-		index++;
-	}
-	free(env_array);
-}
-
-void	execute_child(const char *cmd_path, char **args, char **env_array)
+void	run_child(const char *cmd_path, char **args, char **env_array)
 {
 	execve(cmd_path, args, env_array);
 	perror("execve");
@@ -35,7 +20,7 @@ void	execute_child(const char *cmd_path, char **args, char **env_array)
 	exit(127);
 }
 
-static int	prepare_external(char **args, t_env **envp, char **cmd_path,
+int	prepare_external(char **args, t_env **envp, char **cmd_path,
 		char ***env_array)
 {
 	*cmd_path = find_command(args[0], envp);
@@ -81,7 +66,7 @@ int	run_external(char **args, t_env **envp)
 	if (pid == 0)
 	{
 		restore_signals();
-		execute_child(cmd_path, args, env_array);
+		run_child(cmd_path, args, env_array);
 	}
 	return (wait_and_cleanup_external(pid, env_array, cmd_path));
 }

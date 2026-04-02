@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 17:51:34 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:09:56 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ int	count_args_from_input(char *input)
 	}
 	return (count);
 }
+
 /*Input string: "ls  -la /tmp"
     Process:
     Skip spaces → find "ls" → copy into args[0]
     Skip spaces → find "-la" → copy into args[1]
     Skip spaces → find "/tmp" → copy into args[2]
     Set args[3] = NULL */
-
-static int	add_word(char **args, t_word_info *info, int index)
+int	add_word(char **args, t_word_info *info, int index)
 {
 	int	len;
 
@@ -56,7 +56,7 @@ static int	add_word(char **args, t_word_info *info, int index)
 	return (1);
 }
 
-static int	fill_args(char **args, char *input)
+int	fill_args(char **args, char *input)
 {
 	int			i;
 	int			j;

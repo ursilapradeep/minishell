@@ -5,94 +5,131 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/16 16:10:08 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 11:24:24 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/16 17:09:09 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/04/02 14:53:13 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h" // Include minishell headers, env accessors, and libft helpers.
+#include "../minishell.h"
 
-int	is_var_char(char c) // Check if character is valid in an environment variable name.
+/*Example:
+Input: echo "$USER" '$HOME'
+env: USER=alice, HOME=/Users/alice
+
+Scanning:
+ctx->input → the full string being parsed
+ctx->i → current position in that string
+ctx->quote → whether you are inside ' or "
+ctx->env → environment list used to expand $USER, $HOME, etc.
+ctx->out_len → total output length being built
+
+Then allocate 17 bytes (16 + null terminator) and fill in second pass.*/
+int	handle_token_len_special_cases(t_token_len_ctx *ctx,
+	int *skip, int *vlen)
 {
-	return (ft_isalnum(c) || c == '_'); // Allow letters/digits and underscore.
-}
-
-int	expanded_len(char *input, t_env *env) // Compute required length of expanded string before allocation.
-{
-	int		i; // Read index over input.
-	int		len; // Total output length after expansion.
-	char	quote; // Active quote context ('\0', '\'', or '"').
-
-	i = 0; // Start from first character.
-	len = 0; // Initialize output length counter.
-	quote = '\0'; // Start outside quotes.
-	while (input[i]) // Walk through input to count expansion result length.
+	if (!*ctx->quote && (ctx->input[*ctx->i] == '\''
+			|| ctx->input[*ctx->i] == '"'))
 	{
-		if (!count_token_len(input, &i, &quote, env, &len)) // Delegate per-token length accounting.
-			return (-1); // Propagate error (e.g., allocation failure inside helpers).
+		*ctx->quote = ctx->input[(*ctx->i)++];
+		return (1);
 	}
-	return (len); // Return exact allocation size needed (without null terminator).
+	if (*ctx->quote && ctx->input[*ctx->i] == *ctx->quote)
+	{
+		*ctx->quote = '\0';
+		(*ctx->i)++;
+		return (1);
+	}
+	if (ctx->input[*ctx->i] == '$' && *ctx->quote != '\''
+		&& (ft_isalpha(ctx->input[*ctx->i + 1])
+			|| ctx->input[*ctx->i + 1] == '_'
+			|| ctx->input[*ctx->i + 1] == '?'))
+	{
+		*vlen = var_value_len(ctx->input, *ctx->i, ctx->env, skip);
+		if (*vlen < 0)
+			return (0);
+		*ctx->out_len += *vlen;
+		*ctx->i += *skip;
+		return (1);
+	}
+	return (0);
 }
 
-static int	append_last_status(char *expanded, int *j, int *i)
-{
-	char	*status_str;
-	char	*tmp;
+int	count_token_len(t_token_len_ctx *ctx)
 
-	status_str = ft_itoa(g_shell.last_status);
-	if (!status_str)
-		return (0);
-	tmp = status_str;
-	while (*tmp)
-		expanded[(*j)++] = *tmp++;
-	free(status_str);
-	*i += 2;
+	{
+	int	skip;
+	int	vlen;
+
+	if (handle_token_len_special_cases(ctx, &skip, &vlen))
+		return (1);
+	else
+	{
+		(*ctx->out_len)++;
+		(*ctx->i)++;
+	}
 	return (1);
 }
 
-int	append_var_value(char *expanded, int *j, char *input,
-		int *i, t_env *env) // Expand $VAR at input[*i] and append its value into expanded buffer.
+int	expanded_len(char *input, t_env *env)
 {
-	int		key_len; // Length of variable key name after '$'.
-	char	*key; // Extracted variable key (heap-allocated).
-	char	*value; // Value looked up in environment.
+	int				i;
+	int				len;
+	char			quote;
+	t_token_len_ctx	ctx;
 
-	if (input[*i + 1] == '?')
-		return (append_last_status(expanded, j, i));
-	key_len = 0; // Begin with empty variable name length.
-	while (is_var_char(input[*i + 1 + key_len])) // Count valid variable-name characters.
-		key_len++;
-	key = ft_substr(input, *i + 1, key_len); // Copy variable name without '$'.
-	if (!key) // Guard allocation failure.
-		return (0); // Signal failure to caller.
-	value = get_env_value(env, key); // Fetch variable value from environment list.
-	if (value) // If variable exists, append full value.
-		while (*value)
-			expanded[(*j)++] = *value++; // Copy each character into output and advance write index.
-	free(key); // Free temporary key string.
-	*i += key_len + 1; // Skip '$' plus key name in input stream.
-	return (1); // Signal success.
+	i = 0;
+	len = 0;
+	quote = '\0';
+	ctx.input = input;
+	ctx.i = &i;
+	ctx.quote = &quote;
+	ctx.env = env;
+	ctx.out_len = &len;
+	while (input[i])
+	{
+		if (!count_token_len(&ctx))
+			return (-1);
+	}
+	return (len);
 }
 
-int	process_next_char(char *expanded, int *j, char *input,
-		int *i, char *quote, t_env *env) // Process one input unit (quote, variable, or literal char).
+/*input = "echo \"$USER\" '$HOME' $PATH"
+env contains: USER=alice HOME = /Users/alice PATH =/usr/bin:/bin
+$USER inside double quotes expands
+$HOME inside single quotes does not expand
+$PATH outside quotes expands*/
+void	init_process_char_ctx(t_process_char_ctx *char_ctx,
+		t_expand_ctx *ctx, char *input, t_env *env)
 {
-	if (!*quote && (input[*i] == '\'' || input[*i] == '"')) // Opening quote found outside quote mode.
-		*quote = input[(*i)++]; // Enter quote mode and consume quote char (not copied).
-	else if (*quote && input[*i] == *quote) // Matching closing quote found.
-	{
-		*quote = '\0'; // Exit quote mode.
-		(*i)++; // Consume closing quote (not copied).
-	}
-	else if (input[*i] == '$' && *quote != '\'' && (ft_isalpha(input[*i + 1])
-			|| input[*i + 1] == '_' || input[*i + 1] == '?')) // Expand variable unless inside single quotes.
-	{
-		if (!append_var_value(expanded, j, input, i, env)) // Append variable expansion text.
-			return (0); // Signal failure.
-	}
-	else // Regular character path.
-		expanded[(*j)++] = input[(*i)++]; // Copy one literal char and advance indices.
-	return (1); // Signal success.
+	char_ctx->expanded = ctx->expanded;
+	char_ctx->j = &ctx->j;
+	char_ctx->input = input;
+	char_ctx->i = &ctx->i;
+	char_ctx->quote = &ctx->quote;
+	char_ctx->env = env;
 }
 
+char	*expand_variables(char *input, t_env *env)
+{
+	t_expand_ctx		ctx;
+	t_process_char_ctx	char_ctx;
+	int					len;
 
+	len = expanded_len(input, env);
+	if (len < 0)
+		return (NULL);
+	ctx.expanded = malloc(len + 1);
+	if (!ctx.expanded)
+		return (NULL);
+	ctx.i = 0;
+	ctx.j = 0;
+	ctx.quote = '\0';
+	while (input[ctx.i])
+	{
+		init_process_char_ctx(&char_ctx, &ctx, input, env);
+		if (!process_next_char(&char_ctx))
+			return (free(ctx.expanded), NULL);
+	}
+	ctx.expanded[ctx.j] = '\0';
+	return (ctx.expanded);
+}
