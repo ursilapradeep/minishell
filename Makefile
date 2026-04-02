@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
+#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/31 15:19:07 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/02 18:41:35 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,9 @@ SRCS = main.c \
        handle_args/handle_cmds.c \
        handle_args/handle_quote.c \
        handle_args/handle_quote_utils.c \
-       handle_args/handle_redirect.c \
+       handle_args/handle_quote_helper.c \
+       handle_args/process_input_utils.c \
+       handle_args/process_input.c \
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        execute/execute.c \
@@ -32,8 +34,10 @@ SRCS = main.c \
        builtins/builtin_unset_exit.c \
        builtins/builtin_utils.c \
        pipes/pipes.c \
-       pipes/pipes_wait.c \
-       pipes/pipes_utils.c \
+       pipes/pipes_utils_a.c \
+       pipes/pipes_utils_b.c \
+       pipes/pipes_executable_c.c \
+       pipes/pipes_wait_d.c \
        signal/Signals.c \
        parser/tokenize.c\
        parser/tokenize_utils_I.c\

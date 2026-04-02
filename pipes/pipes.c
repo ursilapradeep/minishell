@@ -3,110 +3,62 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 14:16:56 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/31 14:43:45 by spaipur-         ###   ########.fr       */
+/*   Created: 2026/04/01 11:54:40 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/04/02 18:36:14 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-int execute_ast_pipeline(t_cmd *cmds, t_env **my_env);
 
-static void	close_all_pipes(int pipes[][2], int cmd_count)
+// Parse pipeline - split by '|'
+/*Function that takes input string and
+returns array of command strings split by |.
+cmds -->pointer to array of strings --hold seperated commands*/
+char	**parse_pipeline(char *input)
+{
+	char	**cmds;
+	int		cmd_count;
+	int		j;
+
+	cmd_count = count_pipes(input);
+	cmds = malloc(sizeof(char *) * (cmd_count + 1));
+	if (!cmds)
+		return (NULL);
+	if (split_pipe_segments(cmds, input, &j) == -1)
+		return (NULL);
+	cmds[j + 1] = NULL;
+	return (cmds);
+}
+
+int	handle_pipeline(char *input, t_env **my_env)
+{
+	char	**pipeline;
+	int		status;
+
+	pipeline = parse_pipeline(input);
+	status = 1;
+	if (pipeline)
+	{
+		status = execute_pipeline(pipeline, my_env);
+		free_args(pipeline);
+	}
+	return (status);
+}
+
+/* Check if input contains pipe */
+/*check the current character is a pipe*/
+int	contains_pipe(char *input)
 {
 	int	i;
 
 	i = 0;
-	while (i < cmd_count - 1)
+	while (input[i])
 	{
-		close(pipes[i][0]); //close read descriptor
-		close(pipes[i][1]); //close write
+		if (input[i] == '|')
+			return (1);
 		i++;
 	}
-}
-/*After dup2, you close all pipe fds because:
-They are no longer needed in that process
-stdin/stdout now already point to the needed pipe ends.
-Avoid fd leaks
-Keeping extra pipe descriptors open wastes resources. */
-static void	execute_child(char **pipeline, t_env **envp, int pipes[][2], // Child handler for one command in pipeline
- int cmd_count, int i) // cmd_count = total commands, i = current command index
-{
-	restore_signals(); // Child should react to Ctrl+C/Ctrl+\ with default behavior.
-	if (i > 0) // If not first command, read stdin from previous pipe
-		dup2(pipes[i - 1][0], STDIN_FILENO); // Redirect STDIN to previous pipe read end
-	if (i < cmd_count - 1) // If not last command, write stdout to current pipe
-		dup2(pipes[i][1], STDOUT_FILENO); // Redirect STDOUT to current pipe write end
-	close_all_pipes(pipes, cmd_count); // Close all inherited pipe fds after dup2 setup
-	execute_pipeline_command_or_exit(pipeline[i], envp);
-}
-
-static int	wait_pipeline_with_signal_control(int cmd_count, pid_t last_pid)
-{
-	int	status;
-
-	status = wait_for_pipeline_children(cmd_count, last_pid);
-	setup_signal_handlers();
-	return (status);
-}
-
-static int	fork_and_execute_all(char **pipeline, t_env **envp, int pipes[][2],
-		int cmd_count)
-{
-	pid_t	pid;
-	pid_t	last_pid;
-	int		i; 	// Start from first command in the pipeline
-	
-	i = 0;
-	last_pid = -1;
-	ignore_signals();
-	while (i < cmd_count) // Create one child process per command
-	{
-		pid = fork(); 	// Fork current process
-		if (pid == -1) // If fork fails, print error and stop creating more children
-		{
-			perror("fork");
-			setup_signal_handlers();
-			close_all_pipes(pipes, cmd_count);
-			return (1);
-		}
-		if (pid == 0) 	// Child process executes its command with proper pipe redirection
-			execute_child(pipeline, envp, pipes, cmd_count, i);
-		if (i == cmd_count - 1)
-			last_pid = pid;
-		i++; // Parent moves to next command
-	}
-	close_all_pipes(pipes, cmd_count); // Parent closes all pipe file descriptors after forking all children
-	return (wait_pipeline_with_signal_control(cmd_count, last_pid));
-}
-
-// Execute pipeline
-/*pipeline (array of command strings, envp: variable passed to executed commands))*/
-//pipes[i] has 2 ends: [0] read end, [1] write end
-int	execute_pipeline(char **pipeline, t_env **envp)
-{
-	int		cmd_count; //stores how many cmds are in the pipeline
-	int		pipes[1024][2]; //array supports upto 1024 pipes (about 1025 commands)
-	int		i;
-
-	i = 0;
-	cmd_count = 0;
-	while (pipeline[cmd_count]) //loops until a null entry is found
-		cmd_count++;
-	i = 0;
-	/*Because for N commands, you need N - 1 pipes to connect them.
-	Example:
-	cmd1 | cmd2 = 2 commands → 1 pipe needed
-	cmd1 | cmd2 | cmd3 = 3 commands → 2 pipes needed */
-	while (i < cmd_count - 1)
-	{
-		if (pipe(pipes[i]) == -1)
-		{
-			perror("pipe");
-			return (1);
-		}
-		i++;
-	}
-	return (fork_and_execute_all(pipeline, envp, pipes, cmd_count));
+	return (0);
 }
