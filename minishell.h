@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/07 11:35:15 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/07 14:45:20 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,7 @@ void		add_cmd(t_cmd **head, t_cmd *new_cmd);
 t_cmd		*build_single_cmd(t_token **tokens);
 int			process_tokens_into_commands(t_token *tokens, t_cmd **commands);
 void		free_cmd_list(t_cmd *cmd);
+int			ft_isspace(int c);
 t_token		*tokenize(char *input);
 int			is_quote(char c);
 char		*extract_quoted_string(const char *input, int *len);

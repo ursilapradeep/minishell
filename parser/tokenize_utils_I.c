@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_I.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <<spaipur-@student.42.fr>>        +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:25:22 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/07 14:42:14 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*extract_word(const char *input, int *len)
 	if (!input || !*input)
 		return (NULL);
 	end = input;
-	while (*end && !isspace(*end) && *end != '|'
+	while (*end && !ft_isspace(*end) && *end != '|'
 		&& *end != '>' && *end != '<' && !is_quote(*end))
 		end++;
 	if (input == end)
@@ -78,22 +78,6 @@ char	*extract_word(const char *input, int *len)
 	ft_strlcpy(word, input, (end - input) + 1);
 	*len = end - input;
 	return (word);
-}
-
-char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
-{
-	char	*token_value;
-
-	token_value = extract_redirect_operator(*cur, len);
-	if (**cur == '<' && (*cur)[1] == '<')
-		*typ = TOKEN_HEREDOC;
-	else if (**cur == '<')
-		*typ = TOKEN_REDIRECT_IN;
-	else if ((*cur)[1] == '>')
-		*typ = TOKEN_REDIRECT_APPEND;
-	else
-		*typ = TOKEN_REDIRECT_OUT;
-	return (token_value);
 }
 
 /**
@@ -126,4 +110,20 @@ char	*extract_redirect_operator(const char *input, int *len)
 		*len = 1;
 	}
 	return (op);
+}
+
+char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
+{
+	char	*token_value;
+
+	token_value = extract_redirect_operator(*cur, len);
+	if (**cur == '<' && (*cur)[1] == '<')
+		*typ = TOKEN_HEREDOC;
+	else if (**cur == '<')
+		*typ = TOKEN_REDIRECT_IN;
+	else if ((*cur)[1] == '>')
+		*typ = TOKEN_REDIRECT_APPEND;
+	else
+		*typ = TOKEN_REDIRECT_OUT;
+	return (token_value);
 }
