@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   quote_removal.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 13:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:55:58 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/07 10:44:16 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
 
 static void	process_quote_removal(const char *str, char *res)
 {

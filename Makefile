@@ -6,7 +6,7 @@
 #    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/02 18:41:35 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/04/07 10:46:08 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,11 +48,11 @@ SRCS = main.c \
        parser/variable_expansion_utils_III.c \
        parser/quote_removal.c \
        parser/command_builder.c\
-       parser/command_builder_utils.c\
+       parser/command_err_handler.c\
        parser/build_redirections.c\
        parser/build_pipeline.c\
-       parser/build_heredoc.c\
-       parser/build_arguments.c\
+       parser/build_args_utils.c\
+       parser/build_args.c\
        redirections/redirections.c \
        redirections/heredoc.c \
        redirections/execute_redirections.c

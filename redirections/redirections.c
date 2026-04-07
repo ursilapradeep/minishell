@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:20:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 12:23:30 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/07 10:57:46 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,13 @@ char	*skip_spaces_and_extract(char *input, int *i)
 	int		start;
 
 	while (input[*i] == ' ' || input[*i] == '\t')
-		start = *i;
+		(*i)++;
+	start = *i;
 	while (input[*i] && input[*i] != ' ' && input[*i] != '\t'
 		&& input[*i] != '>' && input[*i] != '<')
 		(*i)++;
+	if (*i == start)
+		return (NULL);
 	token = ft_substr(input, start, *i - start);
 	return (token);
 }

@@ -6,15 +6,15 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/02 18:31:56 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/07 11:06:24 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_shell_state g_shell = {0, 0};
+t_shell_state	g_shell = {0, 0};
 
-void    free_args(char **args)
+void	free_args(char **args)
 {
 	int	i;
 
@@ -31,7 +31,7 @@ void    free_args(char **args)
 
 void	minishell_loop(t_env *my_env)
 {
- 	int		exit_code;
+	int		exit_code;
 	char	*input;
 
 	exit_code = 0;
@@ -41,7 +41,7 @@ void	minishell_loop(t_env *my_env)
 		if (!input)
 		{
 			if (isatty(STDIN_FILENO))
-				printf("\nexit\n");
+				printf("exit");
 			exit(g_shell.last_status);
 		}
 		if (*input == '\0')
@@ -57,9 +57,9 @@ void	minishell_loop(t_env *my_env)
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
- 	t_env	*my_env;
+	t_env	*my_env;
 
 	(void)argc;
 	(void)argv;
