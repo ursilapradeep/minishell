@@ -6,18 +6,25 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 18:34:31 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 18:34:33 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/07 18:01:44 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <errno.h>
 
 void	run_child(const char *cmd_path, char **args, char **env_array)
 {
+	int	exit_code;
+
 	execve(cmd_path, args, env_array);
 	perror("execve");
+	if (errno == ENOENT)
+		exit_code = 126;
+	else
+		exit_code = 127;
 	free_env_array(env_array);
-	exit(127);
+	exit(exit_code);
 }
 
 int	prepare_external(char **args, t_env **envp, char **cmd_path,
