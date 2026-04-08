@@ -6,11 +6,29 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 11:30:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 15:35:53 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 13:09:54 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+int	setup_pipeline_cmd_io(t_cmd *cmd)
+{
+	if (cmd->heredoc_delimiter && handle_heredoc(cmd->heredoc_delimiter) == -1)
+		return (-1);
+	if (cmd->infd > 2 && dup2(cmd->infd, STDIN_FILENO) == -1)
+	{
+		perror("minishell: dup2");
+		return (-1);
+	}
+	if (cmd->outfd > 2 && dup2(cmd->outfd, STDOUT_FILENO) == -1)
+	{
+		perror("minishell: dup2");
+		return (-1);
+	}
+	return (0);
+}
 
 int	child_status_to_exit_code(int status)
 {

@@ -6,7 +6,7 @@
 #    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/07 10:46:08 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/04/08 12:44:12 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,9 +19,6 @@ SRCS = main.c \
        handle_args/handle_args.c \
        handle_args/args_helpers.c \
        handle_args/handle_cmds.c \
-       handle_args/handle_quote.c \
-       handle_args/handle_quote_utils.c \
-       handle_args/handle_quote_helper.c \
        handle_args/process_input_utils.c \
        handle_args/process_input.c \
        handle_path/find_path.c \
@@ -38,7 +35,6 @@ SRCS = main.c \
        pipes/pipes_utils_b.c \
        pipes/pipes_executable_c.c \
        pipes/pipes_wait_d.c \
-       signal/Signals.c \
        parser/tokenize.c\
        parser/tokenize_utils_I.c\
        parser/tokenize_utils_II.c\
@@ -52,7 +48,8 @@ SRCS = main.c \
        parser/build_redirections.c\
        parser/build_pipeline.c\
        parser/build_args_utils.c\
-       parser/build_args.c\
+       parser/build_args.c \
+       signal/Signals.c \
        redirections/redirections.c \
        redirections/heredoc.c \
        redirections/execute_redirections.c

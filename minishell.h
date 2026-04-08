@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 10:36:14 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 13:14:04 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,7 @@ void		free_args(char **args);
 
 //variable_expansion
 int			expand_token_list(t_token *tokens, t_env *env);
+char		*expand_string(const char *input, t_env *env);
 int			expand_variable(const char *input,
 				t_env *env, char **exp, int *con);
 const char	*extract_var_name(const char *input,
@@ -250,21 +251,6 @@ void		restore_fds(int stdin_backup, int stdout_backup);
 int			apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 				int stdout_bak);
 int			handle_single_command(char *input, t_env **my_env);
-//quote_utils.c
-int			append_var_value(t_process_char_ctx *ctx);
-int			process_next_char(t_process_char_ctx *ctx);
-//quote_helper.c
-int			is_var_char(char c);
-int			handle_exit_status_var(t_var_value_len_ctx *ctx);
-int			var_value_len(char *input, int i, t_env *env, int *skip);
-//handle_quote.c
-int			handle_token_len_special_cases(t_token_len_ctx *ctx,
-				int *skip, int *vlen);
-int			count_token_len(t_token_len_ctx *ctx);
-int			expanded_len(char *input, t_env *env);
-void		init_process_char_ctx(t_process_char_ctx *char_ctx,
-				t_expand_ctx *ctx, char *input, t_env *env);
-char		*expand_variables(char *input, t_env *env);
 //process_input_utils.c
 int			is_invalid_pipe_position(char *input, int i);
 int			has_unclosed_quotes(char *input);
@@ -313,6 +299,7 @@ void		free_env_array(char **env_array);
 char		*prepare_pipeline_segment(char *segment, t_env *env);
 void		exec_or_fail(char **args, t_env **envp);
 void		execute_pipeline_command_or_exit(char *segment, t_env **envp);
+int			setup_pipeline_cmd_io(t_cmd *cmd);
 //pipes_wait_d.c
 int			child_status_to_exit_code(int status);
 int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);

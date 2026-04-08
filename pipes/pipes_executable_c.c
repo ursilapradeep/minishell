@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 15:28:28 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 12:41:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 13:11:15 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*prepare_pipeline_segment(char *segment, t_env *env)
 		cleaned = ft_strdup(segment);
 	if (!cleaned)
 		return (NULL);
-	expanded = expand_variables(cleaned, env);
+	expanded = expand_string(cleaned, env);
 	free(cleaned);
 	return (expanded);
 }
@@ -69,17 +69,45 @@ void	exec_or_fail(char **args, t_env **envp)
 	exit(127);
 }
 
+static t_cmd	*build_pipeline_cmd_or_exit(char *segment, t_env *env)
+{
+	t_token	*tokens;
+	t_cmd	*commands;
+
+	tokens = tokenize(segment);
+	if (!tokens)
+		exit(1);
+	if (expand_token_list(tokens, env) < 0)
+	{
+		free_tokens(tokens);
+		exit(1);
+	}
+	commands = build_commands(tokens);
+	free_tokens(tokens);
+	if (!commands)
+		exit(1);
+	return (commands);
+}
+
 void	execute_pipeline_command_or_exit(char *segment, t_env **envp)
 {
-	char	**args;
-	char	*prepared;
+	t_cmd	*commands;
+	t_cmd	*cmd;
+	int		exit_code;
 
-	prepared = prepare_pipeline_segment(segment, *envp);
-	if (!prepared)
+	commands = build_pipeline_cmd_or_exit(segment, *envp);
+	cmd = commands;
+	if (!cmd->args || !cmd->args[0])
+	{
+		free_cmd_list(commands);
+		exit(0);
+	}
+	if (setup_pipeline_cmd_io(cmd) == -1)
+	{
+		free_cmd_list(commands);
 		exit(1);
-	args = split_args(prepared);
-	free(prepared);
-	if (!args)
-		exit(127);
-	exec_or_fail(args, envp);
+	}
+	exit_code = execute_command(cmd->args, envp);
+	free_cmd_list(commands);
+	exit(exit_code);
 }
