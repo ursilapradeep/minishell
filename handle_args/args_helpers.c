@@ -6,9 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 18:13:54 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/07 10:49:02 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 10:33:14 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../minishell.h"
 
 int	is_space(char c)
 {

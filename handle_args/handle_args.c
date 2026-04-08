@@ -6,12 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:17 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 17:58:59 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 10:35:35 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdlib.h>
 
 int	count_args_from_input(char *input)
 {
