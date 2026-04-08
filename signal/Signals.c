@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 10:59:49 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 18:40:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:51:44 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 Signal handler for SIGINT (Ctrl+C)
 In interactive mode: displays a new prompt on a new line
-Behavior matches bash */
+Behavior matches bash: use echo $?*/
 void	signal_handler_sigint(int signo)
 {
 	(void)signo;

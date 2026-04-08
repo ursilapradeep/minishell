@@ -6,18 +6,25 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 13:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/07 10:44:16 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 18:42:19 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/*Input: "hello $USER"
+
+proc_input() must:
+	track that we're inside "..."
+expand $USER to uvadakku
+copy hello uvadakku
+process_quote_removal() just removes the "..." delimiters.*/
 static void	process_quote_removal(const char *str, char *res)
 {
 	int	i;
 	int	j;
-	int	in_sq;
-	int	in_dq;
+	char	in_sq;
+	char	in_dq;
 
 	i = 0;
 	j = 0;

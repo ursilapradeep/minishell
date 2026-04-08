@@ -6,17 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/07 14:43:17 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 16:45:20 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	ft_isspace(int c)
-{
-	return (c == ' ' || c == '\t' || c == '\n'
-		|| c == '\r' || c == '\v' || c == '\f');
-}
 
 static const char	*skip_whitespace_simple(const char *input)
 {

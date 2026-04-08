@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/07 18:13:09 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 18:13:16 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,15 @@ int	expand_variable_helper(const char **current, char *result,
 	return (0);
 }
 
+/*copies normal characters into result
+tracks whether it is inside single or double quotes
+expands $VAR only when not inside single quotes
+uses expand_variable_helper() to replace variables with their values eg: echo "Hello $USER" $HOME world*/
 int	proc_input(const char *input, char *result, int *result_len, t_env *env)
 {
 	const char	*current;
-	int			in_sq;
-	int			in_dq;
+	char			in_sq;
+	char			in_dq;
 
 	current = input;
 	in_sq = 0;
@@ -106,6 +110,7 @@ char	*expand_string(const char *input, t_env *env)
  * @tokens: Token list to expand
  * @env: Environment list
  * Return: 0 on success, -1 on error
+ * example echo $HOME $USER
  */
 int	expand_token_list(t_token *tokens, t_env *env)
 {

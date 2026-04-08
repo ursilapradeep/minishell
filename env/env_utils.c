@@ -6,11 +6,20 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:15:10 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:47:17 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+/*
+It looks for '=' in env_str.
+If found, it splits into:
+	key = part before '='
+	value = part after '='
+If not found, it stores the whole string as key and sets value = NULL.
+If key allocation fails, it frees value (if allocated) and returns 0 (failure).
+Otherwise it returns 1 (success).*/
 
 int	fill_env_node(t_env *new_node, char *env_str)
 {

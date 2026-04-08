@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/07 14:42:14 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 16:27:42 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*extract_word(const char *input, int *len)
 	if (!input || !*input)
 		return (NULL);
 	end = input;
-	while (*end && !ft_isspace(*end) && *end != '|'
+	while (*end && !is_space(*end) && *end != '|'
 		&& *end != '>' && *end != '<' && !is_quote(*end))
 		end++;
 	if (input == end)

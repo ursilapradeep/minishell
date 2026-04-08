@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion_utils_I.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 15:33:53 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 18:23:55 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,9 @@ static int	allocate_expanded_value(const char *value, char **expanded)
 	return (0);
 }
 
+/*expand_variable() takes a $VAR at the input position, extracts the variable name, looks it 
+up in the environment, allocates memory for the value, and returns how many characters were consumed.
+Input: "${HOME}"*/
 int	expand_variable(const char *input, t_env *env, char **exp, int *con)
 {
 	const char	*v[3];

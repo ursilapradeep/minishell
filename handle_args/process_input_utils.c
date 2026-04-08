@@ -6,14 +6,23 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 10:45:56 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 16:45:26 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 17:36:28 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-/* |ls leadin or trailing pipes return 0 */
-int	is_invalid_pipe_position(char *input, int i)
+void	update_quote_state(char c, char *quote)
+{
+	if (!quote)
+		return ;
+	if (*quote == '\0' && is_quote(c))
+		*quote = c;
+	else if (*quote != '\0' && c == *quote)
+		*quote = '\0';
+}
+
+int	is_invalid_pipe_position(char *input, int i) /* |ls leadin or trailing pipes return 0 */
 {
 	int	left;
 	int	right;
@@ -39,10 +48,7 @@ int	has_unclosed_quotes(char *input)
 	i = 0;
 	while (input[i])
 	{
-		if (!quote && (input[i] == '\'' || input[i] == '"'))
-			quote = input[i];
-		else if (quote && input[i] == quote)
-			quote = '\0';
+		update_quote_state(input[i], &quote);
 		i++;
 	}
 	return (quote != '\0');
@@ -57,11 +63,8 @@ int	find_logical_and(char *input)
 	quote = '\0';
 	while (input[i])
 	{
-		if (!quote && (input[i] == '\'' || input[i] == '"'))
-			quote = input[i];
-		else if (quote && input[i] == quote)
-			quote = '\0';
-		else if (!quote && input[i] == '&' && input[i + 1] == '&')
+		update_quote_state(input[i], &quote);
+		if (!quote && input[i] == '&' && input[i + 1] == '&')
 			return (i);
 		i++;
 	}

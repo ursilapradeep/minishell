@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 13:14:04 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 17:24:23 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,6 +253,7 @@ int			apply_and_execute(char *input, t_env **my_env, int stdin_bak,
 int			handle_single_command(char *input, t_env **my_env);
 //process_input_utils.c
 int			is_invalid_pipe_position(char *input, int i);
+void		update_quote_state(char c, char *quote);
 int			has_unclosed_quotes(char *input);
 int			find_logical_and(char *input);
 int			extract_and_trim_commands(char *input, int and_pos,

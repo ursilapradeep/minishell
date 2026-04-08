@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:15:42 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/02 16:46:00 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/08 17:24:40 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,8 @@ int	has_invalid_pipe_syntax(char *input)
 	quote = '\0';
 	while (input[i])
 	{
-		if (!quote && (input[i] == '\'' || input[i] == '"'))
-			quote = input[i];
-		else if (quote && input[i] == quote)
-			quote = '\0';
-		else if (!quote && input[i] == '|')
+		update_quote_state(input[i], &quote);
+		if (!quote && input[i] == '|')
 		{
 			if (is_invalid_pipe_position(input, i))
 				return (1);
