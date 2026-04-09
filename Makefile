@@ -6,7 +6,7 @@
 #    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/09 11:55:48 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/04/09 12:39:55 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,6 @@ SRCS = main.c \
        process_input/my_env.c \
        pipes/pipes_utils.c \
        
-              
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
 

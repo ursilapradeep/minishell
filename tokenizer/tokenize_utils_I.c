@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_I.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 17:42:40 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:39:03 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,5 +127,3 @@ char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
 		*typ = TOKEN_REDIRECT_OUT;
 	return (token_value);
 }
-
-

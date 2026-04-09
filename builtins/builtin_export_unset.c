@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export_unset.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:18:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/01 11:06:03 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:08:29 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +102,3 @@ int	builtin_unset(char **args, t_env **env)
 	}
 	return (0);
 }
-
-

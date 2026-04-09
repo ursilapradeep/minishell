@@ -6,13 +6,13 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 11:49:00 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:36:31 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int parse_input(char *input, t_env **my_env)
+int	parse_input(char *input, t_env **my_env)
 {
 	t_token	*tokens;
 	t_cmd	*cmds;
@@ -39,6 +39,7 @@ int parse_input(char *input, t_env **my_env)
 	free_cmd_list(cmds);
 	return (status);
 }
+
 /*Input: line = "hel", buf = 'l'
 Output: "hell"
 

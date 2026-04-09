@@ -3,66 +3,65 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:08:13 by us                #+#    #+#             */
-/*   Updated: 2026/03/31 10:25:19 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:44:24 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-// Read heredoc input lines until delimiter and write to pipe 
-/* cat << EOF
-> hello
-> world
-> EOF
 
-read_heredoc_input() collects:
-- "hello" → write to pipe
-- "world" → write to pipe
+// Read heredoc input lines until delimiter and write to pipe  
+/* cat << EOF 
+> hello 
+> world 
+> EOF 
+read_heredoc_input() collects: 
+- "hello" → write to pipe 
+- "world" → write to pipe 
 - "EOF" → stop (matches delimiter)*/
 int	read_heredoc_input(int write_fd, char *delimiter)
 {
-	char	*line; // Buffer to store each input line
+	char	*line;
 
-	while (1) // Loop indefinitely until delimiter is found
+	while (1)
 	{
-		line = readline("> "); // Read one line from user with prompt
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0) // Check if EOF or delimiter reached
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
 		{
-			free(line); 
+			free(line);
 			break ;
 		}
-		write(write_fd, line, ft_strlen(line)); // Write line to pipe
-		write(write_fd, "\n", 1); // Write newline character to pipe
-		free(line); // Free allocated memory for line
+		write(write_fd, line, ft_strlen(line));
+		write(write_fd, "\n", 1);
+		free(line);
 	}
-	return (0); // Return success
+	return (0);
 }
 
-// Handle heredoc (<<)
 int	handle_heredoc(char *delimiter)
 {
-	int		pipefd[2]; // Array to store pipe file descriptors [read, write]
+	int	pipefd[2];
 
-	if (pipe(pipefd) == -1) // Create a pipe, check for error
+	if (pipe(pipefd) == -1)
 	{
-		perror("minishell: pipe"); // Print error message
-		return (-1); // Return error code
+		perror("minishell: pipe");
+		return (-1);
 	}
-	if (read_heredoc_input(pipefd[1], delimiter) == -1) // Call helper to read heredoc input and write to pipe
+	if (read_heredoc_input(pipefd[1], delimiter) == -1)
 	{
-		close(pipefd[0]); // Close read end of pipe
-		close(pipefd[1]); // Close write end of pipe
-		return (-1); // Return error code
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return (-1);
 	}
-	close(pipefd[1]); // Close write end of pipe (no more writing)
-	if (dup2(pipefd[0], STDIN_FILENO) == -1) /*read end of pipe contains heredoc line, file descriptor for standart input*/
+	close(pipefd[1]);
+	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 	{
-		perror("minishell: dup2"); // Print error if dup2 fails
-		close(pipefd[0]); // Close read end of pipe
-		return (-1); // Return error code
+		perror("minishell: dup2");
+		close(pipefd[0]);
+		return (-1);
 	}
-	close(pipefd[0]); // Close read end of pipe (stdin now points to it)
-	return (0); // Return success
+	close(pipefd[0]);
+	return (0);
 }

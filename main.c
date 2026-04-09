@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 11:46:29 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:39:33 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,3 @@ int	main(int argc, char **argv, char **envp)
 	minishell_loop(my_env);
 	return (0);
 }
-
-

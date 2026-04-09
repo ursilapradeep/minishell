@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:16:23 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 10:58:01 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:27:42 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,18 @@ char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd)
 	char	*full_path;
 	int		len;
 
-	len = &path_copy[i] - *dir_start; // Calculate length of current directory in PATH
+	len = &path_copy[i] - *dir_start;
 	dir = malloc(len + 1);
 	if (!dir)
 		return (NULL);
-	ft_strlcpy(dir, *dir_start, len + 1); // Copy directory from PATH into dir variable
+	ft_strlcpy(dir, *dir_start, len + 1);
 	full_path = build_full_path(dir, cmd);
 	free(dir);
 	if (!full_path)
 		return (NULL);
 	if (access(full_path, X_OK) == 0)
 	{
-		*dir_start = &path_copy[i + 1]; // Move dir_start to the next directory in PATH for the next iteration
+		*dir_start = &path_copy[i + 1];
 		return (full_path);
 	}
 	free(full_path);
@@ -62,4 +62,3 @@ char	*check_command_in_dir(char *dir, char *cmd)
 	free(full_path);
 	return (NULL);
 }
-  
