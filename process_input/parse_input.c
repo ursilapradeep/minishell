@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 06:20:23 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 11:49:00 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,53 @@ int parse_input(char *input, t_env **my_env)
 	free_cmd_list(cmds);
 	return (status);
 }
+/*Input: line = "hel", buf = 'l'
+Output: "hell"
 
-static char	*read_non_interactive_line(void)
+Memory flow:
+- ch = "l" (allocated)
+- joined = "hell" (allocated)
+- free "hel" and free "l"
+- return "hell"*/
+char	*append_char_to_line(char *line, char buf)
+{
+	char	*ch;
+	char	*joined;
+
+	ch = ft_substr(&buf, 0, 1);
+	if (!ch)
+		return (free(line), NULL);
+	joined = ft_strjoin(line, ch);
+	free(ch);
+	free(line);
+	return (joined);
+}
+
+/*line = ft_strdup("") → line = "" (empty string)
+
+First iteration:
+
+read(STDIN_FILENO, &buf, 1) → reads 'h', bytes = 1
+buf != '\n' → continue
+append_char_to_line(line, 'h') → line = "h"
+Second iteration:
+
+Read 'e' → line = "he"
+Continue through 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd':
+
+line = "hello world"
+Next iteration:
+
+read() reads '\n'
+buf == '\n' → break out of loop
+After loop:
+
+bytes > 0 and line[0] != '\0' → condition fails
+return (line) → returns "hello world"*/
+char	*read_non_interactive_line(void)
 {
 	char	buf;
 	char	*line;
-	char	*ch;
-	char	*joined;
 	int		bytes;
 
 	line = ft_strdup("");
@@ -58,13 +98,7 @@ static char	*read_non_interactive_line(void)
 			break ;
 		if (buf == '\n')
 			break ;
-		ch = ft_substr(&buf, 0, 1);
-		if (!ch)
-			return (free(line), NULL);
-		joined = ft_strjoin(line, ch);
-		free(ch);
-		free(line);
-		line = joined;
+		line = append_char_to_line(line, buf);
 		if (!line)
 			return (NULL);
 	}
@@ -73,29 +107,25 @@ static char	*read_non_interactive_line(void)
 	return (line);
 }
 
-char *read_input(void)
+char	*read_input(void)
 {
-	/* Buffer that will store the line read from the prompt. */
 	char	*input;
 
 	if (isatty(STDIN_FILENO))
 	{
-		g_sigint_received = 0;
-		rl_done = 0;
-		input = readline("minishell$ ");	/* Display the minishell prompt and read one line of user input. */
+		g_shell.sigint_received = 0;
+		input = readline("minishell$ ");
 	}
 	else
 		input = read_non_interactive_line();
 	if (!input)
 	{
-		if (g_sigint_received)
+		if (g_shell.sigint_received)
 			return (ft_strdup(""));
-		if (isatty(STDIN_FILENO))
-			write(STDERR_FILENO, "exit\n", 5); 	/* Interactive EOF prints exit (bash-like). */
-		return (NULL); /* Signal the caller that no more input is available. */
+		return (NULL);
 	}
-	if (*input == '\0') 	/* Skip empty lines so they are not added to command history. */
+	if (*input == '\0')
 		return (input);
-	add_history(input); /* Save the non-empty command in readline history. */
-	return (input); 	/* Return the input line to the caller for further processing. */
+	add_history(input);
+	return (input);
 }

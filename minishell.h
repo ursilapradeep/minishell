@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 06:20:47 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 11:44:39 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,13 @@ typedef struct s_cmd
 	struct s_cmd	*prev;
 }				t_cmd;
 
-extern int	g_last_status;
-extern int	g_sigint_received;
+typedef struct s_shell_state {
+	int	last_status;
+	int	sigint_received;
+}t_shell_state;
+
+extern t_shell_state  g_shell;
+
 
 // Helper function to check if a token is a valid argument or a redirect
 typedef enum e_token_check
