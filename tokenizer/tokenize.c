@@ -60,6 +60,8 @@ static t_token	*process_token(const char **current, t_token **tokens)
 	token_value = determine_token_value(current, &token_type, &consumed);
 	if (!token_value)
 	{
+		if (consumed == -1)
+			return (NULL);
 		(*current)++;
 		return (*tokens);
 	}

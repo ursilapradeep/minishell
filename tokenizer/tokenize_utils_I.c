@@ -42,6 +42,7 @@ char	*extract_quoted_string(const char *input, int *len)
 	if (!*end)
 	{
 		write(STDERR_FILENO, "Error: Unclosed quote\n", 23);
+		*len = -1;
 		return (NULL);
 	}
 	end++;

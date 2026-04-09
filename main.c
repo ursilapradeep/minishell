@@ -41,7 +41,7 @@ void	minishell_loop(t_env *my_env)
 		if (!input)
 		{
 			if (isatty(STDIN_FILENO))
-				printf("exit");
+				printf("exit\n");
 			exit(g_shell.last_status);
 		}
 		if (*input == '\0')

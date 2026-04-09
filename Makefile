@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
+#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/09 14:18:22 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/09 16:39:40 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,8 +46,8 @@ SRCS = main.c \
        parser/build_pipeline.c\
        parser/build_args.c\
        parser/process_heredoc.c\
+       process_input/parse.c \
        process_input/parse_input.c \
-       
        
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

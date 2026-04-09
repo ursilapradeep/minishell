@@ -6,39 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 12:36:31 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 17:20:10 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	parse_input(char *input, t_env **my_env)
-{
-	t_token	*tokens;
-	t_cmd	*cmds;
-	int		status;
-
-	tokens = tokenize(input);
-	if (!tokens)
-		return (2);
-	if (expand_token_list(tokens, *my_env) < 0)
-	{
-		free_tokens(tokens);
-		return (2);
-	}
-	cmds = build_commands(tokens);
-	free_tokens(tokens);
-	if (!cmds)
-		return (2);
-	if (process_heredocs(cmds) < 0)
-	{
-		free_cmd_list(cmds);
-		return (2);
-	}
-	status = execute_commands(cmds, my_env);
-	free_cmd_list(cmds);
-	return (status);
-}
 
 /*Input: line = "hel", buf = 'l'
 Output: "hell"
@@ -120,11 +92,7 @@ char	*read_input(void)
 	else
 		input = read_non_interactive_line();
 	if (!input)
-	{
-		if (g_shell.sigint_received)
-			return (ft_strdup(""));
 		return (NULL);
-	}
 	if (*input == '\0')
 		return (input);
 	add_history(input);

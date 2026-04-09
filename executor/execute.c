@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 21:30:28 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 16:17:52 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,28 @@ int	wait_for_children(int child_count, t_cmd *cmds)
 	return (exit_status);
 }
 
+static int	execute_single_command(t_cmd *cmd, t_env **my_env)
+{
+	int	saved_stdin;
+	int	saved_stdout;
+	int	status;
+
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdin < 0 || saved_stdout < 0)
+		return (1);
+	setup_redirections(cmd);
+	if (is_builtin(cmd->args[0]))
+		status = execute_builtin(cmd->args, my_env);
+	else
+		status = run_external(cmd->args, my_env);
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+	return (status);
+}
+
 int	execute_commands(t_cmd *cmds, t_env **my_env)
 {
 	int	cmd_count;
@@ -55,12 +77,7 @@ int	execute_commands(t_cmd *cmds, t_env **my_env)
 		return (0);
 	cmd_count = count_commands(cmds);
 	if (cmd_count == 1)
-	{
-		setup_redirections(cmds);
-		if (is_builtin(cmds->args[0]))
-			return (execute_builtin(cmds->args, my_env));
-		return (run_external(cmds->args, my_env));
-	}
+		return (execute_single_command(cmds, my_env));
 	child_count = fork_and_execute_pipeline(cmds, my_env);
 	return (wait_for_children(child_count, cmds));
 }
