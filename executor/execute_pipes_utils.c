@@ -3,77 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   pipes_wait.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 11:30:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 11:16:59 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:42:26 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <signal.h>
-
-static void	free_env_array(char **env_array)
-{
-	int	j;
-
-	if (!env_array)
-		return ;
-	j = 0;
-	while (env_array[j])
-		free(env_array[j++]);
-	free(env_array);
-}
-
-static char	*prepare_pipeline_segment(char *segment, t_env *env)
-{
-	char	*cleaned;
-	char	*expanded;
-
-	if (contains_redirection(segment))
-	{
-		cleaned = apply_redirections(segment);
-		if (!cleaned)
-			return (NULL);
-	}
-	else
-		cleaned = ft_strdup(segment);
-	if (!cleaned)
-		return (NULL);
-	expanded = expand_variables(cleaned, env);
-	free(cleaned);
-	return (expanded);
-}
-
-void	execute_pipeline_command_or_exit(char *segment, t_env **envp)
-{
-	char	**args;
-	char	*prepared;
-	char	*cmd_path;
-	char	**env_array;
-
-	prepared = prepare_pipeline_segment(segment, *envp);
-	if (!prepared)
-		exit(1);
-	args = split_args(prepared);
-	free(prepared);
-	if (!args)
-		exit(127);
-	cmd_path = find_command(args[0], envp);
-	if (!cmd_path)
-	{
-		printf("minishell: command not found: %s\n", args[0]);
-		free_args(args);
-		exit(127);
-	}
-	env_array = build_env_array(*envp);
-	execve(cmd_path, args, env_array);
-	perror("execve");
-	free_env_array(env_array);
-	free(cmd_path);
-	free_args(args);
-	exit(127);
-}
 
 static int	child_status_to_exit_code(int status)
 {

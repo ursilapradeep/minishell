@@ -1,31 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_pwd_export.c                               :+:      :+:    :+:   */
+/*   builtin_export_unset.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/18 20:10:00 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/18 19:59:52 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/18 20:18:00 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/04/09 12:08:29 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	builtin_pwd(char **args)
-{
-	char	cwd[4096];
-
-	(void)args;
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		perror("pwd");
-		return (1);
-	}
-	ft_putstr_fd(cwd, 1);
-	ft_putstr_fd("\n", 1);
-	return (0);
-}
 
 static int	export_one_arg(char *arg, t_env **env)
 {
@@ -72,6 +57,47 @@ int	builtin_export(char **args, t_env **env)
 	{
 		if (export_one_arg(args[i], env) != 0)
 			return (1);
+		i++;
+	}
+	return (0);
+}
+
+static void	unset_one_key(t_env **env, char *key)
+{
+	t_env	*current;
+	t_env	*prev;
+
+	current = *env;
+	prev = NULL;
+	while (current)
+	{
+		if (current->key && ft_strncmp(current->key, key,
+				ft_strlen(key) + 1) == 0)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				*env = current->next;
+			free(current->key);
+			free(current->value);
+			free(current);
+			return ;
+		}
+		prev = current;
+		current = current->next;
+	}
+}
+
+int	builtin_unset(char **args, t_env **env)
+{
+	int		i;
+
+	if (!args[1])
+		return (0);
+	i = 1;
+	while (args[i])
+	{
+		unset_one_key(env, args[i]);
 		i++;
 	}
 	return (0);

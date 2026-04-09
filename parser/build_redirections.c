@@ -3,14 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   build_redirections.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 11:36:54 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 12:18:42 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
+
+static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
+{
+	char	**new_delimiters;
+	int		i;
+
+	new_delimiters = ft_calloc(cmd->heredoc_count + 2, sizeof(char *));
+	if (!new_delimiters)
+		return (NULL);
+	i = 0;
+	while (i < cmd->heredoc_count)
+	{
+		new_delimiters[i] = cmd->heredoc_delimiters[i];
+		i++;
+	}
+	new_delimiters[cmd->heredoc_count] = ft_strdup(delimiter);
+	if (!new_delimiters[cmd->heredoc_count])
+	{
+		free(new_delimiters);
+		return (NULL);
+	}
+	new_delimiters[cmd->heredoc_count + 1] = NULL;
+	return (new_delimiters);
+}
 
 int	open_redirection_file(t_cmd *cmd, char *filename, int type)
 {
@@ -48,7 +72,12 @@ static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 		write(STDERR_FILENO, "Error: No delimiter after <<", 29);
 		return (-1);
 	}
-	cmd->heredoc_delimiter = ft_strdup(current->next->value);
+	cmd->heredoc_delimiters = copy_heredoc_delimiters(cmd,
+			current->next->value);
+	if (!cmd->heredoc_delimiters)
+		return (-1);
+	cmd->heredoc_count++;
+	cmd->heredoc_delimiter = cmd->heredoc_delimiters[cmd->heredoc_count - 1];
 	return (1);
 }
 

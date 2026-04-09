@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion_utils_III.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 13:10:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 15:45:52 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 11:52:18 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	handle_status_special_case(const char *input, char **exp, int *con)
 {
 	if (input[1] != '?')
 		return (0);
-	*exp = ft_itoa(g_last_status);
+	*exp = ft_itoa(g_shell.last_status);
 	if (!*exp)
 		return (-1);
 	*con = 2;

@@ -1,0 +1,69 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_pwd_export.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/18 20:10:00 by uvadakku          #+#    #+#             */
+/*   Updated: 2026/04/01 11:06:14 by spaipur-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+int	builtin_pwd(char **args)
+{
+	char	cwd[4096];
+
+	(void)args;
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror("pwd");
+		return (1);
+	}
+	ft_putstr_fd(cwd, 1);
+	ft_putstr_fd("\n", 1);
+	return (0);
+}
+
+static int	is_n_flag(char *arg)
+{
+	int	i;
+
+	i = 0;
+	if (!arg || arg[0] != '-')
+		return (0);
+	i++;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	builtin_echo(char **args)
+{
+	int	i;
+	int	newline;
+
+	i = 1;
+	newline = 1;
+	while (args[i] && is_n_flag(args[i]))
+	{
+		newline = 0;
+		i++;
+	}
+	while (args[i])
+	{
+		ft_putstr_fd(args[i], 1);
+		if (args[i + 1])
+			ft_putstr_fd(" ", 1);
+		i++;
+	}
+	if (newline)
+		ft_putstr_fd("\n", 1);
+	return (0);
+}

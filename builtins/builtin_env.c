@@ -1,19 +1,35 @@
-<<<<<<< HEAD
-=======
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/23 16:05:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/23 16:53:05 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/31 22:26:24 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/31 22:28:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
->>>>>>> signal_new
 
 #include "../minishell.h"
+
+int	builtin_env(char **args, t_env *env)
+{
+	t_env	*current;
+
+	if (args[1])
+	{
+		ft_putstr_fd("env: too many arguments\n", 2);
+		return (1);
+	}
+	current = env;
+	while (current)
+	{
+		if (current->key && current->value)
+			printf("%s=%s\n", current->key, current->value);
+		current = current->next;
+	}
+	return (0);
+}
 
 char	*get_env_value(t_env *env, char *key)
 {
