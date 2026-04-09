@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 12:56:34 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/09 14:20:19 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,26 +130,23 @@ void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);
 
 //executor
-//int	execute_command(char **args, t_env **my_env);
-int			execute_commands(t_cmd *cmds, t_env **my_env);
-int			wait_and_get_exit_status(pid_t pid);
-int			run_external(char **args, t_env **envp);
-void		free_env_array(char **env_array);
-void		setup_redirections(t_cmd *cmd);
-void		close_all_pipes(t_cmd *cmds);
-void		execute_ast_command_child(t_cmd *cmd, t_env **my_env);
-void		execute_child(const char *cmd_path, char **args, char **env_array);
-int			is_builtin(char *cmd);
-int			count_commands(t_cmd *cmds);
-int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
-int			wait_for_children(int child_count, t_cmd *cmds);
+int		execute_commands(t_cmd *cmds, t_env **my_env);
+int		wait_and_get_exit_status(pid_t pid);
+int		run_external(char **args, t_env **envp);
+void	free_env_array(char **env_array);
+void	setup_redirections(t_cmd *cmd);
+void	close_all_pipes(t_cmd *cmds);
+void	execute_ast_command_child(t_cmd *cmd, t_env **my_env);
+void	execute_child(const char *cmd_path, char **args, char **env_array);
+int		is_builtin(char *cmd);
+int		count_commands(t_cmd *cmds);
+int		fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
+int		wait_for_children(int child_count, t_cmd *cmds);
+void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
+int		execute_pipeline(t_cmd *cmds, t_env **envp);
 
 // Pipe handling
-int			contains_pipe(char *input);
-char		**parse_pipeline(char *input);
-int			execute_pipeline(char **pipeline, t_env **envp);
-int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
-void		execute_pipeline_command_or_exit(char *segment, t_env **envp);
+int		wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 
 // Signal handling
 void		setup_signal_handlers(void);

@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/08 21:35:46 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 13:07:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	close_all_pipes(t_cmd *cmds)
 	}
 }
 
-static void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env)
+void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env)
 {
 	setup_redirections(cmd);
 	close_all_pipes(cmds);

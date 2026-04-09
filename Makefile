@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
+#    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/09 12:39:55 by uvadakku         ###   ########.fr        #
+#    Updated: 2026/04/09 14:18:22 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,8 @@ SRCS = main.c \
        executor/execute_builtins.c\
        executor/execute_single_cmds.c\
        executor/execute_external.c\
+       executor/execute_pipes.c\
+       executor/execute_pipes_utils.c\
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        builtins/builtin_cd_exit.c \
@@ -45,8 +47,7 @@ SRCS = main.c \
        parser/build_args.c\
        parser/process_heredoc.c\
        process_input/parse_input.c \
-       process_input/my_env.c \
-       pipes/pipes_utils.c \
+       
        
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
