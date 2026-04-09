@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/01 12:42:06 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 06:20:47 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,10 @@ typedef struct s_cmd
 {
 	char			**args;
 	int				infd;
-	int					outfd;
+	int				outfd;
 	char			*heredoc_delimiter;
+	char			**heredoc_delimiters;
+	int				heredoc_count;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
 }				t_cmd;
@@ -77,6 +79,10 @@ void 	add_env_node(t_env **env_list, char *env_str);
 
 //tokenizer
 t_token	*tokenize(const char *input);
+int		is_quote(char c);
+char	*extract_quoted_string(const char *input, int *len);
+char	*extract_word(const char *input, int *len);
+char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len);
 char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len);
 char	*extract_word(const char *input, int *len);
 char	*extract_quoted_string(const char *input, int *len);
@@ -91,13 +97,16 @@ const char	*extract_var_name(const char *input, int *len, int *is_braced);
 int			handle_special_cases(const char *in, int *args,char **exp, int *con);
 char		*remove_quotes_string(const char *str);
 
-//parsing
+//parser
 t_cmd	*build_commands(t_token *tokens);
 int		build_pipeline(t_cmd *commands);
 int		initialize_cmd_arguments(t_cmd *cmd, t_token **tokens);
 int		count_args(t_token *tokens);
 int		handle_redirection(t_cmd *cmd, t_token *current, int type);
 void	free_cmd_list(t_cmd *cmd);
+t_token	*find_next_pipe(t_token *tokens);
+int		process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
+int		process_heredocs(t_cmd *cmds);
 
 //built- ins
 int		is_builtin(char *cmd);
@@ -117,6 +126,16 @@ char	**build_env_array(t_env *env);
 //int	execute_command(char **args, t_env **my_env);
 int		execute_commands(t_cmd *cmds, t_env **my_env);
 int		wait_and_get_exit_status(pid_t pid);
+int		run_external(char **args, t_env **envp);
+void	free_env_array(char **env_array);
+void	setup_redirections(t_cmd *cmd);
+void	close_all_pipes(t_cmd *cmds);
+void	execute_ast_command_child(t_cmd *cmd, t_env **my_env);
+void	execute_child(const char *cmd_path, char **args, char **env_array);
+int		is_builtin(char *cmd);
+int		count_commands(t_cmd *cmds);
+int		fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
+int		wait_for_children(int child_count, t_cmd *cmds);
 
 // Pipe handling
 int		contains_pipe(char *input);

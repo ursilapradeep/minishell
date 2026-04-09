@@ -6,13 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/03/31 21:59:43 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 21:35:46 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <signal.h>
-#include <sys/signal.h>
 
 int	is_builtin(char *cmd)
 {
@@ -35,22 +33,50 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
-int	wait_and_get_exit_status(pid_t pid)
+void	close_all_pipes(t_cmd *cmds)
 {
-	int	status;
+	t_cmd	*current;
 
-	if (waitpid(pid, &status, 0) == -1)
+	current = cmds;
+	while (current)
 	{
-		perror("waitpid");
-		return (1);
+		if (current->infd != STDIN_FILENO)
+			close(current->infd);
+		if (current->outfd != STDOUT_FILENO)
+			close(current->outfd);
+		current = current->next;
 	}
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
+}
+
+static void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env)
+{
+	setup_redirections(cmd);
+	close_all_pipes(cmds);
+	restore_signals();
+	execute_ast_command_child(cmd, my_env);
+}
+
+int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env)
+{
+	t_cmd	*current;
+	pid_t	pid;
+	int		i;
+
+	current = cmds;
+	i = 0;
+	while (current)
 	{
-		if (WTERMSIG(status) == SIGINT)
-			write(STDOUT_FILENO, "\n", 1);
-		return (128 + WTERMSIG(status));
+		ignore_signals();
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			return (1);
+		}
+		if (pid == 0)
+			execute_pipeline_child(current, cmds, my_env);
+		current = current->next;
+		i++;
 	}
-	return (1);
+	return (i);
 }

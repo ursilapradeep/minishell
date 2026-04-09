@@ -6,103 +6,61 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 14:02:02 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 21:30:28 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h" // Include command execution, env, and process helper declarations.
-// required prototypes
-int execute_commands(t_cmd *cmds, t_env **my_env);
+#include "../minishell.h"
 
-static void	free_env_array(char **env_array)
+int	count_commands(t_cmd *cmds)
 {
-	int	index; // Index used to traverse env string array.
+	int		count;
+	t_cmd	*current;
 
-	if (!env_array) // Guard against NULL pointer input.
-		return ; // Nothing to free.
-	index = 0; // Start from first environment string.
-	while (env_array[index]) // Free each "KEY=VALUE" entry.
+	count = 0;
+	current = cmds;
+	while (current)
 	{
-		free(env_array[index]); // Release one environment entry string.
-		index++; // Move to next entry.
+		count++;
+		current = current->next;
 	}
-	free(env_array); // Release top-level char** container.
+	return (count);
 }
 
-void	execute_child(const char *cmd_path, char **args, char **env_array)
-{
-	execve(cmd_path, args, env_array); // Replace child process image with target executable.
-	perror("execve"); // Reaches here only when execve fails.
-	free_env_array(env_array); // Free env snapshot on failure path.
-	exit(127); // Exit child with command-not-executable style status.
-}
-
-static int	prepare_external(char **args, t_env **envp, char **cmd_path,
-		char ***env_array)
-{
-	*cmd_path = find_command(args[0], envp); // Resolve command path from PATH or direct path.
-	if (!*cmd_path) // Command resolution failed.
-	{
-		printf("minishell: command not found: %s\n", args[0]); // Print shell-like not found error.
-		return (127); // Return standard command-not-found status.
-	}
-	*env_array = build_env_array(*envp); // Build execve-ready environment array.
-	if (!*env_array) // Allocation/build failure.
-	{
-		free(*cmd_path); // Clean resolved command path on failure.
-		perror("malloc"); // Report allocation error.
-		return (1); // Generic execution preparation failure.
-	}
-	return (0); // Preparation successful.
-}
-
-static int	wait_and_cleanup_external(pid_t pid, char **env_array,
-		char *cmd_path)
+int	wait_for_children(int child_count, t_cmd *cmds)
 {
 	int	exit_status;
+	int	i;
 
-	exit_status = wait_and_get_exit_status(pid); // Parent waits and collects child exit code.
+	close_all_pipes(cmds);
+	exit_status = 0;
+	i = 0;
+	while (i < child_count)
+	{
+		waitpid(-1, &exit_status, 0);
+		i++;
+	}
 	setup_signal_handlers();
-	free_env_array(env_array); // Parent frees env snapshot after child finished.
-	free(cmd_path); // Parent frees resolved path string.
-	return (exit_status); // Return command status to shell loop.
+	if (WIFEXITED(exit_status))
+		return (WEXITSTATUS(exit_status));
+	return (exit_status);
 }
 
-int	run_external(char **args, t_env **envp)
+int	execute_commands(t_cmd *cmds, t_env **my_env)
 {
-	char	*cmd_path; // Absolute or relative executable path to run.
-	char	**env_array; // Environment snapshot passed to execve.
-	pid_t	pid; // Child process id after fork.
-	int		prep_status; // Status from path/env preparation step.
+	int	cmd_count;
+	int	child_count;
 
-	prep_status = prepare_external(args, envp, &cmd_path, &env_array); // Prepare command path and env array.
-	if (prep_status != 0) // Stop if command/env prep failed.
-		return (prep_status);
-	ignore_signals();
-	pid = fork(); 
-	if (pid == -1) 
+	if (!cmds)
+		return (0);
+	cmd_count = count_commands(cmds);
+	if (cmd_count == 1)
 	{
-		perror("fork"); // Report system fork error.
-		setup_signal_handlers();
-		free_env_array(env_array); // Cleanup prepared env array.
-		free(cmd_path); // Cleanup resolved command path.
-		return (1); // Return failure to caller.
+		setup_redirections(cmds);
+		if (is_builtin(cmds->args[0]))
+			return (execute_builtin(cmds->args, my_env));
+		return (run_external(cmds->args, my_env));
 	}
-	if (pid == 0) // Child process branch.
-	{
-		restore_signals(); // Child should use default signal behavior (bash-like).
-		execute_child(cmd_path, args, env_array); // Execute target program in child.
-	}
-	return (wait_and_cleanup_external(pid, env_array, cmd_path));
-}
-
-int execute_command(char **args, t_env **envp)
-{
-	if (!args || !args[0]) // Empty command guard.
-		return (0); // Nothing to execute.
-	if (is_builtin(args[0])) // Builtin command path.
-	{
-		return (execute_builtin(args, envp)); // Execute builtin in shell process.
-	}
-	return (run_external(args, envp)); // Execute non-builtin via fork/exec.
+	child_count = fork_and_execute_pipeline(cmds, my_env);
+	return (wait_for_children(child_count, cmds));
 }

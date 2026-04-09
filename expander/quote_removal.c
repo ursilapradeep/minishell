@@ -6,11 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 13:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/30 12:55:58 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 09:49:14 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
 
 static void	process_quote_removal(const char *str, char *res)
 {

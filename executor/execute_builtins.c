@@ -1,22 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   execute_builtins.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/01 11:03:20 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 14:07:04 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	execute_builtin(t_cmd *cmd, t_env **my_env)
+int	execute_builtin(char **args, t_env **my_env)
 {
-	char **args;
-
-	args = cmd->args;
 	if (!args || !args[0])
 		return (0);
 	if (ft_strncmp(args[0], "echo", 5) == 0 && args[0][4] == '\0')

@@ -23,6 +23,8 @@ t_cmd	*create_cmd(void)
 	cmd->infd = STDIN_FILENO;
 	cmd->outfd = STDOUT_FILENO;
 	cmd->heredoc_delimiter = NULL;
+	cmd->heredoc_delimiters = NULL;
+	cmd->heredoc_count = 0;
 	cmd->next = NULL;
 	cmd->prev = NULL;
 	return (cmd);

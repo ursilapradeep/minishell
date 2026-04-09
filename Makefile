@@ -6,7 +6,7 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/03/31 18:00:53 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/09 06:23:21 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,39 +14,37 @@ NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
-       env/env_utils.c \
-       env/env_executor.c \
-       handle_args/handle_cmds.c \
+       executor/env_utils.c \
+       executor/env_executor.c \
+       executor/execute.c \
+       executor/execute_utils.c \
+       executor/execute_redirections.c\
+       executor/execute_builtins.c\
+       executor/execute_single_cmds.c\
+       executor/execute_external.c\
        handle_path/find_path.c \
        handle_path/path_helpers.c \
-       execute/execute.c \
-       execute/execute_utils.c \
-       builtins/builtins.c \
-       builtins/builtin_cd.c \
-       builtins/builtin_pwd_export.c \
-       builtins/builtin_unset_exit.c \
-       builtins/builtin_utils.c \
-       pipes/pipes.c \
-       pipes/pipes_wait.c \
-       pipes/pipes_utils.c \
+       builtins/builtin_cd_exit.c \
+       builtins/builtin_echo_pwd.c \
+       builtins/builtin_export_unset.c \
+       builtins/builtin_env.c \
        signal/Signals.c \
-       parser/tokenize.c\
-       parser/tokenize_utils_I.c\
-       parser/tokenize_utils_II.c\
-       parser/variable_expansion.c \
-       parser/variable_expansion_utils_I.c \
-       parser/variable_expansion_utils_II.c \
-       parser/variable_expansion_utils_III.c \
-       parser/quote_removal.c \
+       tokenizer/tokenize.c\
+       tokenizer/tokenize_utils_I.c\
+       tokenizer/tokenize_utils_II.c\
+       expander/variable_expansion.c \
+       expander/variable_expansion_utils_I.c \
+       expander/variable_expansion_utils_II.c \
+       expander/variable_expansion_utils_III.c \
+       expander/quote_removal.c \
        parser/command_builder.c\
-       parser/command_builder_utils.c\
+       parser/command_err_handler.c\
+       parser/build_args_utils.c\
        parser/build_redirections.c\
        parser/build_pipeline.c\
-       parser/build_heredoc.c\
-       parser/build_arguments.c\
-       redirections/redirections.c \
-       redirections/heredoc.c \
-       redirections/execute_redirections.c
+       parser/build_args.c\
+       parser/process_heredoc.c\
+       process_input/parse_input.c
        
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

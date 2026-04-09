@@ -6,11 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 11:36:54 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 09:27:36 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
 
 int	open_redirection_file(t_cmd *cmd, char *filename, int type)
 {
@@ -43,12 +43,34 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type)
 
 static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 {
+	char	**new_delimiters;
+	int		i;
+
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
 		write(STDERR_FILENO, "Error: No delimiter after <<", 29);
 		return (-1);
 	}
-	cmd->heredoc_delimiter = ft_strdup(current->next->value);
+	new_delimiters = ft_calloc(cmd->heredoc_count + 2, sizeof(char *));
+	if (!new_delimiters)
+		return (-1);
+	i = 0;
+	while (i < cmd->heredoc_count)
+	{
+		new_delimiters[i] = cmd->heredoc_delimiters[i];
+		i++;
+	}
+	new_delimiters[cmd->heredoc_count] = ft_strdup(current->next->value);
+	if (!new_delimiters[cmd->heredoc_count])
+	{
+		free(new_delimiters);
+		return (-1);
+	}
+	new_delimiters[cmd->heredoc_count + 1] = NULL;
+	free(cmd->heredoc_delimiters);
+	cmd->heredoc_delimiters = new_delimiters;
+	cmd->heredoc_count++;
+	cmd->heredoc_delimiter = new_delimiters[cmd->heredoc_count - 1];
 	return (1);
 }
 

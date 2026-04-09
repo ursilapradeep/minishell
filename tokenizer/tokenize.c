@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 15:39:11 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/08 09:48:38 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static t_token	*process_token(const char **current, t_token **tokens)
 	return (*tokens);
 }
 
-t_token	*tokenize(char *input)
+t_token	*tokenize(const char *input)
 {
 	t_token		*tokens;
 	const char	*current;

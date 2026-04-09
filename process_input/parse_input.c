@@ -6,18 +6,18 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/01 12:31:41 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/09 06:20:23 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 int parse_input(char *input, t_env **my_env)
 {
 	t_token	*tokens;
 	t_cmd	*cmds;
 	int		status;
-    
+
 	tokens = tokenize(input);
 	if (!tokens)
 		return (2);
@@ -30,7 +30,12 @@ int parse_input(char *input, t_env **my_env)
 	free_tokens(tokens);
 	if (!cmds)
 		return (2);
-	status = execute_commands(cmds, my_env);//TODO: create execute_cmd_list to run builtins/execve
+	if (process_heredocs(cmds) < 0)
+	{
+		free_cmd_list(cmds);
+		return (2);
+	}
+	status = execute_commands(cmds, my_env);
 	free_cmd_list(cmds);
 	return (status);
 }
