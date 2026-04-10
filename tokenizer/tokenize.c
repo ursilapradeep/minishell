@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 09:48:38 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 15:35:14 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,25 @@ static t_token	*process_token(const char **current, t_token **tokens)
 	return (*tokens);
 }
 
+static void	mark_whitespace_boundary(t_token **tokens,
+		const char *before_skip, const char *after_skip)
+{
+	t_token	*last_token;
+
+	if (before_skip != after_skip && *tokens)
+	{
+		last_token = *tokens;
+		while (last_token->next)
+			last_token = last_token->next;
+		last_token->prev = last_token;
+	}
+}
+
 t_token	*tokenize(const char *input)
 {
-	t_token		*tokens;
 	const char	*current;
+	const char	*before_skip;
+	t_token		*tokens;
 
 	tokens = NULL;
 	if (!input || !*input)
@@ -84,14 +99,17 @@ t_token	*tokenize(const char *input)
 	current = input;
 	while (current && *current)
 	{
+		before_skip = current;
 		current = skip_whitespace_simple(current);
 		if (!*current)
 			break ;
+		mark_whitespace_boundary(&tokens, before_skip, current);
 		if (!process_token(&current, &tokens))
 		{
 			free_tokens(tokens);
 			return (NULL);
 		}
 	}
+	tokens = merge_consecutive_words(tokens);
 	return (tokens);
 }

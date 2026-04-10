@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 09:54:01 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 15:38:39 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,9 @@ int			is_builtin(char *cmd);
 int			count_commands(t_cmd *cmds);
 int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
 int			wait_for_children(int child_count, t_cmd *cmds);
+int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
 int			execute_pipeline(t_cmd *cmds, t_env **envp);
-
-// Pipe handling
-int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 
 // Signal handling
 void		setup_signal_handlers(void);
@@ -153,6 +151,7 @@ void		restore_signals(void);
 void		signal_handler_sigint(int sig);
 void		signal_handler_sigquit(int sig);
 int			handle_status_special_case(const char *input, char **exp, int *con);
+
 // path handling
 char		*find_command(char *cmd, t_env **envp);
 char		*process_directory(char *path_copy,
