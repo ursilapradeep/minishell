@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:45:51 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 13:29:24 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 21:04:48 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,21 @@ int	check_token_type(t_token *curr, t_token_check check_type)
 {
 	if (check_type == TOKEN_VALID_ARGUMENT)
 	{
-		return (curr->type == TOKEN_WORD && (!curr->prev
-				|| (curr->prev->type != TOKEN_REDIRECT_IN
-					&& curr->prev->type != TOKEN_REDIRECT_OUT
-					&& curr->prev->type != TOKEN_REDIRECT_APPEND
-					&& curr->prev->type != TOKEN_HEREDOC)));
+		// Check if current token is preceded by a redirect
+		int	preceded_by_redirect = curr->prev
+			&& (curr->prev->type == TOKEN_REDIRECT_IN
+				|| curr->prev->type == TOKEN_REDIRECT_OUT
+				|| curr->prev->type == TOKEN_REDIRECT_APPEND
+				|| curr->prev->type == TOKEN_HEREDOC);
+		
+		// Check if current token is followed by a redirect (e.g., "2" before ">")
+		int	followed_by_redirect = curr->next
+			&& (curr->next->type == TOKEN_REDIRECT_IN
+				|| curr->next->type == TOKEN_REDIRECT_OUT
+				|| curr->next->type == TOKEN_REDIRECT_APPEND
+				|| curr->next->type == TOKEN_HEREDOC);
+		
+		return (curr->type == TOKEN_WORD && !preceded_by_redirect && !followed_by_redirect);
 	}
 	else if (check_type == TOKEN_REDIRECT)
 	{

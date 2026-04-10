@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 20:27:51 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 21:43:59 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,10 @@ static int	execute_single_command(t_cmd *cmd, t_env **my_env)
 		close(saved_stdout);
 		return (0);
 	}
-	if (is_builtin(cmd->args[0]))
+	// Special case: env with arguments should be treated as external command
+	int	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0 
+		&& cmd->args[0][3] == '\0' && cmd->args[1]);
+	if (is_builtin(cmd->args[0]) && !is_env_with_args)
 		status = execute_builtin(cmd->args, my_env);
 	else
 		status = run_external(cmd->args, my_env);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 22:26:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 22:28:45 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 21:11:42 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,25 @@ int	builtin_env(char **args, t_env *env)
 {
 	t_env	*current;
 
-	if (args[1])
+	// If no arguments, just print environment
+	if (!args[1])
 	{
-		ft_putstr_fd("env: too many arguments\n", 2);
-		return (1);
+		current = env;
+		while (current)
+		{
+			if (current->key && current->value)
+				printf("%s=%s\n", current->key, current->value);
+			current = current->next;
+		}
+		return (0);
 	}
-	current = env;
-	while (current)
-	{
-		if (current->key && current->value)
-			printf("%s=%s\n", current->key, current->value);
-		current = current->next;
-	}
-	return (0);
+	
+	// If there are arguments, env command itself should not handle them
+	// The arguments should be treated as a command to execute
+	// Since this is a builtin, returning non-zero will make the main shell
+	// try to execute it as an external command
+	// For now, return an error indicating we should pass to executor
+	return (-1);
 }
 
 char	*get_env_value(t_env *env, char *key)

@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 14:17:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 14:07:04 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 21:40:32 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,12 @@ int	execute_builtin(char **args, t_env **my_env)
 	if (ft_strncmp(args[0], "unset", 6) == 0 && args[0][5] == '\0')
 		return (builtin_unset(args, my_env));
 	if (ft_strncmp(args[0], "env", 4) == 0 && args[0][3] == '\0')
+	{
+		// If env has arguments, don't handle it here - let it be treated as external
+		if (args[1])
+			return (0);
 		return (builtin_env(args, *my_env));
+	}
 	if (ft_strncmp(args[0], "exit", 5) == 0 && args[0][4] == '\0')
 	{
 		return (builtin_exit(args));
