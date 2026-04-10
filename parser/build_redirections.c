@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 13:29:24 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 20:04:54 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,18 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 		return (-1);
 	}
 	filename = current->next->value;
+	if ((type == TOKEN_REDIRECT_IN && cmd->infd == -2) 
+		|| (type != TOKEN_REDIRECT_IN && cmd->outfd == -2))
+		return (1);
 	fd = open_redirection_file(cmd, filename, type);
 	if (fd < 0)
-		return (-1);
+	{
+		if (type == TOKEN_REDIRECT_IN)
+			cmd->infd = -2;
+		else
+			cmd->outfd = -2;
+		return (1);
+	}
 	if (type == TOKEN_REDIRECT_IN)
 		cmd->infd = fd;
 	else

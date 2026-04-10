@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 16:17:52 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/10 20:27:51 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,14 @@ int	wait_for_children(int child_count, t_cmd *cmds)
 {
 	int	exit_status;
 	int	i;
+	t_cmd	*last_cmd;
 
 	close_all_pipes(cmds);
 	exit_status = 0;
 	i = 0;
+	last_cmd = cmds;
+	while (last_cmd && last_cmd->next)
+		last_cmd = last_cmd->next;
 	while (i < child_count)
 	{
 		waitpid(-1, &exit_status, 0);
@@ -57,6 +61,14 @@ static int	execute_single_command(t_cmd *cmd, t_env **my_env)
 	if (saved_stdin < 0 || saved_stdout < 0)
 		return (1);
 	setup_redirections(cmd);
+	if (!cmd->args || !cmd->args[0])
+	{
+		dup2(saved_stdin, STDIN_FILENO);
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdin);
+		close(saved_stdout);
+		return (0);
+	}
 	if (is_builtin(cmd->args[0]))
 		status = execute_builtin(cmd->args, my_env);
 	else
