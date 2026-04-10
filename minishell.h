@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 14:20:19 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/10 09:54:01 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef struct s_env
 	char			*value;
 	struct s_env	*next;
 	struct s_env	*prev;
-}t_env;
+}	t_env;
 
 typedef enum e_token_type
 {
@@ -39,7 +39,7 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_OUT,
 	TOKEN_REDIRECT_APPEND,
 	TOKEN_HEREDOC
-}t_token_type;
+}	t_token_type;
 
 typedef struct s_token
 {
@@ -47,7 +47,7 @@ typedef struct s_token
 	t_token_type	type;
 	struct s_token	*next;
 	struct s_token	*prev;
-}t_token;
+}	t_token;
 
 typedef struct s_cmd
 {
@@ -59,12 +59,13 @@ typedef struct s_cmd
 	int				heredoc_count;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
-}t_cmd;
+}	t_cmd;
 
-typedef struct s_shell_state {
-	int	last_status;
-	int	sigint_received;
-}t_shell_state;
+typedef struct s_shell_state
+{
+	int				last_status;
+	int				sigint_received;
+}	t_shell_state;
 
 extern t_shell_state	g_shell;
 
@@ -72,7 +73,7 @@ typedef enum e_token_check
 {
 	TOKEN_VALID_ARGUMENT,
 	TOKEN_REDIRECT
-}t_token_check;
+}	t_token_check;
 
 // process input 
 char		*read_input(void);
@@ -87,13 +88,10 @@ char		*extract_quoted_string(const char *input, int *len);
 char		*extract_word(const char *input, int *len);
 char		*handle_redirection_token(const char **cur,
 				t_token_type *typ, int *len);
-char		*handle_redirection_token(const char **cur,
-				t_token_type *typ, int *len);
-char		*extract_word(const char *input, int *len);
-char		*extract_quoted_string(const char *input, int *len);
 t_token		*create_token(char *value, t_token_type type);
 void		add_token(t_token **head, t_token *new_token);
 void		free_tokens(t_token *tokens);
+t_token		*merge_consecutive_words(t_token *tokens);
 
 //variable_expansion
 const char	*extract_var_name(const char *input, int *len, int *is_braced);
@@ -130,23 +128,23 @@ void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);
 
 //executor
-int		execute_commands(t_cmd *cmds, t_env **my_env);
-int		wait_and_get_exit_status(pid_t pid);
-int		run_external(char **args, t_env **envp);
-void	free_env_array(char **env_array);
-void	setup_redirections(t_cmd *cmd);
-void	close_all_pipes(t_cmd *cmds);
-void	execute_ast_command_child(t_cmd *cmd, t_env **my_env);
-void	execute_child(const char *cmd_path, char **args, char **env_array);
-int		is_builtin(char *cmd);
-int		count_commands(t_cmd *cmds);
-int		fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
-int		wait_for_children(int child_count, t_cmd *cmds);
-void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
-int		execute_pipeline(t_cmd *cmds, t_env **envp);
+int			execute_commands(t_cmd *cmds, t_env **my_env);
+int			wait_and_get_exit_status(pid_t pid);
+int			run_external(char **args, t_env **envp);
+void		free_env_array(char **env_array);
+void		setup_redirections(t_cmd *cmd);
+void		close_all_pipes(t_cmd *cmds);
+void		execute_ast_command_child(t_cmd *cmd, t_env **my_env);
+void		execute_child(const char *cmd_path, char **args, char **env_array);
+int			is_builtin(char *cmd);
+int			count_commands(t_cmd *cmds);
+int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
+int			wait_for_children(int child_count, t_cmd *cmds);
+void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
+int			execute_pipeline(t_cmd *cmds, t_env **envp);
 
 // Pipe handling
-int		wait_for_pipeline_children(int cmd_count, pid_t last_pid);
+int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 
 // Signal handling
 void		setup_signal_handlers(void);
