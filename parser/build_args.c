@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:45:51 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 21:04:48 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/11 18:19:57 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,9 @@
 int	check_token_type(t_token *curr, t_token_check check_type)
 {
 	if (check_type == TOKEN_VALID_ARGUMENT)
-	{
-		// Check if current token is preceded by a redirect
-		int	preceded_by_redirect = curr->prev
-			&& (curr->prev->type == TOKEN_REDIRECT_IN
-				|| curr->prev->type == TOKEN_REDIRECT_OUT
-				|| curr->prev->type == TOKEN_REDIRECT_APPEND
-				|| curr->prev->type == TOKEN_HEREDOC);
-		
-		// Check if current token is followed by a redirect (e.g., "2" before ">")
-		int	followed_by_redirect = curr->next
-			&& (curr->next->type == TOKEN_REDIRECT_IN
-				|| curr->next->type == TOKEN_REDIRECT_OUT
-				|| curr->next->type == TOKEN_REDIRECT_APPEND
-				|| curr->next->type == TOKEN_HEREDOC);
-		
-		return (curr->type == TOKEN_WORD && !preceded_by_redirect && !followed_by_redirect);
-	}
+		return (is_valid_arg_type(curr));
 	else if (check_type == TOKEN_REDIRECT)
-	{
-		return (curr->type == TOKEN_REDIRECT_IN
-			|| curr->type == TOKEN_REDIRECT_OUT
-			|| curr->type == TOKEN_REDIRECT_APPEND
-			|| curr->type == TOKEN_HEREDOC);
-	}
+		return (is_redirect_type(curr->type));
 	return (0);
 }
 
@@ -56,8 +35,8 @@ int	process_token_for_args(t_token *current, char **args, int *i)
 
 int	iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
 {
-	int		i;
-	int		skip_next;
+	int	i;
+	int	skip_next;
 
 	i = 0;
 	skip_next = 0;
@@ -69,11 +48,10 @@ int	iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
 			tokens = tokens->next;
 			continue ;
 		}
-		if (check_token_type(tokens, TOKEN_VALID_ARGUMENT)
-			&& process_token_for_args(tokens, args, &i) == -1)
-			return (-1);
-		else if (check_token_type(tokens, TOKEN_REDIRECT))
+		if (check_token_type(tokens, TOKEN_REDIRECT))
 			skip_next = 1;
+		else if (process_token_for_args(tokens, args, &i) == -1)
+			return (-1);
 		tokens = tokens->next;
 	}
 	args[i] = NULL;

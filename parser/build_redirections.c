@@ -94,44 +94,9 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 		return (-1);
 	}
 	filename = current->next->value;
-	if ((type == TOKEN_REDIRECT_IN && cmd->infd == -2) 
+	if ((type == TOKEN_REDIRECT_IN && cmd->infd == -2)
 		|| (type != TOKEN_REDIRECT_IN && cmd->outfd == -2))
 		return (1);
 	fd = open_redirection_file(cmd, filename, type);
-	if (fd < 0)
-	{
-		if (type == TOKEN_REDIRECT_IN)
-			cmd->infd = -2;
-		else
-			cmd->outfd = -2;
-		return (1);
-	}
-	if (type == TOKEN_REDIRECT_IN)
-		cmd->infd = fd;
-	else
-		cmd->outfd = fd;
-	return (1);
-}
-
-int	process_redirections_in_tokens(t_cmd *cmd, t_token *tokens)
-{
-	t_token	*curr;
-
-	if (!cmd || !tokens)
-		return (0);
-	curr = tokens;
-	while (curr && curr->type != TOKEN_PIPE)
-	{
-		if (curr->type == TOKEN_REDIRECT_IN
-			|| curr->type == TOKEN_REDIRECT_OUT
-			|| curr->type == TOKEN_REDIRECT_APPEND
-			|| curr->type == TOKEN_HEREDOC)
-		{
-			if (handle_redirection(cmd, curr, curr->type) < 0)
-				return (-1);
-			curr = curr->next;
-		}
-		curr = curr->next;
-	}
-	return (0);
+	return (process_file_fd(cmd, fd, type));
 }

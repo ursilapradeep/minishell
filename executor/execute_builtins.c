@@ -28,7 +28,6 @@ int	execute_builtin(char **args, t_env **my_env)
 		return (builtin_unset(args, my_env));
 	if (ft_strncmp(args[0], "env", 4) == 0 && args[0][3] == '\0')
 	{
-		// If env has arguments, don't handle it here - let it be treated as external
 		if (args[1])
 			return (0);
 		return (builtin_env(args, *my_env));
