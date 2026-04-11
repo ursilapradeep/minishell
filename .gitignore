@@ -1,0 +1,18 @@
+# Build artifacts
+*.o
+*.a
+
+# Binaries
+minishell
+echo
+
+# Temporary logs/files
+*.log
+*.out
+*.tmp
+
+# Local tester clone (kept outside tracked project)
+42_minishell_tester/
+
+# Local resources sandbox
+minishell_resources/
