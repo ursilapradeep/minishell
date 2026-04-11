@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/08 21:23:59 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/11 23:46:53 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ static void	execute_external_command(t_cmd *cmd, t_env **my_env)
 	cmd_path = find_command(cmd->args[0], my_env);
 	if (!cmd_path)
 	{
-		printf("minishell: command not found: %s\n", cmd->args[0]);
+		ft_putstr_fd("minishell: command not found: ", STDERR_FILENO);
+		ft_putstr_fd(cmd->args[0], STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
 		exit(127);
 	}
 	env_array = build_env_array(*my_env);

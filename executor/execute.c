@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 21:43:59 by spaipur-         ###   ########.fr       */
+/*   execute.c                                          :+:+:      :+:+:+:    */
+/*                                                    +#++#+    +#++#+       */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#++#+    +#++#+        */
+/*                                                #######  ####### #######   */
+/*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#    #+#     */
+/*   Updated: 2026/04/11 22:53:00 by spaipur-         ###   ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	execute_single_command(t_cmd *cmd, t_env **my_env);
 
 int	count_commands(t_cmd *cmds)
 {
@@ -59,43 +61,35 @@ static int	restore_std_io(int saved_stdin, int saved_stdout)
 	return (0);
 }
 
-static int	execute_single_command(t_cmd *cmd, t_env **my_env)
+static int	exec_single_logic(t_cmd *cmd, t_env **my_env)
+{
+	int	is_env_with_args;
+
+	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0
+			&& cmd->args[0][3] == '\0' && cmd->args[1]);
+	if (is_builtin(cmd->args[0]) && !is_env_with_args)
+		return (execute_builtin(cmd->args, my_env));
+	return (run_external(cmd->args, my_env));
+}
+
+int	execute_single_command(t_cmd *cmd, t_env **my_env)
 {
 	int	saved_stdin;
 	int	saved_stdout;
 	int	status;
-	int	is_env_with_args;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdin < 0 || saved_stdout < 0)
 		return (1);
 	setup_redirections(cmd);
-	if (!cmd->args || !cmd->args[0])
+	if (!cmd->args || !cmd->args[0]
+		|| (cmd->args[0][0] == '\0' && !cmd->args[1]))
 	{
 		restore_std_io(saved_stdin, saved_stdout);
 		return (0);
 	}
-	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0
-			&& cmd->args[0][3] == '\0' && cmd->args[1]);
-	if (is_builtin(cmd->args[0]) && !is_env_with_args)
-		status = execute_builtin(cmd->args, my_env);
-	else
-		status = run_external(cmd->args, my_env);
+	status = exec_single_logic(cmd, my_env);
 	restore_std_io(saved_stdin, saved_stdout);
 	return (status);
-}
-
-int	execute_commands(t_cmd *cmds, t_env **my_env)
-{
-	int	cmd_count;
-	int	child_count;
-
-	if (!cmds)
-		return (0);
-	cmd_count = count_commands(cmds);
-	if (cmd_count == 1)
-		return (execute_single_command(cmds, my_env));
-	child_count = fork_and_execute_pipeline(cmds, my_env);
-	return (wait_for_children(child_count, cmds));
 }

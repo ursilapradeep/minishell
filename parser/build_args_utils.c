@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   build_args_utils.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/29 19:28:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 13:29:24 by spaipur-         ###   ########.fr       */
+/*   build_args_utils.c                                 :::      :::    :::   */
+/*                                                    :::      :::    :::   */
+/*   By: spaipur- <spaipur-@student.42.fr>          :::      :::    :::   */
+/*                                                :::      :::    :::   */
+/*   Created: 2026/03/29 19:28:23 by spaipur-          :::      :::    :::   */
+/*   Updated: 2026/04/11 22:53:00 by spaipur-         :::      :::    :::   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ int	count_args(t_token *tokens)
 	count = 0;
 	current = tokens;
 	skip_next = 0;
-	while (current && current->type != TOKEN_PIPE)
+	while (current && current->type != TOKEN_PIPE
+		&& current->type != TOKEN_AND && current->type != TOKEN_OR)
 	{
 		if (skip_next)
 		{

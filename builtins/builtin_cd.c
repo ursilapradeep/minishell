@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:02:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/11 18:16:02 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 00:39:42 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static char	*resolve_cd_target(char **args, t_env *env, int *status)
 		*status = 1;
 		return (NULL);
 	}
-	if (!args[1])
+	if (!args[1] || ft_strncmp(args[1], "--", 3) == 0)
 		return (get_cd_env_target(env, "HOME", "cd: HOME not set\n", status));
 	if (ft_strncmp(args[1], "-", 2) == 0)
 		return (get_cd_env_target(env, "OLDPWD",

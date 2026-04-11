@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_path.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/09 12:26:36 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/11 21:40:08 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,24 +44,6 @@ static char	*search_in_path(char *path_env, char *cmd)
 	result = search_directories(path_copy, cmd);
 	free(path_copy);
 	return (result);
-}
-
-/*envp[0] = "USER=me"
-envp[1] = "PATH=/usr/local/bin:/usr/bin:/bin"
-envp[2] = "HOME=/home/me" //get_path_from_env(envp) scans each entry, 
-finds the one starting with "PATH=", and returns the substring after it:*/
-char	*get_path_from_env(char **envp)
-{
-	int	i;
-
-	i = 0;
-	while (envp && envp[i])
-	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i] + 5);
-		i++;
-	}
-	return (NULL);
 }
 
 char	*find_command(char *cmd, t_env **envp)

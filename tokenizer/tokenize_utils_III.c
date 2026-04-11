@@ -22,7 +22,9 @@ static int	merge_tokens_values(t_token *current, t_token *next)
 {
 	char	*merged_value;
 	int		merged_len;
+	int		had_boundary;
 
+	had_boundary = (next->prev == next);
 	merged_len = ft_strlen(current->value) + ft_strlen(next->value) + 1;
 	merged_value = ft_calloc(merged_len, sizeof(char));
 	if (!merged_value)
@@ -32,8 +34,10 @@ static int	merge_tokens_values(t_token *current, t_token *next)
 	free(current->value);
 	current->value = merged_value;
 	current->next = next->next;
-	if (next->next)
+	if (next->next && next->next->prev != next->next)
 		next->next->prev = current;
+	if (had_boundary)
+		current->prev = current;
 	free(next);
 	return (1);
 }
@@ -56,7 +60,7 @@ static t_token	*process_merge_iteration(t_token *current)
 		{
 			if (!merge_tokens_values(current, next))
 				return (current->next);
-			return (current->next);
+			return (current);
 		}
 		return (next);
 	}

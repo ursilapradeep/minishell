@@ -40,68 +40,7 @@ static int	execute_single_input(char *input, t_env **my_env)
 	return (status);
 }
 
-static int	find_next_and_operator(const char *input, int start)
-{
-	int			i;
-	char		quote;
-
-	i = start;
-	quote = '\0';
-	while (input[i])
-	{
-		if ((input[i] == '\'' || input[i] == '"'))
-		{
-			if (quote == '\0')
-				quote = input[i];
-			else if (quote == input[i])
-				quote = '\0';
-		}
-		else if (quote == '\0' && input[i] == '&' && input[i + 1] == '&')
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-static int	process_input_segment(const char *input, int start, int end,
-		t_env **my_env)
-{
-	char	*segment;
-	char	*trimmed;
-	int		status;
-
-	if (end == -1)
-		segment = ft_substr(input, start, ft_strlen(input) - start);
-	else
-		segment = ft_substr(input, start, end - start);
-	if (!segment)
-		return (2);
-	trimmed = ft_strtrim(segment, " \t\n");
-	free(segment);
-	if (!trimmed)
-		return (2);
-	status = 0;
-	if (*trimmed)
-		status = execute_single_input(trimmed, my_env);
-	free(trimmed);
-	return (status);
-}
-
 int	parse_input(char *input, t_env **my_env)
 {
-	int		status;
-	int		start;
-	int		end;
-
-	status = 0;
-	start = 0;
-	while (input[start])
-	{
-		end = find_next_and_operator(input, start);
-		status = process_input_segment(input, start, end, my_env);
-		if (status != 0 || end == -1)
-			break ;
-		start = end + 2;
-	}
-	return (status);
+	return (execute_single_input(input, my_env));
 }

@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/08 21:20:39 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/11 23:46:53 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ static int	prepare_external(char **args, t_env **envp, char **cmd_path,
 	*cmd_path = find_command(args[0], envp);
 	if (!*cmd_path)
 	{
-		printf("minishell: command not found: %s\n", args[0]);
+		ft_putstr_fd("minishell: command not found: ", STDERR_FILENO);
+		ft_putstr_fd(args[0], STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
 		return (127);
 	}
 	*env_array = build_env_array(*envp);

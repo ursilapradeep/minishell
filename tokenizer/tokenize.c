@@ -12,6 +12,9 @@
 
 #include "../minishell.h"
 
+char	*determine_token_value(const char **current,
+			t_token_type *token_type, int *consumed);
+
 static const char	*skip_whitespace_simple(const char *input)
 {
 	if (!input)
@@ -19,32 +22,6 @@ static const char	*skip_whitespace_simple(const char *input)
 	while (*input && (*input == ' ' || *input == '	' || *input == '\n'))
 		input++;
 	return (input);
-}
-
-static char	*determine_token_value(const char **current,
-		t_token_type *token_type, int *consumed)
-{
-	char	*token_value;
-
-	token_value = NULL;
-	if (**current == '|')
-	{
-		token_value = ft_calloc(2, sizeof(char));
-		if (token_value)
-		{
-			token_value[0] = '|';
-			token_value[1] = '\0';
-		}
-		*token_type = TOKEN_PIPE;
-		*consumed = 1;
-	}
-	else if (**current == '>' || **current == '<')
-		token_value = handle_redirection_token(current, token_type, consumed);
-	else if (is_quote(**current))
-		token_value = extract_quoted_string(*current, consumed);
-	else
-		token_value = extract_word(*current, consumed);
-	return (token_value);
 }
 
 static t_token	*process_token(const char **current, t_token **tokens)

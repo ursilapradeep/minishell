@@ -44,18 +44,26 @@ static int	is_n_flag(char *arg)
 	return (1);
 }
 
-int	builtin_echo(char **args)
+static int	unsplit_n_prefix_len(char *arg)
 {
 	int	i;
-	int	newline;
 
+	if (!arg || arg[0] != '-')
+		return (0);
 	i = 1;
-	newline = 1;
-	while (args[i] && is_n_flag(args[i]))
-	{
-		newline = 0;
+	while (arg[i] == 'n')
 		i++;
-	}
+	if (i == 1 || arg[i] != ' ')
+		return (0);
+	while (arg[i] == ' ')
+		i++;
+	if (!arg[i])
+		return (0);
+	return (i);
+}
+
+static void	print_echo_args(char **args, int i)
+{
 	while (args[i])
 	{
 		ft_putstr_fd(args[i], 1);
@@ -63,6 +71,31 @@ int	builtin_echo(char **args)
 			ft_putstr_fd(" ", 1);
 		i++;
 	}
+}
+
+int	builtin_echo(char **args)
+{
+	int	i;
+	int	newline;
+	int	offset;
+
+	i = 1;
+	newline = 1;
+	while (args[i] && is_n_flag(args[i]))
+		i++;
+	if (i > 1)
+		newline = 0;
+	offset = unsplit_n_prefix_len(args[i]);
+	if (offset > 0)
+	{
+		newline = 0;
+		if (args[i][offset])
+			ft_putstr_fd(args[i] + offset, 1);
+		if (args[i][offset] && args[i + 1])
+			ft_putstr_fd(" ", 1);
+		i++;
+	}
+	print_echo_args(args, i);
 	if (newline)
 		ft_putstr_fd("\n", 1);
 	return (0);
