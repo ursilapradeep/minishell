@@ -94,7 +94,7 @@ int	builtin_export(char **args, t_env **env)
 		while (*env)
 		{
 			if ((*env)->value)
-				printf("declare -x %s = \"%s\"\n", (*env)->key, (*env)->value);
+				printf("declare -x %s=\"%s\"\n", (*env)->key, (*env)->value);
 			else
 				printf("declare -x %s\n", (*env)->key);
 			*env = (*env)->next;

@@ -1,135 +1,93 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variable_expansion.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 13:07:33 by spaipur-         ###   ########.fr       */
+/*   variable_expansion.c                               :::      ::::::::   */
+/*                                                    :::      :::    :::   */
+/*   By: spaipur- <spaipur-@student.42.fr>          :::      :::    :::   */
+/*                                                :::      :::    :::   */
+/*   Created: 2026/03/20 12:54:24 by spaipur-          :::      :::    :::   */
+/*   Updated: 2026/04/11 19:30:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-/**
- * expand_variable_helper - Helper function to expand variables
- * @current: Pointer to the current character in the input string
- * @result: The result string being built
- * @result_len: Pointer to the length of the result string
- * @env: Environment list
- * Return: 1 on successful variable expansion, 0 on failure
- */
-int	expand_variable_helper(const char **current, char *result,
-	int *result_len, t_env *env)
+static int	has_unquoted_dollar(const char *value)
 {
-	char	*var_value;
-	char	*temp;
-	int		consumed;
+	int		in_sq;
+	int		in_dq;
 
-	var_value = NULL;
-	consumed = 0;
-	if (expand_variable(*current, env, &var_value, &consumed) == 0)
-	{
-		if (var_value)
-		{
-			temp = var_value;
-			while (*temp && *result_len < 4095)
-			{
-				result[(*result_len)++] = *temp;
-				temp++;
-			}
-			free(var_value);
-		}
-		*current += consumed;
-		return (1);
-	}
-	return (0);
-}
-
-int	proc_input(const char *input, char *result, int *result_len, t_env *env)
-{
-	const char	*current;
-	int			in_sq;
-	int			in_dq;
-
-	current = input;
 	in_sq = 0;
 	in_dq = 0;
-	while (current && *current && *result_len < 4095)
+	while (value && *value)
 	{
-		if (*current == '\'' && !in_dq)
+		if (*value == '\'' && !in_dq)
 			in_sq = !in_sq;
-		else if (*current == '"' && !in_sq)
+		else if (*value == '"' && !in_sq)
 			in_dq = !in_dq;
-		if (*current == '$' && !in_sq)
-		{
-			if (expand_variable_helper(&current, result, result_len, env))
-				continue ;
-			else
-				return (-1);
-		}
-		result[(*result_len)++] = *current;
-		current++;
+		else if (*value == '$' && !in_sq && !in_dq)
+			return (1);
+		value++;
 	}
 	return (0);
 }
 
-/**
- * expand_string - Expand all variables in a string
- * @input: Input string with potential variables
- * @env: Environment list
- * Return: Newly allocated expanded string, NULL on error
- */
-char	*expand_string(const char *input, t_env *env)
+static int	has_any_quote(const char *value)
 {
-	char	*result;
-	int		result_len;
-
-	if (!input || !env)
-		return (ft_strdup(input));
-	result = ft_calloc(4096, sizeof(char));
-	if (!result)
-		return (NULL);
-	result_len = 0;
-	if (proc_input(input, result, &result_len, env) == -1)
+	while (value && *value)
 	{
-		free(result);
-		return (NULL);
+		if (*value == '\'' || *value == '"')
+			return (1);
+		value++;
 	}
-	result[result_len] = '\0';
-	return (result);
+	return (0);
 }
 
-/**
- * expand_token_list - Expand variables in all tokens
- * @tokens: Token list to expand
- * @env: Environment list
- * Return: 0 on success, -1 on error
- */
+static char	*expand_token_word(t_token *current, t_token *prev, t_env *env)
+{
+	if (prev && prev->type == TOKEN_HEREDOC)
+		return (ft_strdup(current->value));
+	return (expand_string(current->value, env));
+}
+
+static int	process_word_token(t_token *current, t_token *prev, t_env *env)
+{
+	char	*expanded;
+	char	*unquoted;
+	int		should_split;
+
+	should_split = has_unquoted_dollar(current->value)
+		&& !has_any_quote(current->value)
+		&& !(prev && prev->type == TOKEN_HEREDOC);
+	expanded = expand_token_word(current, prev, env);
+	if (!expanded)
+		return (-1);
+	unquoted = remove_quotes_string(expanded);
+	free(expanded);
+	if (!unquoted)
+		return (-1);
+	free(current->value);
+	current->value = unquoted;
+	if (should_split && split_unquoted_fields(current) < 0)
+		return (-1);
+	return (0);
+}
+
 int	expand_token_list(t_token *tokens, t_env *env)
 {
 	t_token	*current;
-	char	*expanded;
-	char	*unquoted;
+	t_token	*prev;
 
 	if (!tokens || !env)
 		return (0);
 	current = tokens;
+	prev = NULL;
 	while (current)
 	{
-		if (current->type == TOKEN_WORD)
-		{
-			expanded = expand_string(current->value, env);
-			if (!expanded)
-				return (-1);
-			unquoted = remove_quotes_string(expanded);
-			free(expanded);
-			free(current->value);
-			current->value = unquoted;
-			if (!unquoted)
-				return (-1);
-		}
+		if (current->type == TOKEN_WORD
+			&& process_word_token(current, prev, env) < 0)
+			return (-1);
+		prev = current;
 		current = current->next;
 	}
 	return (0);

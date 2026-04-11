@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_I.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 12:39:03 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/12 00:39:22 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,26 +90,19 @@ char	*extract_word(const char *input, int *len)
 char	*extract_redirect_operator(const char *input, int *len)
 {
 	char	*op;
+	int		op_len;
 
 	if (!input || (*input != '>' && *input != '<'))
 		return (NULL);
-	if ((input[0] == '>' && input[1] == '>')
+	op_len = 1;
+	if ((input[0] == '>' && (input[1] == '>' || input[1] == '|'))
 		|| (input[0] == '<' && input[1] == '<'))
-	{
-		op = ft_calloc(3, sizeof(char));
-		if (!op)
-			return (NULL);
-		ft_strlcpy(op, input, 3);
-		*len = 2;
-	}
-	else
-	{
-		op = ft_calloc(2, sizeof(char));
-		if (!op)
-			return (NULL);
-		ft_strlcpy(op, input, 2);
-		*len = 1;
-	}
+		op_len = 2;
+	op = ft_calloc(op_len + 1, sizeof(char));
+	if (!op)
+		return (NULL);
+	ft_strlcpy(op, input, op_len + 1);
+	*len = op_len;
 	return (op);
 }
 

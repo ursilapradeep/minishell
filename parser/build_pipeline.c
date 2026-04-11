@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:55:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 13:29:34 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/11 23:46:53 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,14 @@ static int	create_pipe_between_commands(t_cmd *current, t_cmd *next)
 		perror("pipe");
 		return (-1);
 	}
-	current->outfd = pipefd[1];
-	next->infd = pipefd[0];
+	if (current->outfd == STDOUT_FILENO)
+		current->outfd = pipefd[1];
+	else
+		close(pipefd[1]);
+	if (next->infd == STDIN_FILENO)
+		next->infd = pipefd[0];
+	else
+		close(pipefd[0]);
 	return (0);
 }
 
@@ -35,8 +41,11 @@ int	build_pipeline(t_cmd *commands)
 	current = commands;
 	while (current && current->next)
 	{
-		if (create_pipe_between_commands(current, current->next) == -1)
-			return (-1);
+		if (current->has_pipe)
+		{
+			if (create_pipe_between_commands(current, current->next) == -1)
+				return (-1);
+		}
 		current = current->next;
 	}
 	return (0);

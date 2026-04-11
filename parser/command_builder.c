@@ -25,6 +25,8 @@ t_cmd	*create_cmd(void)
 	cmd->heredoc_delimiter = NULL;
 	cmd->heredoc_delimiters = NULL;
 	cmd->heredoc_count = 0;
+	cmd->next_op = OP_NONE;
+	cmd->has_pipe = 0;
 	cmd->next = NULL;
 	cmd->prev = NULL;
 	return (cmd);
@@ -62,30 +64,7 @@ t_cmd	*build_single_cmd(t_token **tokens)
 	return (cmd);
 }
 
-int	process_tokens_into_commands(t_token *tokens, t_cmd **commands)
-{
-	t_cmd		*new_cmd;
-	t_token		*curr;
-
-	curr = tokens;
-	while (curr)
-	{
-		new_cmd = build_single_cmd(&curr);
-		if (!new_cmd && *commands)
-		{
-			write(STDERR_FILENO, "Error: Failed to build cmd\n", 27);
-			return (-1);
-		}
-		if (new_cmd)
-			add_cmd(commands, new_cmd);
-		else if (!*commands)
-		{
-			write(STDERR_FILENO, "Error: No valid command\n", 24);
-			return (-1);
-		}
-	}
-	return (0);
-}
+int	process_tokens_into_commands(t_token *tokens, t_cmd **commands);
 
 t_cmd	*build_commands(t_token *tokens)
 {

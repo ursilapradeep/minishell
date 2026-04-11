@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 15:38:39 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,17 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_REDIRECT_APPEND,
-	TOKEN_HEREDOC
+	TOKEN_HEREDOC,
+	TOKEN_AND,
+	TOKEN_OR
 }	t_token_type;
+
+typedef enum e_operator
+{
+	OP_NONE,
+	OP_AND,
+	OP_OR
+}	t_operator;
 
 typedef struct s_token
 {
@@ -57,6 +66,8 @@ typedef struct s_cmd
 	char			*heredoc_delimiter;
 	char			**heredoc_delimiters;
 	int				heredoc_count;
+	t_operator		next_op;
+	int				has_pipe;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
 }	t_cmd;
@@ -77,6 +88,7 @@ typedef enum e_token_check
 
 // process input 
 char		*read_input(void);
+char		*read_non_interactive_line(void);
 int			parse_input(char *input, t_env **my_env);
 t_env		*init_env(char **envp);
 void		add_env_node(t_env **env_list, char *env_str);
@@ -98,9 +110,19 @@ const char	*extract_var_name(const char *input, int *len, int *is_braced);
 int			expand_token_list(t_token *tokens, t_env *env);
 int			expand_variable(const char *input,
 				t_env *env, char **exp, int *con);
+int			expand_tilde(const char *input, t_env *env,
+				char *result, int *consumed);
 int			handle_special_cases(const char *in, int *args,
 				char **exp, int *con);
 char		*remove_quotes_string(const char *str);
+char		*get_env_variable(t_env *env, const char *var_name, int len);
+int			is_word_start(const char *pos, const char *input);
+int			expand_tilde_helper(const char **current, char *result,
+				int *result_len, t_env *env);
+int			expand_variable_helper(const char **current, char *result,
+				int *result_len, t_env *env);
+char		*expand_string(const char *input, t_env *env);
+int			split_unquoted_fields(t_token *current);
 
 //parser
 t_cmd		*build_commands(t_token *tokens);
@@ -113,6 +135,7 @@ int			handle_redirection(t_cmd *cmd, t_token *current, int type);
 int			process_file_fd(t_cmd *cmd, int fd, int type);
 void		free_cmd_list(t_cmd *cmd);
 t_token		*find_next_pipe(t_token *tokens);
+t_token		*find_next_separator(t_token *tokens);
 int			process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
 int			process_heredocs(t_cmd *cmds);
 
@@ -160,7 +183,6 @@ char		*find_command(char *cmd, t_env **envp);
 char		*process_directory(char *path_copy,
 				char **dir_start, int i, char *cmd);
 char		*check_command_in_dir(char *dir, char *cmd);
-char		*get_path_from_env(char **envp);
 
 //error handling
 void		free_args(char **args);

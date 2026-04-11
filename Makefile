@@ -6,7 +6,7 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/11 17:32:41 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,8 @@ SRCS = main.c \
        executor/env_utils.c \
        executor/env_executor.c \
        executor/execute.c \
+       executor/execute_operators.c \
+       executor/execute_operators_utils.c \
        executor/execute_utils.c \
        executor/execute_redirections.c\
        executor/execute_builtins.c\
@@ -37,14 +39,22 @@ SRCS = main.c \
        tokenizer/tokenize_utils_I.c\
        tokenizer/tokenize_utils_II.c\
        tokenizer/tokenize_utils_III.c\
+       tokenizer/tokenize_utils_IV.c\
+       tokenizer/tokenize_utils_V.c\
        expander/variable_expansion.c \
        expander/variable_expansion_utils_I.c \
        expander/variable_expansion_utils_II.c \
        expander/variable_expansion_utils_III.c \
+       expander/variable_expansion_utils_IV.c \
+       expander/variable_expansion_utils_V.c \
+       expander/variable_expansion_utils_VI.c \
+       expander/variable_expansion_split.c \
        expander/quote_removal.c \
-       parser/command_builder.c\
-       parser/command_err_handler.c\
-       parser/build_args_utils.c\
+        parser/command_builder.c\
+        parser/command_builder_utils.c\
+        parser/command_err_handler.c\
+        parser/build_args_utils.c\
+        parser/build_args_utils_II.c\
        parser/build_redirections.c\
        parser/build_redirections_utils.c\
        parser/build_pipeline.c\

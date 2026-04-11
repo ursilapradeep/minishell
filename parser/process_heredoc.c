@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_heredoc.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 12:34:01 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ static int	read_heredoc_lines(int write_fd, char *delimiter)
 
 	while (1)
 	{
-		line = readline("> ");
+		if (isatty(STDIN_FILENO))
+			line = readline("> ");
+		else
+			line = read_non_interactive_line();
 		if (!line)
 			break ;
 		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
@@ -36,24 +39,7 @@ static int	read_heredoc_lines(int write_fd, char *delimiter)
 
 static int	read_heredoc_input(int write_fd, char *delimiter)
 {
-	int		tty_fd;
-
-	tty_fd = open("/dev/tty", O_RDONLY);
-	if (tty_fd < 0)
-	{
-		perror("minishell: /dev/tty");
-		return (-1);
-	}
-	rl_instream = fdopen(tty_fd, "r");
-	if (!rl_instream)
-	{
-		close(tty_fd);
-		perror("minishell: fdopen");
-		return (-1);
-	}
 	read_heredoc_lines(write_fd, delimiter);
-	fclose(rl_instream);
-	rl_instream = stdin;
 	return (0);
 }
 

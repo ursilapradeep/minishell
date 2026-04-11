@@ -27,7 +27,7 @@ int	builtin_env(char **args, t_env *env)
 		}
 		return (0);
 	}
-	return (-1);
+	return (1);
 }
 
 char	*get_env_value(t_env *env, char *key)
