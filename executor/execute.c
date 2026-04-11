@@ -29,8 +29,8 @@ int	count_commands(t_cmd *cmds)
 
 int	wait_for_children(int child_count, t_cmd *cmds)
 {
-	int	exit_status;
-	int	i;
+	int		exit_status;
+	int		i;
 	t_cmd	*last_cmd;
 
 	close_all_pipes(cmds);
@@ -50,11 +50,21 @@ int	wait_for_children(int child_count, t_cmd *cmds)
 	return (exit_status);
 }
 
+static int	restore_std_io(int saved_stdin, int saved_stdout)
+{
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+	return (0);
+}
+
 static int	execute_single_command(t_cmd *cmd, t_env **my_env)
 {
 	int	saved_stdin;
 	int	saved_stdout;
 	int	status;
+	int	is_env_with_args;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
@@ -63,23 +73,16 @@ static int	execute_single_command(t_cmd *cmd, t_env **my_env)
 	setup_redirections(cmd);
 	if (!cmd->args || !cmd->args[0])
 	{
-		dup2(saved_stdin, STDIN_FILENO);
-		dup2(saved_stdout, STDOUT_FILENO);
-		close(saved_stdin);
-		close(saved_stdout);
+		restore_std_io(saved_stdin, saved_stdout);
 		return (0);
 	}
-	// Special case: env with arguments should be treated as external command
-	int	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0 
-		&& cmd->args[0][3] == '\0' && cmd->args[1]);
+	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0
+			&& cmd->args[0][3] == '\0' && cmd->args[1]);
 	if (is_builtin(cmd->args[0]) && !is_env_with_args)
 		status = execute_builtin(cmd->args, my_env);
 	else
 		status = run_external(cmd->args, my_env);
-	dup2(saved_stdin, STDIN_FILENO);
-	dup2(saved_stdout, STDOUT_FILENO);
-	close(saved_stdin);
-	close(saved_stdout);
+	restore_std_io(saved_stdin, saved_stdout);
 	return (status);
 }
 

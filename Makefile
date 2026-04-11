@@ -6,7 +6,7 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/10 15:09:34 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/11 17:32:41 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,11 @@ SRCS = main.c \
        executor/execute_pipes_utils.c\
        handle_path/find_path.c \
        handle_path/path_helpers.c \
-       builtins/builtin_cd_exit.c \
+       builtins/builtin_cd.c \
+       builtins/builtin_exit.c \
        builtins/builtin_echo_pwd.c \
-       builtins/builtin_export_unset.c \
+       builtins/builtin_export.c \
+       builtins/builtin_unset.c \
        builtins/builtin_env.c \
        signal/Signals.c \
        tokenizer/tokenize.c\
@@ -44,6 +46,7 @@ SRCS = main.c \
        parser/command_err_handler.c\
        parser/build_args_utils.c\
        parser/build_redirections.c\
+       parser/build_redirections_utils.c\
        parser/build_pipeline.c\
        parser/build_args.c\
        parser/process_heredoc.c\

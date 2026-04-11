@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 22:26:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 21:11:42 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/11 18:15:02 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	builtin_env(char **args, t_env *env)
 {
 	t_env	*current;
 
-	// If no arguments, just print environment
 	if (!args[1])
 	{
 		current = env;
@@ -28,12 +27,6 @@ int	builtin_env(char **args, t_env *env)
 		}
 		return (0);
 	}
-	
-	// If there are arguments, env command itself should not handle them
-	// The arguments should be treated as a command to execute
-	// Since this is a builtin, returning non-zero will make the main shell
-	// try to execute it as an external command
-	// For now, return an error indicating we should pass to executor
 	return (-1);
 }
 

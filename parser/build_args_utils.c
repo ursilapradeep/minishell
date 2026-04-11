@@ -26,6 +26,26 @@ static int	is_valid_argument(t_token *current)
 			|| !is_redirect_token(current->prev)));
 }
 
+int	is_redirect_type(t_token_type type)
+{
+	return (type == TOKEN_REDIRECT_IN
+		|| type == TOKEN_REDIRECT_OUT
+		|| type == TOKEN_REDIRECT_APPEND
+		|| type == TOKEN_HEREDOC);
+}
+
+int	is_valid_arg_type(t_token *curr)
+{
+	int	preceded;
+	int	followed;
+
+	preceded = curr->prev
+		&& is_redirect_token(curr->prev);
+	followed = curr->next
+		&& is_redirect_token(curr->next);
+	return (curr->type == TOKEN_WORD && !preceded && !followed);
+}
+
 int	count_args(t_token *tokens)
 {
 	int		count;
