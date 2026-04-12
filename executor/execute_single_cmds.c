@@ -56,9 +56,13 @@ static void	execute_external_command(t_cmd *cmd, t_env **my_env)
 
 void	execute_ast_command_child(t_cmd *cmd, t_env **my_env)
 {
+	int	is_env_with_args;
+
 	if (!cmd || !cmd->args || !cmd->args[0])
 		exit(0);
-	if (is_builtin(cmd->args[0]))
+	is_env_with_args = (ft_strncmp(cmd->args[0], "env", 4) == 0
+			&& cmd->args[0][3] == '\0' && cmd->args[1]);
+	if (is_builtin(cmd->args[0]) && !is_env_with_args)
 		exit(execute_builtin(cmd->args, my_env));
 	execute_external_command(cmd, my_env);
 }
