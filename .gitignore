@@ -16,3 +16,11 @@ echo
 
 # Local resources sandbox
 minishell_resources/
+
+# Editor/system files
+.DS_Store
+.vscode/
+
+# Local docs/scratch
+doc/
+docs/
