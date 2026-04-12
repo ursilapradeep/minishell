@@ -34,6 +34,8 @@ static int	is_n_flag(char *arg)
 	i = 0;
 	if (!arg || arg[0] != '-')
 		return (0);
+	if (!arg[1])
+		return (0);
 	i++;
 	while (arg[i])
 	{
