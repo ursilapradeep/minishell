@@ -29,6 +29,22 @@ void	free_args(char **args)
 	free(args);
 }
 
+static int	handle_input_read(char *input)
+{
+	if (!input)
+	{
+		if (isatty(STDIN_FILENO))
+			printf("exit\n");
+		exit(g_shell.last_status);
+	}
+	if (*input == '\0')
+	{
+		free(input);
+		return (1);
+	}
+	return (0);
+}
+
 void	minishell_loop(t_env *my_env)
 {
 	int		exit_code;
@@ -38,20 +54,13 @@ void	minishell_loop(t_env *my_env)
 	while (1)
 	{
 		input = read_input();
-		if (!input)
-		{
-			if (isatty(STDIN_FILENO))
-				printf("exit\n");
-			exit(g_shell.last_status);
-		}
-		if (*input == '\0')
-		{
-			free(input);
+		if (handle_input_read(input))
 			continue ;
-		}
 		exit_code = parse_input(input, &my_env);
 		g_shell.last_status = exit_code;
 		free(input);
+		if (!isatty(STDIN_FILENO) && exit_code == 2)
+			exit(2);
 		if (exit_code == -1)
 			break ;
 	}
