@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,21 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
 
 static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 {
+	char	*delimiter;
+
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
 		write(STDERR_FILENO, "Error: No delimiter after <<", 29);
 		return (-1);
 	}
-	cmd->heredoc_delimiters = copy_heredoc_delimiters(cmd,
-			current->next->value);
+	if (current->next->quoted)
+		delimiter = ft_strjoin("\1", current->next->value);
+	else
+		delimiter = ft_strdup(current->next->value);
+	if (!delimiter)
+		return (-1);
+	cmd->heredoc_delimiters = copy_heredoc_delimiters(cmd, delimiter);
+	free(delimiter);
 	if (!cmd->heredoc_delimiters)
 		return (-1);
 	cmd->heredoc_count++;

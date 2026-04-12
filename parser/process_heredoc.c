@@ -6,13 +6,32 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	read_heredoc_lines(int write_fd, char *delimiter)
+static void	write_heredoc_line(int write_fd, char *line, int do_expand,
+		t_env *env)
+{
+	char	*expanded;
+
+	expanded = line;
+	if (do_expand)
+	{
+		expanded = expand_string(line, env);
+		if (!expanded)
+			expanded = ft_strdup("");
+	}
+	write(write_fd, expanded, ft_strlen(expanded));
+	write(write_fd, "\n", 1);
+	if (do_expand)
+		free(expanded);
+}
+
+static int	read_heredoc_lines(int write_fd, char *delimiter,
+		int do_expand, t_env *env)
 {
 	char	*line;
 
@@ -30,29 +49,29 @@ static int	read_heredoc_lines(int write_fd, char *delimiter)
 			free(line);
 			break ;
 		}
-		write(write_fd, line, ft_strlen(line));
-		write(write_fd, "\n", 1);
+		write_heredoc_line(write_fd, line, do_expand, env);
 		free(line);
 	}
 	return (0);
 }
 
-static int	read_heredoc_input(int write_fd, char *delimiter)
-{
-	read_heredoc_lines(write_fd, delimiter);
-	return (0);
-}
-
-static int	create_heredoc_fd(char *delimiter)
+static int	create_heredoc_fd(char *delimiter, t_env *env)
 {
 	int	pipefd[2];
+	int	do_expand;
 
 	if (pipe(pipefd) == -1)
 	{
 		perror("minishell: pipe");
 		return (-1);
 	}
-	if (read_heredoc_input(pipefd[1], delimiter) == -1)
+	do_expand = 1;
+	if (delimiter[0] == '\1')
+	{
+		do_expand = 0;
+		delimiter++;
+	}
+	if (read_heredoc_lines(pipefd[1], delimiter, do_expand, env) == -1)
 	{
 		close(pipefd[0]);
 		close(pipefd[1]);
@@ -62,7 +81,7 @@ static int	create_heredoc_fd(char *delimiter)
 	return (pipefd[0]);
 }
 
-static int	process_cmd_heredocs(t_cmd *cmd)
+static int	process_cmd_heredocs(t_cmd *cmd, t_env *env)
 {
 	int	fd;
 	int	i;
@@ -70,7 +89,7 @@ static int	process_cmd_heredocs(t_cmd *cmd)
 	i = 0;
 	while (i < cmd->heredoc_count)
 	{
-		fd = create_heredoc_fd(cmd->heredoc_delimiters[i]);
+		fd = create_heredoc_fd(cmd->heredoc_delimiters[i], env);
 		if (fd < 0)
 			return (-1);
 		if (i == cmd->heredoc_count - 1)
@@ -86,7 +105,7 @@ static int	process_cmd_heredocs(t_cmd *cmd)
 	return (0);
 }
 
-int	process_heredocs(t_cmd *cmds)
+int	process_heredocs(t_cmd *cmds, t_env *env)
 {
 	t_cmd	*current;
 
@@ -95,7 +114,8 @@ int	process_heredocs(t_cmd *cmds)
 	current = cmds;
 	while (current)
 	{
-		if (current->heredoc_count > 0 && process_cmd_heredocs(current) < 0)
+		if (current->heredoc_count > 0
+			&& process_cmd_heredocs(current, env) < 0)
 			return (-1);
 		current = current->next;
 	}

@@ -63,7 +63,7 @@ static int	execute_single_input(char *input, t_env **my_env)
 			print_pipe_syntax_error(input);
 		return (2);
 	}
-	if (process_heredocs(cmds) < 0)
+	if (process_heredocs(cmds, *my_env) < 0)
 		return (free_cmd_list(cmds), 2);
 	status = execute_commands(cmds, my_env);
 	free_cmd_list(cmds);
