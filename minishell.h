@@ -167,8 +167,9 @@ void		execute_ast_command_child(t_cmd *cmd, t_env **my_env);
 void		execute_child(const char *cmd_path, char **args, char **env_array);
 int			is_builtin(char *cmd);
 int			count_commands(t_cmd *cmds);
-int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env);
-int			wait_for_children(int child_count, t_cmd *cmds);
+int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env,
+				pid_t *last_pid);
+int			wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid);
 int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
 int			execute_pipeline(t_cmd *cmds, t_env **envp);

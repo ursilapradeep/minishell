@@ -19,17 +19,19 @@ int		should_short_circuit(int status, t_operator op);
 
 static int	execute_current_cmd(t_cmd **current, t_env **my_env)
 {
-	int	pipeline_count;
-	int	child_count;
-	int	status;
+	int		pipeline_count;
+	int		child_count;
+	int		status;
+	pid_t	last_pid;
 
 	pipeline_count = count_pipeline_cmds(*current);
 	if (pipeline_count == 1)
 		status = execute_single_command(*current, my_env);
 	else
 	{
-		child_count = fork_and_execute_pipeline(*current, my_env);
-		status = wait_for_children(child_count, *current);
+		last_pid = -1;
+		child_count = fork_and_execute_pipeline(*current, my_env, &last_pid);
+		status = wait_for_children(child_count, *current, last_pid);
 	}
 	return (status);
 }

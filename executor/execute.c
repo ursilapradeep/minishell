@@ -29,27 +29,30 @@ int	count_commands(t_cmd *cmds)
 	return (count);
 }
 
-int	wait_for_children(int child_count, t_cmd *cmds)
+int	wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid)
 {
 	int		exit_status;
+	int		last_status;
+	pid_t	waited_pid;
 	int		i;
-	t_cmd	*last_cmd;
 
 	close_all_pipes(cmds);
 	exit_status = 0;
+	last_status = 1;
 	i = 0;
-	last_cmd = cmds;
-	while (last_cmd && last_cmd->next)
-		last_cmd = last_cmd->next;
 	while (i < child_count)
 	{
-		waitpid(-1, &exit_status, 0);
+		waited_pid = waitpid(-1, &exit_status, 0);
+		if (waited_pid == last_pid)
+			last_status = exit_status;
 		i++;
 	}
 	setup_signal_handlers();
-	if (WIFEXITED(exit_status))
-		return (WEXITSTATUS(exit_status));
-	return (exit_status);
+	if (WIFEXITED(last_status))
+		return (WEXITSTATUS(last_status));
+	if (WIFSIGNALED(last_status))
+		return (128 + WTERMSIG(last_status));
+	return (1);
 }
 
 static int	restore_std_io(int saved_stdin, int saved_stdout, int saved_stderr)
