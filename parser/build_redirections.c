@@ -62,9 +62,9 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
 		else if (cmd->outfd > 2)
 			close(cmd->outfd);
 		if (type == TOKEN_REDIRECT_OUT)
-			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		else
-			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
 	}
 	else
 		return (-1);
