@@ -32,6 +32,26 @@ static int	has_unquoted_dollar(const char *value)
 	return (0);
 }
 
+static int	has_unquoted_space(const char *value)
+{
+	int	in_sq;
+	int	in_dq;
+
+	in_sq = 0;
+	in_dq = 0;
+	while (value && *value)
+	{
+		if (*value == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (*value == '"' && !in_sq)
+			in_dq = !in_dq;
+		else if ((*value == ' ' || *value == '\t') && !in_sq && !in_dq)
+			return (1);
+		value++;
+	}
+	return (0);
+}
+
 static char	*expand_token_word(t_token *current, t_token *prev, t_env *env)
 {
 	if (prev && prev->type == TOKEN_HEREDOC)
@@ -45,11 +65,12 @@ static int	process_word_token(t_token *current, t_token *prev, t_env *env)
 	char	*unquoted;
 	int		should_split;
 
-	should_split = has_unquoted_dollar(current->value)
-		&& !(prev && prev->type == TOKEN_HEREDOC);
 	expanded = expand_token_word(current, prev, env);
 	if (!expanded)
 		return (-1);
+	should_split = has_unquoted_dollar(current->value)
+		&& has_unquoted_space(expanded)
+		&& !(prev && prev->type == TOKEN_HEREDOC);
 	unquoted = remove_quotes_string(expanded);
 	free(expanded);
 	if (!unquoted)
