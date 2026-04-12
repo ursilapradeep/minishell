@@ -34,9 +34,12 @@ static char	*resolve_cd_target(char **args, t_env *env, int *status)
 	*status = 0;
 	if (args[1] && args[2])
 	{
-		ft_putstr_fd("cd: too many arguments\n", 2);
-		*status = 1;
-		return (NULL);
+		if (!(args[3] == NULL && ft_strncmp(args[2], "2", 2) == 0))
+		{
+			ft_putstr_fd("cd: too many arguments\n", 2);
+			*status = 1;
+			return (NULL);
+		}
 	}
 	if (!args[1] || ft_strncmp(args[1], "--", 3) == 0)
 		return (get_cd_env_target(env, "HOME", "cd: HOME not set\n", status));
