@@ -12,7 +12,6 @@
 
 #include "../minishell.h"
 
-int	wait_for_children(int child_count, t_cmd *cmds);
 int	execute_single_command(t_cmd *cmd, t_env **my_env);
 
 int	should_short_circuit(int status, t_operator op)

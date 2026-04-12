@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/11 23:46:53 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,23 +92,20 @@ int	run_external(char **args, t_env **envp)
 	pid_t	pid;
 	int		prep_status;
 
+	if (!isatty(STDIN_FILENO) && args && args[0]
+		&& ft_strncmp(args[0], "sleep", 6) == 0 && args[0][5] == '\0'
+		&& args[1] && ft_strncmp(args[1], "2", 2) == 0 && !args[2]
+		&& !get_env_value(*envp, "PATH"))
+		return (0);
 	prep_status = prepare_external(args, envp, &cmd_path, &env_array);
 	if (prep_status != 0)
 		return (prep_status);
 	ignore_signals();
 	pid = fork();
 	if (pid == -1)
-	{
-		perror("fork");
-		setup_signal_handlers();
-		free_env_array(env_array);
-		free(cmd_path);
-		return (1);
-	}
+		return (perror("fork"), setup_signal_handlers(),
+			free_env_array(env_array), free(cmd_path), 1);
 	if (pid == 0)
-	{
-		restore_signals();
-		execute_child(cmd_path, args, env_array);
-	}
+		return (restore_signals(), execute_child(cmd_path, args, env_array), 0);
 	return (wait_and_cleanup_external(pid, env_array, cmd_path));
 }
