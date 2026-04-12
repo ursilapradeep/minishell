@@ -56,6 +56,8 @@ static void	execute_external_command(t_cmd *cmd, t_env **my_env)
 
 void	execute_ast_command_child(t_cmd *cmd, t_env **my_env)
 {
+	if (!cmd || !cmd->args || !cmd->args[0])
+		exit(0);
 	if (is_builtin(cmd->args[0]))
 		exit(execute_builtin(cmd->args, my_env));
 	execute_external_command(cmd, my_env);

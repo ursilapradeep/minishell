@@ -28,23 +28,29 @@ t_token	*find_next_separator(t_token *tokens)
 	return (NULL);
 }
 
-static void	process_operator_token(t_cmd **last_cmd, t_token *curr,
+static int	process_operator_token(t_token **curr, t_cmd **last_cmd,
 		int *prev_had_pipe)
 {
+	if (!*curr || ((*curr)->type != TOKEN_AND && (*curr)->type != TOKEN_OR))
+		return (0);
 	if (*last_cmd)
 	{
-		if (curr->type == TOKEN_AND)
+		if ((*curr)->type == TOKEN_AND)
 			(*last_cmd)->next_op = OP_AND;
-		else if (curr->type == TOKEN_OR)
+		else if ((*curr)->type == TOKEN_OR)
 			(*last_cmd)->next_op = OP_OR;
 	}
 	*prev_had_pipe = 0;
+	*curr = (*curr)->next;
+	return (1);
 }
 
 static int	process_pipe_token(t_token **curr, int *prev_had_pipe)
 {
 	if (*curr && (*curr)->type == TOKEN_PIPE)
 	{
+		if (*prev_had_pipe)
+			return (*prev_had_pipe = -1, 1);
 		*prev_had_pipe = 1;
 		*curr = (*curr)->next;
 		return (1);
@@ -63,7 +69,11 @@ static int	process_new_cmd(t_cmd **new_cmd, t_cmd **commands,
 	if (*new_cmd)
 	{
 		if (*prev_had_pipe)
+		{
+			if (!*last_cmd)
+				return (-1);
 			(*last_cmd)->has_pipe = 1;
+		}
 		*prev_had_pipe = 0;
 		add_cmd(commands, *new_cmd);
 		*last_cmd = *new_cmd;
@@ -88,18 +98,16 @@ int	process_tokens_into_commands(t_token *tokens, t_cmd **commands)
 	prev_had_pipe = 0;
 	while (curr)
 	{
-		while (curr && (curr->type == TOKEN_AND || curr->type == TOKEN_OR))
-		{
-			process_operator_token(&last_cmd, curr, &prev_had_pipe);
-			curr = curr->next;
-		}
-		if (!curr)
-			break ;
-		if (process_pipe_token(&curr, &prev_had_pipe))
+		if (process_operator_token(&curr, &last_cmd, &prev_had_pipe))
 			continue ;
+		if (process_pipe_token(&curr, &prev_had_pipe))
+		{
+			if (prev_had_pipe < 0 || !curr)
+				return (-1);
+			continue ;
+		}
 		new_cmd = build_single_cmd(&curr);
-		if (process_new_cmd(&new_cmd, commands, &last_cmd, &prev_had_pipe)
-			< 0)
+		if (process_new_cmd(&new_cmd, commands, &last_cmd, &prev_had_pipe) < 0)
 			return (-1);
 	}
 	return (0);
