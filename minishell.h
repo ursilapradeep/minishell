@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:55:02 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void		free_cmd_list(t_cmd *cmd);
 t_token		*find_next_pipe(t_token *tokens);
 t_token		*find_next_separator(t_token *tokens);
 int			process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
-int			process_heredocs(t_cmd *cmds);
+int			process_heredocs(t_cmd *cmds, t_env *env);
 
 //built- ins
 int			is_builtin(char *cmd);
