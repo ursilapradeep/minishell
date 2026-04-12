@@ -47,17 +47,26 @@ static char	*resolve_cd_target(char **args, t_env *env, int *status)
 	return (target_dir);
 }
 
-int	builtin_cd(char **args, t_env **env)
+static void	update_pwd_and_maybe_print(t_env **env,
+		char cwd[4096], int print_new_pwd)
 {
-	char	*target_dir;
-	char	*old_pwd;
-	char	cwd[4096];
-	int		status;
+	if (getcwd(cwd, 4096) != NULL)
+	{
+		set_env_value(env, "PWD", cwd);
+		if (print_new_pwd)
+		{
+			ft_putstr_fd(cwd, 1);
+			ft_putstr_fd("\n", 1);
+		}
+	}
+}
 
-	target_dir = resolve_cd_target(args, *env, &status);
-	if (status != 0)
-		return (status);
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
+static int	change_dir_and_set_oldpwd(t_env **env,
+		char *target_dir, char cwd[4096])
+{
+	char	*old_pwd;
+
+	if (getcwd(cwd, 4096) == NULL)
 	{
 		perror("cd");
 		return (1);
@@ -71,7 +80,22 @@ int	builtin_cd(char **args, t_env **env)
 	}
 	set_env_value(env, "OLDPWD", old_pwd);
 	free(old_pwd);
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		set_env_value(env, "PWD", cwd);
+	return (0);
+}
+
+int	builtin_cd(char **args, t_env **env)
+{
+	char	*target_dir;
+	char	cwd[4096];
+	int		status;
+	int		print_new_pwd;
+
+	print_new_pwd = (args[1] && ft_strncmp(args[1], "-", 2) == 0);
+	target_dir = resolve_cd_target(args, *env, &status);
+	if (status != 0)
+		return (status);
+	if (change_dir_and_set_oldpwd(env, target_dir, cwd) != 0)
+		return (1);
+	update_pwd_and_maybe_print(env, cwd, print_new_pwd);
 	return (0);
 }
