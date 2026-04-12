@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 14:19:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 15:56:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ typedef enum e_token_check
 // process input 
 char		*read_input(void);
 char		*read_non_interactive_line(void);
+void		update_quote_state(char c, int *in_sq, int *in_dq);
 int			parse_input(char *input, t_env **my_env);
 t_env		*init_env(char **envp);
 void		add_env_node(t_env **env_list, char *env_str);

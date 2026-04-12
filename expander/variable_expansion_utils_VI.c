@@ -12,14 +12,6 @@
 
 #include "../minishell.h"
 
-static void	update_quote_state(char c, int *in_sq, int *in_dq)
-{
-	if (c == '\'' && !*in_dq)
-		*in_sq = !*in_sq;
-	else if (c == '"' && !*in_sq)
-		*in_dq = !*in_dq;
-}
-
 static int	handle_backslash_dollar(const char **current, char *result,
 		int *result_len, int state)
 {
