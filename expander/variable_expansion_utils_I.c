@@ -31,12 +31,12 @@ char	*get_env_variable(t_env *env, const char *var_name, int len)
 	return (NULL);
 }
 
-static int	handle_tilde_plus(char *result, int *consumed)
+static int	handle_tilde_plus(t_env *env, char *result, int *consumed)
 {
 	char	*value;
 	int		value_len;
 
-	value = get_env_variable(NULL, "PWD", 3);
+	value = get_env_variable(env, "PWD", 3);
 	if (value)
 	{
 		value_len = ft_strlen(value);
@@ -47,12 +47,12 @@ static int	handle_tilde_plus(char *result, int *consumed)
 	return (0);
 }
 
-static int	handle_tilde_minus(char *result, int *consumed)
+static int	handle_tilde_minus(t_env *env, char *result, int *consumed)
 {
 	char	*value;
 	int		value_len;
 
-	value = get_env_variable(NULL, "OLDPWD", 6);
+	value = get_env_variable(env, "OLDPWD", 6);
 	if (value)
 	{
 		value_len = ft_strlen(value);
@@ -63,12 +63,12 @@ static int	handle_tilde_minus(char *result, int *consumed)
 	return (0);
 }
 
-static int	handle_tilde_home(char *result, int *consumed)
+static int	handle_tilde_home(t_env *env, char *result, int *consumed)
 {
 	char	*home;
 	int		value_len;
 
-	home = get_env_variable(NULL, "HOME", 4);
+	home = get_env_variable(env, "HOME", 4);
 	if (home)
 	{
 		value_len = ft_strlen(home);
@@ -81,15 +81,14 @@ static int	handle_tilde_home(char *result, int *consumed)
 
 int	expand_tilde(const char *input, t_env *env, char *result, int *consumed)
 {
-	(void)env;
 	*consumed = 0;
 	if (!input || input[0] != '~')
 		return (0);
 	if (input[1] == '+' && (input[2] == '/' || input[2] == '\0'))
-		return (handle_tilde_plus(result, consumed));
+		return (handle_tilde_plus(env, result, consumed));
 	else if (input[1] == '-' && (input[2] == '/' || input[2] == '\0'))
-		return (handle_tilde_minus(result, consumed));
+		return (handle_tilde_minus(env, result, consumed));
 	else if (input[1] == '/' || input[1] == '\0')
-		return (handle_tilde_home(result, consumed));
+		return (handle_tilde_home(env, result, consumed));
 	return (0);
 }
