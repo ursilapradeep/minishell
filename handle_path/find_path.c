@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:12 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/11 21:40:08 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 11:01:14 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ static char	*search_in_path(char *path_env, char *cmd)
 char	*find_command(char *cmd, t_env **envp)
 {
 	char	*path_env;
+	char	*default_path;
 
 	if (ft_strchr(cmd, '/'))
 	{
@@ -57,7 +58,9 @@ char	*find_command(char *cmd, t_env **envp)
 		return (NULL);
 	}
 	path_env = get_env_value(*envp, "PATH");
+	default_path = "/usr/local/sbin:/usr/local/bin:/usr/sbin"
+		":/usr/bin:/sbin:/bin";
 	if (!path_env)
-		return (NULL);
+		path_env = default_path;
 	return (search_in_path(path_env, cmd));
 }
