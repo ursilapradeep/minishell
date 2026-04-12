@@ -52,12 +52,14 @@ int	wait_for_children(int child_count, t_cmd *cmds)
 	return (exit_status);
 }
 
-static int	restore_std_io(int saved_stdin, int saved_stdout)
+static int	restore_std_io(int saved_stdin, int saved_stdout, int saved_stderr)
 {
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
+	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
+	close(saved_stderr);
 	return (0);
 }
 
@@ -76,20 +78,24 @@ int	execute_single_command(t_cmd *cmd, t_env **my_env)
 {
 	int	saved_stdin;
 	int	saved_stdout;
+	int	saved_stderr;
 	int	status;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
-	if (saved_stdin < 0 || saved_stdout < 0)
+	saved_stderr = dup(STDERR_FILENO);
+	if (saved_stdin < 0 || saved_stdout < 0 || saved_stderr < 0)
 		return (1);
+	if (cmd->infd == -2 || cmd->outfd == -2 || cmd->errfd == -2)
+		return (restore_std_io(saved_stdin, saved_stdout, saved_stderr), 1);
 	setup_redirections(cmd);
 	if (!cmd->args || !cmd->args[0]
 		|| (cmd->args[0][0] == '\0' && !cmd->args[1]))
 	{
-		restore_std_io(saved_stdin, saved_stdout);
+		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
 		return (0);
 	}
 	status = exec_single_logic(cmd, my_env);
-	restore_std_io(saved_stdin, saved_stdout);
+	restore_std_io(saved_stdin, saved_stdout, saved_stderr);
 	return (status);
 }

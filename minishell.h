@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ typedef struct s_cmd
 	char			**args;
 	int				infd;
 	int				outfd;
+	int				errfd;
 	char			*heredoc_delimiter;
 	char			**heredoc_delimiters;
 	int				heredoc_count;
@@ -132,7 +133,7 @@ int			count_args(t_token *tokens);
 int			is_redirect_type(t_token_type type);
 int			is_valid_arg_type(t_token *curr);
 int			handle_redirection(t_cmd *cmd, t_token *current, int type);
-int			process_file_fd(t_cmd *cmd, int fd, int type);
+int			process_file_fd(t_cmd *cmd, int fd, int type, int target_fd);
 void		free_cmd_list(t_cmd *cmd);
 t_token		*find_next_pipe(t_token *tokens);
 t_token		*find_next_separator(t_token *tokens);

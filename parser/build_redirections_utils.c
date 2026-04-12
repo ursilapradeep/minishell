@@ -12,24 +12,28 @@
 
 #include "../minishell.h"
 
-static int	set_error_fd(t_cmd *cmd, int type)
+static int	set_error_fd(t_cmd *cmd, int type, int target_fd)
 {
 	if (type == TOKEN_REDIRECT_IN)
 		cmd->infd = -2;
+	else if (target_fd == STDERR_FILENO)
+		cmd->errfd = -2;
 	else
 		cmd->outfd = -2;
 	return (1);
 }
 
-int	process_file_fd(t_cmd *cmd, int fd, int type)
+int	process_file_fd(t_cmd *cmd, int fd, int type, int target_fd)
 {
 	if (fd < 0)
 	{
 		perror("minishell");
-		return (set_error_fd(cmd, type));
+		return (set_error_fd(cmd, type, target_fd));
 	}
 	if (type == TOKEN_REDIRECT_IN)
 		cmd->infd = fd;
+	else if (target_fd == STDERR_FILENO)
+		cmd->errfd = fd;
 	else
 		cmd->outfd = fd;
 	return (1);

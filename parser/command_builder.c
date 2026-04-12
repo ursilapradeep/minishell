@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:21:40 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/03/31 11:52:11 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ t_cmd	*create_cmd(void)
 	cmd->args = NULL;
 	cmd->infd = STDIN_FILENO;
 	cmd->outfd = STDOUT_FILENO;
+	cmd->errfd = STDERR_FILENO;
 	cmd->heredoc_delimiter = NULL;
 	cmd->heredoc_delimiters = NULL;
 	cmd->heredoc_count = 0;

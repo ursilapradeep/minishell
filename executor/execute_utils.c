@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/10 21:12:16 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	close_all_pipes(t_cmd *cmds)
 			close(current->infd);
 		if (current->outfd != STDOUT_FILENO)
 			close(current->outfd);
+		if (current->errfd > 2)
+			close(current->errfd);
 		current = current->next;
 	}
 }
