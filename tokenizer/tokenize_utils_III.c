@@ -33,6 +33,8 @@ static int	merge_tokens_values(t_token *current, t_token *next)
 	ft_strlcat(merged_value, next->value, merged_len);
 	free(current->value);
 	current->value = merged_value;
+	if (next->quoted)
+		current->quoted = 1;
 	current->next = next->next;
 	if (next->next && next->next->prev != next->next)
 		next->next->prev = current;

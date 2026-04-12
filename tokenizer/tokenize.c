@@ -45,6 +45,8 @@ static t_token	*process_token(const char **current, t_token **tokens)
 	new_token = create_token(token_value, token_type);
 	if (!new_token)
 		return (NULL);
+	if (token_value[0] == '\'' || token_value[0] == '"')
+		new_token->quoted = 1;
 	add_token(tokens, new_token);
 	*current += consumed;
 	return (*tokens);

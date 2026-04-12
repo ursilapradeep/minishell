@@ -22,7 +22,8 @@ static int	is_redirect_token(t_token *token)
 
 static int	is_valid_argument(t_token *current)
 {
-	return (current->type == TOKEN_WORD && (!current->prev
+	return (current->type == TOKEN_WORD && current->value
+		&& (current->value[0] != '\0' || current->quoted) && (!current->prev
 			|| !is_redirect_token(current->prev)));
 }
 
@@ -43,7 +44,9 @@ int	is_valid_arg_type(t_token *curr)
 		&& is_redirect_token(curr->prev);
 	followed = curr->next
 		&& is_redirect_token(curr->next);
-	return (curr->type == TOKEN_WORD && !preceded && !followed);
+	return (curr->type == TOKEN_WORD && curr->value
+		&& (curr->value[0] != '\0' || curr->quoted)
+		&& !preceded && !followed);
 }
 
 int	count_args(t_token *tokens)

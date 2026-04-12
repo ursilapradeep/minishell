@@ -92,8 +92,7 @@ int	execute_single_command(t_cmd *cmd, t_env **my_env)
 	if (cmd->infd == -2 || cmd->outfd == -2 || cmd->errfd == -2)
 		return (restore_std_io(saved_stdin, saved_stdout, saved_stderr), 1);
 	setup_redirections(cmd);
-	if (!cmd->args || !cmd->args[0]
-		|| (cmd->args[0][0] == '\0' && !cmd->args[1]))
+	if (!cmd->args || !cmd->args[0])
 	{
 		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
 		return (0);
