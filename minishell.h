@@ -150,6 +150,8 @@ int			builtin_export(char **args, t_env **env);
 int			builtin_unset(char **args, t_env **env);
 int			builtin_exit(char **args);
 int			builtin_env(char **args, t_env *env);
+void		print_sorted_export(t_env *env);
+int			handle_export_option_error(char *arg);
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);

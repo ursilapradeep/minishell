@@ -32,6 +32,8 @@ SRCS = main.c \
        builtins/builtin_exit.c \
        builtins/builtin_echo_pwd.c \
        builtins/builtin_export.c \
+       builtins/builtin_export_utils.c \
+       builtins/builtin_export_option.c \
        builtins/builtin_unset.c \
        builtins/builtin_env.c \
        signal/Signals.c \
