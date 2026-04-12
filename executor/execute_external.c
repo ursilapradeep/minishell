@@ -50,13 +50,15 @@ static int	wait_and_cleanup_external(pid_t pid, char **env_array,
 void	execute_child(const char *cmd_path, char **args, char **env_array)
 {
 	int	exit_code;
+	int	saved_errno;
 
 	execve(cmd_path, args, env_array);
+	saved_errno = errno;
 	perror("execve");
 	free_env_array(env_array);
 	exit_code = 127;
-	if (errno == EACCES || errno == EPERM
-		|| errno == EISDIR || errno == ENOEXEC)
+	if (saved_errno == EACCES || saved_errno == EPERM
+		|| saved_errno == EISDIR || saved_errno == ENOEXEC)
 		exit_code = 126;
 	exit(exit_code);
 }

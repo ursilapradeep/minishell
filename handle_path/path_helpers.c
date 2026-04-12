@@ -11,6 +11,20 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/stat.h>
+
+static int	is_executable_file(char *path)
+{
+	struct stat	st;
+
+	if (access(path, X_OK) != 0)
+		return (0);
+	if (stat(path, &st) != 0)
+		return (0);
+	if (S_ISDIR(st.st_mode))
+		return (0);
+	return (1);
+}
 
 static char	*build_full_path(char *dir, char *cmd)
 {
@@ -40,7 +54,7 @@ char	*process_directory(char *path_copy, char **dir_start, int i, char *cmd)
 	free(dir);
 	if (!full_path)
 		return (NULL);
-	if (access(full_path, X_OK) == 0)
+	if (is_executable_file(full_path))
 	{
 		*dir_start = &path_copy[i + 1];
 		return (full_path);
@@ -57,7 +71,7 @@ char	*check_command_in_dir(char *dir, char *cmd)
 	full_path = build_full_path(dir, cmd);
 	if (!full_path)
 		return (NULL);
-	if (access(full_path, X_OK) == 0)
+	if (is_executable_file(full_path))
 		return (full_path);
 	free(full_path);
 	return (NULL);
