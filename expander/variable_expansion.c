@@ -32,17 +32,6 @@ static int	has_unquoted_dollar(const char *value)
 	return (0);
 }
 
-static int	has_any_quote(const char *value)
-{
-	while (value && *value)
-	{
-		if (*value == '\'' || *value == '"')
-			return (1);
-		value++;
-	}
-	return (0);
-}
-
 static char	*expand_token_word(t_token *current, t_token *prev, t_env *env)
 {
 	if (prev && prev->type == TOKEN_HEREDOC)
@@ -57,7 +46,6 @@ static int	process_word_token(t_token *current, t_token *prev, t_env *env)
 	int		should_split;
 
 	should_split = has_unquoted_dollar(current->value)
-		&& !has_any_quote(current->value)
 		&& !(prev && prev->type == TOKEN_HEREDOC);
 	expanded = expand_token_word(current, prev, env);
 	if (!expanded)
