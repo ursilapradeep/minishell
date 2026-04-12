@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 12:30:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/10 20:04:54 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,16 @@ static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
 	return (new_delimiters);
 }
 
-int	open_redirection_file(t_cmd *cmd, char *filename, int type)
+static int	get_target_fd(t_token *current)
+{
+	if (current->prev && current->prev->type == TOKEN_WORD
+		&& current->prev != current
+		&& ft_strncmp(current->prev->value, "2", 2) == 0)
+		return (STDERR_FILENO);
+	return (STDOUT_FILENO);
+}
+
+int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
 {
 	int	fd;
 
@@ -46,17 +55,16 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type)
 			close(cmd->infd);
 		fd = open(filename, O_RDONLY);
 	}
-	else if (type == TOKEN_REDIRECT_OUT)
+	else if (type == TOKEN_REDIRECT_OUT || type == TOKEN_REDIRECT_APPEND)
 	{
-		if (cmd->outfd > 2)
+		if (target_fd == STDERR_FILENO && cmd->errfd > 2)
+			close(cmd->errfd);
+		else if (cmd->outfd > 2)
 			close(cmd->outfd);
-		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	}
-	else if (type == TOKEN_REDIRECT_APPEND)
-	{
-		if (cmd->outfd > 2)
-			close(cmd->outfd);
-		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (type == TOKEN_REDIRECT_OUT)
+			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else
+			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	}
 	else
 		return (-1);
@@ -85,6 +93,7 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 {
 	char	*filename;
 	int		fd;
+	int		target_fd;
 
 	if (type == TOKEN_HEREDOC)
 		return (handle_heredoc_token(cmd, current));
@@ -94,9 +103,13 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 		return (-1);
 	}
 	filename = current->next->value;
+	target_fd = get_target_fd(current);
 	if ((type == TOKEN_REDIRECT_IN && cmd->infd == -2)
-		|| (type != TOKEN_REDIRECT_IN && cmd->outfd == -2))
+		|| (type != TOKEN_REDIRECT_IN && target_fd == STDERR_FILENO
+			&& cmd->errfd == -2)
+		|| (type != TOKEN_REDIRECT_IN && target_fd != STDERR_FILENO
+			&& cmd->outfd == -2))
 		return (1);
-	fd = open_redirection_file(cmd, filename, type);
-	return (process_file_fd(cmd, fd, type));
+	fd = open_redirection_file(cmd, filename, type, target_fd);
+	return (process_file_fd(cmd, fd, type, target_fd));
 }

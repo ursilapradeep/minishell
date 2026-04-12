@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:19:38 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/10 19:55:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,11 @@ void	setup_redirections(t_cmd *cmd)
 	{
 		exit(1);
 	}
+	if (cmd->errfd > 2)
+	{
+		dup2(cmd->errfd, STDERR_FILENO);
+		close(cmd->errfd);
+	}
+	else if (cmd->errfd == -2)
+		exit(1);
 }

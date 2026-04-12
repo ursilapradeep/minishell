@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_err_handler.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 12:34:54 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 12:30:20 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ static void	free_cmd_resources(t_cmd *current)
 		close(current->infd);
 	if (current->outfd > 2)
 		close(current->outfd);
+	if (current->errfd > 2)
+		close(current->errfd);
 	if (current->heredoc_delimiters)
 	{
 		i = 0;
