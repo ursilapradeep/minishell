@@ -40,6 +40,7 @@ static void	execute_external_command(t_cmd *cmd, t_env **my_env)
 		ft_putstr_fd("\n", STDERR_FILENO);
 		exit(127);
 	}
+	set_env_value(my_env, "_", cmd_path);
 	env_array = build_env_array(*my_env);
 	if (!env_array)
 	{

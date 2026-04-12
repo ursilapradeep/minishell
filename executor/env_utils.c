@@ -60,6 +60,9 @@ t_env	*init_env(char **envp)
 {
 	t_env	*env_list;
 	int		i;
+	char	*shlvl;
+	char	*new_shlvl;
+	int		level;
 
 	i = 0;
 	env_list = NULL;
@@ -67,6 +70,16 @@ t_env	*init_env(char **envp)
 	{
 		add_env_node(&env_list, envp[i]);
 		i++;
+	}
+	shlvl = get_env_value(env_list, "SHLVL");
+	level = 1;
+	if (shlvl)
+		level = ft_atoi(shlvl) + 1;
+	new_shlvl = ft_itoa(level);
+	if (new_shlvl)
+	{
+		set_env_value(&env_list, "SHLVL", new_shlvl);
+		free(new_shlvl);
 	}
 	return (env_list);
 }

@@ -74,6 +74,7 @@ static int	prepare_external(char **args, t_env **envp, char **cmd_path,
 		ft_putstr_fd("\n", STDERR_FILENO);
 		return (127);
 	}
+	set_env_value(envp, "_", *cmd_path);
 	*env_array = build_env_array(*envp);
 	if (!*env_array)
 	{
