@@ -13,6 +13,7 @@
 #include "../minishell.h"
 #include <signal.h>
 #include <sys/signal.h>
+#include <errno.h>
 
 int	wait_and_get_exit_status(pid_t pid)
 {
@@ -48,10 +49,16 @@ static int	wait_and_cleanup_external(pid_t pid, char **env_array,
 
 void	execute_child(const char *cmd_path, char **args, char **env_array)
 {
+	int	exit_code;
+
 	execve(cmd_path, args, env_array);
 	perror("execve");
 	free_env_array(env_array);
-	exit(127);
+	exit_code = 127;
+	if (errno == EACCES || errno == EPERM
+		|| errno == EISDIR || errno == ENOEXEC)
+		exit_code = 126;
+	exit(exit_code);
 }
 
 static int	prepare_external(char **args, t_env **envp, char **cmd_path,
