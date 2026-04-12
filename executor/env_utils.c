@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:19:16 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/08 07:20:49 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	fill_env_node(t_env *new_node, char *env_str)
 void	add_env_node(t_env **env_list, char *env_str)
 {
 	t_env	*new_node;
+	t_env	*last;
 
 	new_node = malloc(sizeof(t_env));
 	if (!new_node)
@@ -49,11 +50,18 @@ void	add_env_node(t_env **env_list, char *env_str)
 		free(new_node);
 		return ;
 	}
-	new_node->next = *env_list;
-	new_node->prev = NULL;
-	if (*env_list)
-		(*env_list)->prev = new_node;
-	*env_list = new_node;
+	new_node->next = NULL;
+	if (!*env_list)
+	{
+		new_node->prev = NULL;
+		*env_list = new_node;
+		return ;
+	}
+	last = *env_list;
+	while (last->next)
+		last = last->next;
+	last->next = new_node;
+	new_node->prev = last;
 }
 
 t_env	*init_env(char **envp)
