@@ -90,20 +90,12 @@ int	builtin_export(char **args, t_env **env)
 	char	*equal_sign;
 
 	if (!args[1])
-	{
-		while (*env)
-		{
-			if ((*env)->value)
-				printf("declare -x %s=\"%s\"\n", (*env)->key, (*env)->value);
-			else
-				printf("declare -x %s\n", (*env)->key);
-			*env = (*env)->next;
-		}
-		return (0);
-	}
+		return (print_sorted_export(*env), 0);
 	i = 0;
 	while (args[++i])
 	{
+		if (handle_export_option_error(args[i]))
+			return (2);
 		equal_sign = ft_strchr(args[i], '=');
 		if (equal_sign && export_with_equal(args[i], env))
 			return (1);
