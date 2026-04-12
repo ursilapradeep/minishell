@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 17:20:10 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,14 @@ char	*append_char_to_line(char *line, char buf)
 	free(ch);
 	free(line);
 	return (joined);
+}
+
+static void	update_quote_state(char c, int quote[2])
+{
+	if (c == '\'' && !quote[1])
+		quote[0] = !quote[0];
+	else if (c == '"' && !quote[0])
+		quote[1] = !quote[1];
 }
 
 /*line = ft_strdup("") → line = "" (empty string)
@@ -60,17 +68,19 @@ char	*read_non_interactive_line(void)
 	char	buf;
 	char	*line;
 	int		bytes;
+	int		quote[2];
 
 	line = ft_strdup("");
 	if (!line)
 		return (NULL);
+	quote[0] = 0;
+	quote[1] = 0;
 	while (1)
 	{
 		bytes = read(STDIN_FILENO, &buf, 1);
-		if (bytes <= 0)
+		if (bytes <= 0 || (buf == '\n' && !quote[0] && !quote[1]))
 			break ;
-		if (buf == '\n')
-			break ;
+		update_quote_state(buf, quote);
 		line = append_char_to_line(line, buf);
 		if (!line)
 			return (NULL);
