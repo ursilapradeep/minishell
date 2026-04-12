@@ -54,6 +54,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	int				quoted;
 	struct s_token	*next;
 	struct s_token	*prev;
 }	t_token;

@@ -23,6 +23,8 @@ int	check_token_type(t_token *curr, t_token_check check_type)
 
 int	process_token_for_args(t_token *current, char **args, int *i)
 {
+	if (current->value && current->value[0] == '\0' && !current->quoted)
+		return (0);
 	args[*i] = ft_strdup(current->value);
 	if (!args[*i])
 	{
