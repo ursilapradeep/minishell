@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <ctype.h>
 
 /**
  * is_quote - Check if character is a quote
@@ -68,7 +67,8 @@ char	*extract_word(const char *input, int *len)
 	if (!input || !*input)
 		return (NULL);
 	end = input;
-	while (*end && !isspace(*end) && *end != '|'
+	while (*end && *end != ' ' && (*end < '\t' || *end > '\r')
+		&& *end != '|'
 		&& *end != '>' && *end != '<' && !is_quote(*end))
 		end++;
 	if (input == end)
