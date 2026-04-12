@@ -58,7 +58,7 @@ void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env)
 	execute_ast_command_child(cmd, my_env);
 }
 
-int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env)
+int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env, pid_t *last_pid)
 {
 	t_cmd	*current;
 	pid_t	pid;
@@ -77,6 +77,8 @@ int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env)
 		}
 		if (pid == 0)
 			execute_pipeline_child(current, cmds, my_env);
+		if (current->next == NULL)
+			*last_pid = pid;
 		current = current->next;
 		i++;
 	}
