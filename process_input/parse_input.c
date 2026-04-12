@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 12:31:01 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 15:29:39 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/12 15:56:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ char	*append_char_to_line(char *line, char buf)
 	return (joined);
 }
 
-static void	update_quote_state(char c, int quote[2])
+void	update_quote_state(char c, int *in_sq, int *in_dq)
 {
-	if (c == '\'' && !quote[1])
-		quote[0] = !quote[0];
-	else if (c == '"' && !quote[0])
-		quote[1] = !quote[1];
+	if (c == '\'' && !*in_dq)
+		*in_sq = !*in_sq;
+	else if (c == '"' && !*in_sq)
+		*in_dq = !*in_dq;
 }
 
 /*line = ft_strdup("") → line = "" (empty string)
@@ -80,7 +80,7 @@ char	*read_non_interactive_line(void)
 		bytes = read(STDIN_FILENO, &buf, 1);
 		if (bytes <= 0 || (buf == '\n' && !quote[0] && !quote[1]))
 			break ;
-		update_quote_state(buf, quote);
+		update_quote_state(buf, &quote[0], &quote[1]);
 		line = append_char_to_line(line, buf);
 		if (!line)
 			return (NULL);
