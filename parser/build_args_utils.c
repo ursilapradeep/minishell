@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_args_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/29 19:28:23 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/13 12:09:29 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/13 12:31:55 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,12 @@ int	is_valid_arg_type(t_token *curr)
 	int	preceded;
 	int	followed;
 
-	preceded = curr->prev && is_redirect_token(curr->prev);
-	followed = curr->next && is_redirect_token(curr->next);
+	preceded = 0;
+	followed = 0;
+	if (curr->prev)
+		preceded = is_redirect_token(curr->prev);
+	if (curr->next)
+		followed = is_redirect_token(curr->next);
 	return (curr->type == TOKEN_WORD && curr->value
 		&& (curr->value[0] != '\0' || curr->quoted)
 		&& !preceded && !followed);
