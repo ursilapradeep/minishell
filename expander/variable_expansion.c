@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 17:34:45 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 12:07:29 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	process_word_token(t_token *current, t_token *prev, t_env *env)
 		return (-1);
 	should_split = has_unquoted_dollar(current->value)
 		&& has_unquoted_space(expanded)
-		&& !(prev && prev->type == TOKEN_HEREDOC);
+			&& !(prev && prev->type == TOKEN_HEREDOC);
 	unquoted = remove_quotes_string(expanded);
 	free(expanded);
 	if (!unquoted)
