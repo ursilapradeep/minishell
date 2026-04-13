@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 15:56:45 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 10:41:20 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ t_token		*create_token(char *value, t_token_type type);
 void		add_token(t_token **head, t_token *new_token);
 void		free_tokens(t_token *tokens);
 t_token		*merge_consecutive_words(t_token *tokens);
+char		*determine_token_value(const char **current,
+				t_token_type *token_type, int *consumed);
 
 //variable_expansion
 const char	*extract_var_name(const char *input, int *len, int *is_braced);

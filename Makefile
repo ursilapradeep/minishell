@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
+#    By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-#    Updated: 2026/04/12 00:39:00 by spaipur-         ###   ########.fr        #
+#    Updated: 2026/04/13 10:43:11 by uvadakku         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,6 @@ SRCS = main.c \
        tokenizer/tokenize_utils_II.c\
        tokenizer/tokenize_utils_III.c\
        tokenizer/tokenize_utils_IV.c\
-       tokenizer/tokenize_utils_V.c\
        expander/variable_expansion.c \
        expander/variable_expansion_utils_I.c \
        expander/variable_expansion_utils_II.c \

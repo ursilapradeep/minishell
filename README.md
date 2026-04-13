@@ -64,6 +64,8 @@ make fclean
 ## Resources
 
 ### Technical references
+- Bash Reference Manual:https://www.gnu.org/software/bash/manual/bash.html
+- Bash (unix Shell):https://en.wikipedia.org/wiki/Bash_(Unix_shell)
 - Readline manual: https://man7.org/linux/man-pages/man3/readline.3.html
 - Redirections (pipex background): https://42-cursus.gitbook.io/guide/2-rank-02/pipex/understand-pipex
 - Heredoc reference: https://linuxize.com/post/bash-heredoc/
