@@ -6,16 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 17:24:28 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/13 17:10:36 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int		execute_single_command(t_cmd *cmd, t_env **my_env);
-int		count_pipeline_cmds(t_cmd *cmd);
-t_cmd	*skip_pipeline(t_cmd *cmd);
-int		should_short_circuit(int status, t_operator op);
 
 static int	execute_current_cmd(t_cmd **current, t_env **my_env)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_builder.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:21:40 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 09:28:40 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 13:07:28 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ t_cmd	*build_single_cmd(t_token **tokens)
 		return (NULL);
 	return (cmd);
 }
-
-int	process_tokens_into_commands(t_token *tokens, t_cmd **commands);
 
 t_cmd	*build_commands(t_token *tokens)
 {

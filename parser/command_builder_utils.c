@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   command_builder_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:21:40 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 17:34:45 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 13:07:24 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-t_cmd	*build_single_cmd(t_token **tokens);
-void	add_cmd(t_cmd **head, t_cmd *new_cmd);
 
 t_token	*find_next_separator(t_token *tokens)
 {
