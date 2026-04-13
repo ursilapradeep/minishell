@@ -6,14 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 15:29:50 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 12:38:07 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-char	*determine_token_value(const char **current,
-			t_token_type *token_type, int *consumed);
 
 static const char	*skip_whitespace_simple(const char *input)
 {
