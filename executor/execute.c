@@ -6,13 +6,11 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:51:52 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 17:24:28 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/13 16:52:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	execute_single_command(t_cmd *cmd, t_env **my_env);
 
 int	count_commands(t_cmd *cmds)
 {

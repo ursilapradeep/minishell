@@ -3,18 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   build_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 16:45:51 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/11 23:46:53 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/13 13:52:33 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int			count_args(t_token *tokens);
-char		**build_args_array(t_token *tokens, int arg_count);
-int			process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
 
 static int	process_args_and_redirs(t_cmd *cmd, t_token **tokens, int arg_count)
 {

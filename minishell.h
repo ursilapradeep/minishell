@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/13 10:41:20 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/13 18:48:29 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,10 @@ t_token		*find_next_pipe(t_token *tokens);
 t_token		*find_next_separator(t_token *tokens);
 int			process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
 int			process_heredocs(t_cmd *cmds, t_env *env);
+int			process_tokens_into_commands(t_token *tokens, t_cmd **commands);
+t_cmd		*build_single_cmd(t_token **tokens);
+void		add_cmd(t_cmd **head, t_cmd *new_cmd);
+char		**build_args_array(t_token *tokens, int arg_count);
 
 //built- ins
 int			is_builtin(char *cmd);
@@ -161,6 +165,7 @@ void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);
 
 //executor
+int			execute_single_command(t_cmd *cmd, t_env **my_env);
 int			execute_commands(t_cmd *cmds, t_env **my_env);
 int			wait_and_get_exit_status(pid_t pid);
 int			run_external(char **args, t_env **envp);
@@ -177,6 +182,9 @@ int			wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid);
 int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
 int			execute_pipeline(t_cmd *cmds, t_env **envp);
+int			count_pipeline_cmds(t_cmd *cmd);
+t_cmd		*skip_pipeline(t_cmd *cmd);
+int			should_short_circuit(int status, t_operator op);
 
 // Signal handling
 void		setup_signal_handlers(void);
