@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-<<<<<<< Updated upstream
-/*   Updated: 2026/04/13 12:07:29 by uvadakku         ###   ########.fr       */
-=======
-/*   Updated: 2026/04/13 12:23:59 by spaipur-         ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2026/04/13 12:37:49 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,17 +68,11 @@ static int	process_word_token(t_token *current, t_token *prev, t_env *env)
 	expanded = expand_token_word(current, prev, env);
 	if (!expanded)
 		return (-1);
-<<<<<<< Updated upstream
-	should_split = has_unquoted_dollar(current->value)
-		&& has_unquoted_space(expanded)
-			&& !(prev && prev->type == TOKEN_HEREDOC);
-=======
 	should_split = has_unquoted_dollar(current->value);
 	if (should_split)
 		should_split = has_unquoted_space(expanded);
 	if (should_split && prev && prev->type == TOKEN_HEREDOC)
 		should_split = 0;
->>>>>>> Stashed changes
 	unquoted = remove_quotes_string(expanded);
 	free(expanded);
 	if (!unquoted)
