@@ -30,6 +30,8 @@ static int	process_operator_token(t_token **curr, t_cmd **last_cmd,
 {
 	if (!*curr || ((*curr)->type != TOKEN_AND && (*curr)->type != TOKEN_OR))
 		return (0);
+	if (!*last_cmd || *prev_had_pipe)
+		return (-1);
 	if (*last_cmd)
 	{
 		if ((*curr)->type == TOKEN_AND)
@@ -89,13 +91,17 @@ int	process_tokens_into_commands(t_token *tokens, t_cmd **commands)
 	t_token	*curr;
 	t_cmd	*last_cmd;
 	int		prev_had_pipe;
+	int		op_result;
 
 	curr = tokens;
 	last_cmd = NULL;
 	prev_had_pipe = 0;
 	while (curr)
 	{
-		if (process_operator_token(&curr, &last_cmd, &prev_had_pipe))
+		op_result = process_operator_token(&curr, &last_cmd, &prev_had_pipe);
+		if (op_result < 0)
+			return (-1);
+		if (op_result > 0)
 			continue ;
 		if (process_pipe_token(&curr, &prev_had_pipe))
 		{
