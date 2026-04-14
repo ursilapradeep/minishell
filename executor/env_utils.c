@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int	fill_env_node(t_env *new_node, char *env_str)
+static int	fill_env_node(t_env *new_node, char *env_str)
 {
 	char	*equal_sign;
 	size_t	key_len;

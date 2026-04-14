@@ -26,7 +26,7 @@ static int	count_env_entries(t_env *env)
 	return (count);
 }
 
-void	free_partial_env_array(char **env_array, int count)
+static void	free_partial_env_array(char **env_array, int count)
 {
 	while (count > 0)
 	{

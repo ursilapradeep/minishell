@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   variable_expansion_utils_III.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 13:10:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/09 11:52:18 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

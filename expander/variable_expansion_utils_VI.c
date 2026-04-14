@@ -12,34 +12,6 @@
 
 #include "../minishell.h"
 
-static int	handle_backslash_dollar(const char **current, char *result,
-		int *result_len, int state)
-{
-	int	count;
-	int	i;
-
-	if (**current != '\\' || (state & 1))
-		return (0);
-	count = 0;
-	while ((*current)[count] == '\\')
-		count++;
-	if ((*current)[count] != '$')
-		return (0);
-	i = 0;
-	while (i < (count / 2) && *result_len < 4095)
-	{
-		result[(*result_len)++] = '\\';
-		i++;
-	}
-	*current += count;
-	if (count % 2)
-	{
-		result[(*result_len)++] = '$';
-		(*current)++;
-	}
-	return (1);
-}
-
 static int	handle_dollar_special(const char **current, char *result,
 		int *result_len, int state)
 {
@@ -51,10 +23,10 @@ static int	handle_dollar_special(const char **current, char *result,
 		(*current)++;
 		return (1);
 	}
-	return (handle_backslash_dollar(current, result, result_len, state));
+	return (0);
 }
 
-int	proc_input(const char *input, char *result, int *result_len, t_env *env)
+static int	proc_input(const char *input, char *result, int *result_len, t_env *env)
 {
 	const char	*current;
 	int			in_sq;
