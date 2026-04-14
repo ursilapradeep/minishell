@@ -46,6 +46,21 @@ static void	print_pipe_syntax_error(char *input)
 	ft_putstr_fd("'\n", 2);
 }
 
+static int	print_logical_syntax_error(t_token *tokens, char *input)
+{
+	if (!tokens)
+		return (0);
+	if (tokens->type != TOKEN_AND && tokens->type != TOKEN_OR)
+		return (0);
+	ft_putstr_fd("bash: line 1: syntax error near unexpected token `", 2);
+	ft_putstr_fd(tokens->value, 2);
+	ft_putstr_fd("'\n", 2);
+	ft_putstr_fd("bash: line 1: `", 2);
+	ft_putstr_fd(input, 2);
+	ft_putstr_fd("'\n", 2);
+	return (1);
+}
+
 static int	execute_single_input(char *input, t_env **my_env)
 {
 	t_token	*tokens;
@@ -54,6 +69,8 @@ static int	execute_single_input(char *input, t_env **my_env)
 
 	tokens = tokenize(input);
 	if (!tokens || expand_token_list(tokens, *my_env) < 0)
+		return (free_tokens(tokens), 2);
+	if (print_logical_syntax_error(tokens, input))
 		return (free_tokens(tokens), 2);
 	cmds = build_commands(tokens);
 	free_tokens(tokens);
