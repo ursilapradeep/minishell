@@ -26,7 +26,8 @@ static int	handle_dollar_special(const char **current, char *result,
 	return (0);
 }
 
-static int	proc_input(const char *input, char *result, int *result_len, t_env *env)
+static int	proc_input(const char *input, char *result,
+		int *result_len, t_env *env)
 {
 	const char	*current;
 	int			in_sq;

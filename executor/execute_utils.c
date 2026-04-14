@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 15:06:43 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/12 17:24:28 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/14 22:27:17 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,21 @@ void	execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env)
 	execute_ast_command_child(cmd, my_env);
 }
 
+static int	fork_one_pipeline_cmd(t_cmd *current, t_cmd *cmds,
+		t_env **my_env, pid_t *pid)
+{
+	ignore_signals();
+	*pid = fork();
+	if (*pid == -1)
+	{
+		perror("fork");
+		return (-1);
+	}
+	if (*pid == 0)
+		execute_pipeline_child(current, cmds, my_env);
+	return (0);
+}
+
 int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env, pid_t *last_pid)
 {
 	t_cmd	*current;
@@ -68,15 +83,8 @@ int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env, pid_t *last_pid)
 	i = 0;
 	while (current)
 	{
-		ignore_signals();
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork");
+		if (fork_one_pipeline_cmd(current, cmds, my_env, &pid) < 0)
 			return (1);
-		}
-		if (pid == 0)
-			execute_pipeline_child(current, cmds, my_env);
 		i++;
 		if (!current->has_pipe)
 		{
