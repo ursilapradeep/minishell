@@ -6,7 +6,11 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
+<<<<<<< Updated upstream
 #    Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr        #
+=======
+#    Updated: 2026/04/14 19:22:12 by spaipur-         ###   ########.fr        #
+>>>>>>> Stashed changes
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +28,6 @@ SRCS = main.c \
        executor/execute_builtins.c\
        executor/execute_single_cmds.c\
        executor/execute_external.c\
-       executor/execute_pipes.c\
-       executor/execute_pipes_utils.c\
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        builtins/builtin_cd.c \
