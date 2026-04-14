@@ -29,6 +29,8 @@ static void	process_quote_removal(const char *str, char *res)
 			in_sq = !in_sq;
 		else if (str[i] == '"' && !in_sq)
 			in_dq = !in_dq;
+		else if (str[i] == '\\' && !in_sq && str[i + 1])
+			res[j++] = str[++i];
 		else
 			res[j++] = str[i];
 		i++;
