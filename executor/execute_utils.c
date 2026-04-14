@@ -77,10 +77,13 @@ int	fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env, pid_t *last_pid)
 		}
 		if (pid == 0)
 			execute_pipeline_child(current, cmds, my_env);
-		if (current->next == NULL)
-			*last_pid = pid;
-		current = current->next;
 		i++;
+		if (!current->has_pipe)
+		{
+			*last_pid = pid;
+			break ;
+		}
+		current = current->next;
 	}
 	return (i);
 }
