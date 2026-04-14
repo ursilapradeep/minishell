@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:15:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 15:29:39 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/14 22:27:17 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,10 @@ char	*extract_quoted_string(const char *input, int *len)
  * @len: Pointer to store consumed characters
  * Return: Allocated word string, NULL on error
  */
-char	*extract_word(const char *input, int *len)
+static const char	*find_word_end(const char *input)
 {
 	const char	*end;
-	char		*word;
 
-	if (!input || !*input)
-		return (NULL);
 	end = input;
 	while (*end)
 	{
@@ -79,6 +76,17 @@ char	*extract_word(const char *input, int *len)
 			break ;
 		end++;
 	}
+	return (end);
+}
+
+char	*extract_word(const char *input, int *len)
+{
+	const char	*end;
+	char		*word;
+
+	if (!input || !*input)
+		return (NULL);
+	end = find_word_end(input);
 	if (input == end)
 		return (NULL);
 	word = ft_calloc((end - input) + 1, sizeof(char));
@@ -89,36 +97,22 @@ char	*extract_word(const char *input, int *len)
 	return (word);
 }
 
-/**
- * extract_redirect_operator - Extract redirect operator (>, >>, <, <<)
- * @input: Input string
- * @len: Pointer to store operator length
- * Return: Operator string, NULL on error
- */
-static char	*extract_redirect_operator(const char *input, int *len)
-{
-	char	*op;
-	int		op_len;
-
-	if (!input || (*input != '>' && *input != '<'))
-		return (NULL);
-	op_len = 1;
-	if ((input[0] == '>' && (input[1] == '>' || input[1] == '|'))
-		|| (input[0] == '<' && input[1] == '<'))
-		op_len = 2;
-	op = ft_calloc(op_len + 1, sizeof(char));
-	if (!op)
-		return (NULL);
-	ft_strlcpy(op, input, op_len + 1);
-	*len = op_len;
-	return (op);
-}
-
 char	*handle_redirection_token(const char **cur, t_token_type *typ, int *len)
 {
 	char	*token_value;
+	int		op_len;
 
-	token_value = extract_redirect_operator(*cur, len);
+	if (!cur || !*cur || (**cur != '>' && **cur != '<'))
+		return (NULL);
+	op_len = 1;
+	if (((*cur)[0] == '>' && ((*cur)[1] == '>' || (*cur)[1] == '|'))
+		|| ((*cur)[0] == '<' && (*cur)[1] == '<'))
+		op_len = 2;
+	token_value = ft_calloc(op_len + 1, sizeof(char));
+	if (!token_value)
+		return (NULL);
+	ft_strlcpy(token_value, *cur, op_len + 1);
+	*len = op_len;
 	if (**cur == '<' && (*cur)[1] == '<')
 		*typ = TOKEN_HEREDOC;
 	else if (**cur == '<')
