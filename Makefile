@@ -63,6 +63,7 @@ SRCS = main.c \
        parser/process_heredoc.c\
        process_input/parse.c \
        process_input/parse_input.c \
+       process_input/shell_status.c \
        
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

@@ -16,7 +16,7 @@ int	handle_status_special_case(const char *input, char **exp, int *con)
 {
 	if (input[1] != '?')
 		return (0);
-	*exp = ft_itoa(g_shell.last_status);
+	*exp = ft_itoa(get_last_status());
 	if (!*exp)
 		return (-1);
 	*con = 2;

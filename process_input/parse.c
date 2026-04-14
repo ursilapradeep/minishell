@@ -70,36 +70,9 @@ static int	execute_single_input(char *input, t_env **my_env)
 	return (status);
 }
 
-static void	execute_segment(char **seg, char *current,
-			t_env **my_env, int *status)
-{
-	*current = '\0';
-	if (**seg)
-		*status = execute_single_input(*seg, my_env);
-	*seg = current + 1;
-}
-
 int	parse_input(char *input, t_env **my_env)
 {
-	int		quote[2];
-	int		status;
-	char	*seg;
-
-	quote[0] = 0;
-	quote[1] = 0;
-	status = 0;
-	seg = input;
-	while (*input)
-	{
-		if (*input == '\'' && !quote[1])
-			quote[0] = !quote[0];
-		else if (*input == '"' && !quote[0])
-			quote[1] = !quote[1];
-		else if (*input == ';' && !quote[0] && !quote[1])
-			execute_segment(&seg, input, my_env, &status);
-		input++;
-	}
-	if (*seg)
-		status = execute_single_input(seg, my_env);
-	return (status);
+	if (!input || !*input)
+		return (0);
+	return (execute_single_input(input, my_env));
 }

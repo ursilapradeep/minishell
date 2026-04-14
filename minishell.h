@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
@@ -74,13 +75,7 @@ typedef struct s_cmd
 	struct s_cmd	*prev;
 }	t_cmd;
 
-typedef struct s_shell_state
-{
-	int				last_status;
-	int				sigint_received;
-}	t_shell_state;
-
-extern t_shell_state	g_shell;
+extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_token_check
 {
@@ -89,10 +84,13 @@ typedef enum e_token_check
 }	t_token_check;
 
 // process input 
+void		minishell_loop(t_env *my_env);
 char		*read_input(void);
 char		*read_non_interactive_line(void);
 void		update_quote_state(char c, int *in_sq, int *in_dq);
 int			parse_input(char *input, t_env **my_env);
+int			get_last_status(void);
+void		set_last_status(int status);
 t_env		*init_env(char **envp);
 void		add_env_node(t_env **env_list, char *env_str);
 
