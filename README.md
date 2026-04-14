@@ -79,3 +79,24 @@ AI tools were used for:
 - improving documentation wording.
 
 All generated suggestions were manually reviewed, tested, and adapted before integration.
+
+# 1) backslash escape
+printf 'echo hello\\ world\n' | ./minishell; echo "minishell=$?"
+printf 'echo hello\\ world\n' | bash;       echo "bash=$?"
+
+# 2) invalid leading &&
+printf '&& ls\n' | ./minishell; echo "minishell=$?"
+printf '&& ls\n' | bash;       echo "bash=$?"
+
+# 3) input redirection
+printf 'foo\nbar\n' > in.txt
+printf 'cat < in.txt\n' | ./minishell; echo "minishell=$?"
+printf 'cat < in.txt\n' | bash;       echo "bash=$?"
+
+# 4) pipe + and/or chain
+printf 'ls | grep foo && echo found || echo not found\n' | ./minishell; echo "minishell=$?"
+printf 'ls | grep foo && echo found || echo not found\n' | bash;       echo "bash=$?"
+1.run these tests
+2. fix each one of them to match the bash behaviour
+3.recheck the tests
+4.git after each fix
