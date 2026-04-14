@@ -67,10 +67,18 @@ char	*extract_word(const char *input, int *len)
 	if (!input || !*input)
 		return (NULL);
 	end = input;
-	while (*end && *end != ' ' && (*end < '\t' || *end > '\r')
-		&& *end != '|'
-		&& *end != '>' && *end != '<' && !is_quote(*end))
+	while (*end)
+	{
+		if (*end == '\\' && end[1])
+		{
+			end += 2;
+			continue ;
+		}
+		if (*end == ' ' || (*end >= '\t' && *end <= '\r')
+			|| *end == '|' || *end == '>' || *end == '<' || is_quote(*end))
+			break ;
 		end++;
+	}
 	if (input == end)
 		return (NULL);
 	word = ft_calloc((end - input) + 1, sizeof(char));
