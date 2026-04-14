@@ -95,10 +95,7 @@ char	*read_input(void)
 	char	*input;
 
 	if (isatty(STDIN_FILENO))
-	{
-		g_shell.sigint_received = 0;
 		input = readline("minishell$ ");
-	}
 	else
 		input = read_non_interactive_line();
 	if (!input)

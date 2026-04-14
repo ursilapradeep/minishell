@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-t_shell_state	g_shell = {0, 0};
+volatile sig_atomic_t	g_signal = 0;
 
 void	free_args(char **args)
 {
@@ -35,7 +35,7 @@ static int	handle_input_read(char *input)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("exit\n");
-		exit(g_shell.last_status);
+		exit(get_last_status());
 	}
 	if (*input == '\0')
 	{
@@ -54,10 +54,15 @@ void	minishell_loop(t_env *my_env)
 	while (1)
 	{
 		input = read_input();
+		if (g_signal == SIGINT)
+		{
+			set_last_status(130);
+			g_signal = 0;
+		}
 		if (handle_input_read(input))
 			continue ;
 		exit_code = parse_input(input, &my_env);
-		g_shell.last_status = exit_code;
+		set_last_status(exit_code);
 		free(input);
 		if (!isatty(STDIN_FILENO) && exit_code == 2)
 			exit(2);
@@ -72,7 +77,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	g_shell.last_status = 0;
+	set_last_status(0);
 	my_env = init_env(envp);
 	if (isatty(STDIN_FILENO))
 		setup_signal_handlers();
