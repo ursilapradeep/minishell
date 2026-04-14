@@ -6,11 +6,7 @@
 #    By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/13 13:03:32 by spaipur-          #+#    #+#              #
-<<<<<<< Updated upstream
-#    Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr        #
-=======
-#    Updated: 2026/04/14 19:22:12 by spaipur-         ###   ########.fr        #
->>>>>>> Stashed changes
+#    Updated: 2026/04/14 21:36:00 by spaipur-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

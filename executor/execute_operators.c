@@ -41,10 +41,18 @@ static t_cmd	*get_pipeline_end(t_cmd *current)
 static t_cmd	*advance_current(t_cmd *current, int status)
 {
 	t_cmd	*end;
+	t_cmd	*next_segment;
 
 	end = get_pipeline_end(current);
 	if (should_short_circuit(status, end->next_op))
-		return (skip_pipeline(current));
+	{
+		next_segment = end->next;
+		if (!next_segment)
+			return (NULL);
+		while (next_segment->has_pipe && next_segment->next)
+			next_segment = next_segment->next;
+		return (next_segment->next);
+	}
 	return (end->next);
 }
 
