@@ -87,7 +87,7 @@ char	*extract_word(const char *input, int *len)
  * @len: Pointer to store operator length
  * Return: Operator string, NULL on error
  */
-char	*extract_redirect_operator(const char *input, int *len)
+static char	*extract_redirect_operator(const char *input, int *len)
 {
 	char	*op;
 	int		op_len;
