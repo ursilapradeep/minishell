@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <errno.h>
 
 static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
 {
@@ -36,13 +37,13 @@ static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
 	return (new_delimiters);
 }
 
-static int	get_target_fd(t_token *current)
+static void	print_file_error(char *filename)
 {
-	if (current->prev && current->prev->type == TOKEN_WORD
-		&& current->prev != current
-		&& ft_strncmp(current->prev->value, "2", 2) == 0)
-		return (STDERR_FILENO);
-	return (STDOUT_FILENO);
+	ft_putstr_fd("bash: ", STDERR_FILENO);
+	ft_putstr_fd(filename, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(strerror(errno), STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 }
 
 int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
@@ -69,7 +70,7 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
 	else
 		return (-1);
 	if (fd < 0)
-		perror("minishell");
+		print_file_error(filename);
 	return (fd);
 }
 
@@ -100,24 +101,25 @@ static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 {
 	char	*filename;
-	int		fd;
 	int		target_fd;
 
 	if (type == TOKEN_HEREDOC)
 		return (handle_heredoc_token(cmd, current));
 	if (!current->next || current->next->type != TOKEN_WORD)
-	{
-		write(STDERR_FILENO, "Error: No filename after redirect", 34);
-		return (-1);
-	}
+		return (write(STDERR_FILENO, "Error: No filename after redirect", 34),
+			-1);
 	filename = current->next->value;
-	target_fd = get_target_fd(current);
+	target_fd = STDOUT_FILENO;
+	if (current->prev && current->prev->type == TOKEN_WORD
+		&& current->prev != current
+		&& ft_strncmp(current->prev->value, "2", 2) == 0)
+		target_fd = STDERR_FILENO;
 	if ((type == TOKEN_REDIRECT_IN && cmd->infd == -2)
 		|| (type != TOKEN_REDIRECT_IN && target_fd == STDERR_FILENO
 			&& cmd->errfd == -2)
 		|| (type != TOKEN_REDIRECT_IN && target_fd != STDERR_FILENO
 			&& cmd->outfd == -2))
 		return (1);
-	fd = open_redirection_file(cmd, filename, type, target_fd);
-	return (process_file_fd(cmd, fd, type, target_fd));
+	return (process_file_fd(cmd, open_redirection_file(cmd, filename, type,
+				target_fd), type, target_fd));
 }
