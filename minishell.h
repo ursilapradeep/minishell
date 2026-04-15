@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ typedef struct s_cmd
 }	t_cmd;
 
 extern volatile sig_atomic_t	g_signal;
-extern volatile sig_atomic_t	g_heredoc_mode;
 
 typedef enum e_token_check
 {

@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 10:59:49 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,14 @@
 */
 void	signal_handler_sigint(int sig)
 {
+	int	was_in_heredoc;
+
+	was_in_heredoc = 0;
+	if (g_signal < 0)
+		was_in_heredoc = 1;
 	g_signal = sig;
 	write(STDOUT_FILENO, "\n", 1);
-	if (g_heredoc_mode)
+	if (was_in_heredoc)
 	{
 		rl_replace_line("", 0);
 		rl_done = 1;
