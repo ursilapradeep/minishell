@@ -6,14 +6,13 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 10:42:04 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
-volatile sig_atomic_t	g_heredoc_mode = 0;
 
 void	free_args(char **args)
 {

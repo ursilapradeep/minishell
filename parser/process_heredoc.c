@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 14:19:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,15 +73,15 @@ static int	create_heredoc_fd(char *delimiter, t_env *env)
 		do_expand = 0;
 		delimiter++;
 	}
-	g_heredoc_mode = 1;
+	g_signal = -1;
 	if (read_heredoc_lines(pipefd[1], delimiter, do_expand, env) == -1)
 	{
-		g_heredoc_mode = 0;
+		g_signal = 0;
 		close(pipefd[0]);
 		close(pipefd[1]);
 		return (-1);
 	}
-	g_heredoc_mode = 0;
+	g_signal = 0;
 	close(pipefd[1]);
 	return (pipefd[0]);
 }
