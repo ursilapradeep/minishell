@@ -26,10 +26,7 @@ static int	set_error_fd(t_cmd *cmd, int type, int target_fd)
 int	process_file_fd(t_cmd *cmd, int fd, int type, int target_fd)
 {
 	if (fd < 0)
-	{
-		perror("minishell");
 		return (set_error_fd(cmd, type, target_fd));
-	}
 	if (type == TOKEN_REDIRECT_IN)
 		cmd->infd = fd;
 	else if (target_fd == STDERR_FILENO)
