@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 16:33:08 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/14 22:58:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,19 @@ static int	is_pipe_syntax_error(char *input)
 
 static void	print_pipe_syntax_error(char *input)
 {
-	ft_putstr_fd("bash: line 1: syntax error near unexpected token `|'\n", 2);
-	ft_putstr_fd("bash: line 1: `", 2);
-	ft_putstr_fd(input, 2);
-	ft_putstr_fd("'\n", 2);
+	(void)input;
+	ft_putstr_fd("bash: syntax error near unexpected token `|'\n", 2);
 }
 
 static int	print_logical_syntax_error(t_token *tokens, char *input)
 {
+	(void)input;
 	if (!tokens)
 		return (0);
 	if (tokens->type != TOKEN_AND && tokens->type != TOKEN_OR)
 		return (0);
-	ft_putstr_fd("bash: line 1: syntax error near unexpected token `", 2);
+	ft_putstr_fd("bash: syntax error near unexpected token `", 2);
 	ft_putstr_fd(tokens->value, 2);
-	ft_putstr_fd("'\n", 2);
-	ft_putstr_fd("bash: line 1: `", 2);
-	ft_putstr_fd(input, 2);
 	ft_putstr_fd("'\n", 2);
 	return (1);
 }
