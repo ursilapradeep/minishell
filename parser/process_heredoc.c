@@ -41,6 +41,8 @@ static int	read_heredoc_lines(int write_fd, char *delimiter,
 			line = readline("> ");
 		else
 			line = read_non_interactive_line();
+		if (g_signal == SIGINT)
+			return (free(line), -1);
 		if (!line)
 			break ;
 		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
@@ -71,12 +73,15 @@ static int	create_heredoc_fd(char *delimiter, t_env *env)
 		do_expand = 0;
 		delimiter++;
 	}
+	g_heredoc_mode = 1;
 	if (read_heredoc_lines(pipefd[1], delimiter, do_expand, env) == -1)
 	{
+		g_heredoc_mode = 0;
 		close(pipefd[0]);
 		close(pipefd[1]);
 		return (-1);
 	}
+	g_heredoc_mode = 0;
 	close(pipefd[1]);
 	return (pipefd[0]);
 }

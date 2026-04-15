@@ -23,6 +23,12 @@ void	signal_handler_sigint(int sig)
 {
 	g_signal = sig;
 	write(STDOUT_FILENO, "\n", 1);
+	if (g_heredoc_mode)
+	{
+		rl_replace_line("", 0);
+		rl_done = 1;
+		return ;
+	}
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
