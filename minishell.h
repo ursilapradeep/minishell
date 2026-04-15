@@ -76,6 +76,7 @@ typedef struct s_cmd
 }	t_cmd;
 
 extern volatile sig_atomic_t	g_signal;
+extern volatile sig_atomic_t	g_heredoc_mode;
 
 typedef enum e_token_check
 {

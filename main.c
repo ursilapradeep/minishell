@@ -13,6 +13,7 @@
 #include "minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
+volatile sig_atomic_t	g_heredoc_mode = 0;
 
 void	free_args(char **args)
 {

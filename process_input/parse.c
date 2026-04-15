@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 16:33:08 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/14 22:58:45 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/15 04:52:33 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static int	execute_single_input(char *input, t_env **my_env)
 		return (2);
 	}
 	if (process_heredocs(cmds, *my_env) < 0)
-		return (free_cmd_list(cmds), 2);
+		return (free_cmd_list(cmds), 2 + (128 * (g_signal == SIGINT)));
 	status = execute_commands(cmds, my_env);
 	free_cmd_list(cmds);
 	return (status);
