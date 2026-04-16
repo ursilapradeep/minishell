@@ -40,9 +40,9 @@ void	close_all_pipes(t_cmd *cmds)
 	current = cmds;
 	while (current)
 	{
-		if (current->infd != STDIN_FILENO)
+		if (current->infd > 2)
 			close(current->infd);
-		if (current->outfd != STDOUT_FILENO)
+		if (current->outfd > 2)
 			close(current->outfd);
 		if (current->errfd > 2)
 			close(current->errfd);

@@ -199,6 +199,7 @@ char		*find_command(char *cmd, t_env **envp);
 char		*process_directory(char *path_copy,
 				char **dir_start, int i, char *cmd);
 char		*check_command_in_dir(char *dir, char *cmd);
+char		*check_command_in_dir(char *dir, char *cmd);
 
 //error handling
 void		free_args(char **args);

@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME = minishell
-CC = cc
+CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
        executor/env_utils.c \

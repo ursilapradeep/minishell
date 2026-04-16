@@ -43,7 +43,8 @@ int	process_redirections_in_tokens(t_cmd *cmd, t_token *tokens)
 	if (!cmd || !tokens)
 		return (0);
 	curr = tokens;
-	while (curr && curr->type != TOKEN_PIPE)
+	while (curr && curr->type != TOKEN_PIPE
+		&& curr->type != TOKEN_AND && curr->type != TOKEN_OR)
 	{
 		if (curr->type == TOKEN_REDIRECT_IN
 			|| curr->type == TOKEN_REDIRECT_OUT

@@ -47,8 +47,10 @@ int	builtin_exit(char **args)
 {
 	int	exit_code;
 
+	if (isatty(STDIN_FILENO))
+		ft_putstr_fd("exit\n", STDERR_FILENO);
 	if (!args[1])
-		exit(0);
+		exit(get_last_status());
 	exit_validate_arg(args[1]);
 	if (args[2])
 	{

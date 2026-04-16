@@ -92,11 +92,6 @@ int	run_external(char **args, t_env **envp)
 	pid_t	pid;
 	int		prep_status;
 
-	if (!isatty(STDIN_FILENO) && args && args[0]
-		&& ft_strncmp(args[0], "sleep", 6) == 0 && args[0][5] == '\0'
-		&& args[1] && ft_strncmp(args[1], "2", 2) == 0 && !args[2]
-		&& !get_env_value(*envp, "PATH"))
-		return (0);
 	prep_status = prepare_external(args, envp, &cmd_path, &env_array);
 	if (prep_status != 0)
 		return (prep_status);
