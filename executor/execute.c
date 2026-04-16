@@ -75,27 +75,41 @@ static int	exec_single_logic(t_cmd *cmd, t_env **my_env)
 	return (run_external(cmd->args, my_env));
 }
 
+static int handle_variable_assignment_if_needed(t_cmd *cmd, t_env **my_env)
+{
+	if (cmd->args && cmd->args[0]
+		&& ft_strchr(cmd->args[0], '=')
+		&& cmd->args[0][0] != '='
+		&& !cmd->args[1])
+	{
+		set_env_value(my_env, cmd->args[0], NULL);
+		return 1;
+	}
+	return 0;
+}
+
 int	execute_single_command(t_cmd *cmd, t_env **my_env)
 {
-	int	saved_stdin;
-	int	saved_stdout;
-	int	saved_stderr;
-	int	status;
-
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-	saved_stderr = dup(STDERR_FILENO);
+	int saved_stdin = dup(STDIN_FILENO);
+	int saved_stdout = dup(STDOUT_FILENO);
+	int saved_stderr = dup(STDERR_FILENO);
+	int status;
 	if (saved_stdin < 0 || saved_stdout < 0 || saved_stderr < 0)
-		return (1);
+		return 1;
 	if (cmd->infd == -2 || cmd->outfd == -2 || cmd->errfd == -2)
 		return (restore_std_io(saved_stdin, saved_stdout, saved_stderr), 1);
 	setup_redirections(cmd);
 	if (!cmd->args || !cmd->args[0])
 	{
 		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
-		return (0);
+		return 0;
+	}
+	if (handle_variable_assignment_if_needed(cmd, my_env))
+	{
+		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
+		return 0;
 	}
 	status = exec_single_logic(cmd, my_env);
 	restore_std_io(saved_stdin, saved_stdout, saved_stderr);
-	return (status);
+	return status;
 }
