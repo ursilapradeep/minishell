@@ -77,22 +77,25 @@ int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
 static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 {
 	char	*delimiter;
+	char	**new_delims;
 
-	if (!current->next || current->next->type != TOKEN_WORD)
-	{
-		write(STDERR_FILENO, "Error: No delimiter after <<", 29);
-		return (-1);
-	}
+	       if (!current->next || current->next->type != TOKEN_WORD)
+	       {
+		       write(STDERR_FILENO, "syntax error near unexpected token `newline'\n", 43);
+		       return (-1);
+	       }
 	if (current->next->quoted)
 		delimiter = ft_strjoin("\1", current->next->value);
 	else
 		delimiter = ft_strdup(current->next->value);
 	if (!delimiter)
 		return (-1);
-	cmd->heredoc_delimiters = copy_heredoc_delimiters(cmd, delimiter);
+	new_delims = copy_heredoc_delimiters(cmd, delimiter);
 	free(delimiter);
-	if (!cmd->heredoc_delimiters)
+	if (!new_delims)
 		return (-1);
+	free(cmd->heredoc_delimiters);
+	cmd->heredoc_delimiters = new_delims;
 	cmd->heredoc_count++;
 	cmd->heredoc_delimiter = cmd->heredoc_delimiters[cmd->heredoc_count - 1];
 	return (1);
@@ -106,8 +109,10 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 	if (type == TOKEN_HEREDOC)
 		return (handle_heredoc_token(cmd, current));
 	if (!current->next || current->next->type != TOKEN_WORD)
-		return (write(STDERR_FILENO, "Error: No filename after redirect", 34),
-			-1);
+	{
+		write(STDERR_FILENO, "syntax error near unexpected token \n", 43);
+		return (-1);
+	}
 	filename = current->next->value;
 	target_fd = STDOUT_FILENO;
 	if (current->prev && current->prev->type == TOKEN_WORD

@@ -72,7 +72,8 @@ static const char	*find_word_end(const char *input)
 			continue ;
 		}
 		if (*end == ' ' || (*end >= '\t' && *end <= '\r')
-			|| *end == '|' || *end == '>' || *end == '<' || is_quote(*end))
+			|| *end == '|' || *end == '>' || *end == '<'
+			|| *end == '&' || is_quote(*end))
 			break ;
 		end++;
 	}

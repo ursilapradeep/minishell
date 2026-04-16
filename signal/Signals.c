@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 10:59:49 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/15 18:25:49 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/16 12:54:28 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,22 @@ void	signal_handler_sigint(int sig)
 	write(STDOUT_FILENO, "\n", 1);
 	if (was_in_heredoc)
 	{
-		rl_replace_line("", 0);
-		rl_done = 1;
+		//rl_replace_line("", 0);
+		//rl_done = 1;
 		return ;
 	}
-	rl_replace_line("", 0);
+	//rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
+}
+
+/*
+** Signal handler for SIGQUIT (Ctrl+\)
+** In minishell: does nothing (unlike bash which exits)
+*/
+void	signal_handler_sigquit(int sig)
+{
+	(void)sig;
 }
 
 /*

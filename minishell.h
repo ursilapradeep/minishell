@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/15 18:26:19 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/17 13:56:25 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <signal.h>
 # include <sys/signal.h>
 # include <fcntl.h>
+# include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
@@ -197,6 +198,7 @@ int			handle_status_special_case(const char *input, char **exp, int *con);
 char		*find_command(char *cmd, t_env **envp);
 char		*process_directory(char *path_copy,
 				char **dir_start, int i, char *cmd);
+char		*check_command_in_dir(char *dir, char *cmd);
 char		*check_command_in_dir(char *dir, char *cmd);
 
 //error handling
