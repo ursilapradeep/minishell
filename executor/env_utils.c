@@ -79,6 +79,7 @@ t_env	*init_env(char **envp)
 		add_env_node(&env_list, envp[i]);
 		i++;
 	}
+	add_env_node(&env_list, "0=minishell");
 	shlvl = get_env_value(env_list, "SHLVL");
 	level = 1;
 	if (shlvl)

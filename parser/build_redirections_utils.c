@@ -79,11 +79,11 @@ static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 	char	*delimiter;
 	char	**new_delims;
 
-	       if (!current->next || current->next->type != TOKEN_WORD)
-	       {
-		       write(STDERR_FILENO, "syntax error near unexpected token `newline'\n", 43);
-		       return (-1);
-	       }
+	if (!current->next || current->next->type != TOKEN_WORD)
+	{
+		write(STDERR_FILENO, "syntax error near unexpected token `newline'\n", 43);
+		return (-1);
+	}
 	if (current->next->quoted)
 		delimiter = ft_strjoin("\1", current->next->value);
 	else
@@ -126,5 +126,5 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 			&& cmd->outfd == -2))
 		return (1);
 	return (process_file_fd(cmd, open_redirection_file(cmd, filename, type,
-				target_fd), type, target_fd));
+		target_fd), type, target_fd));
 }
