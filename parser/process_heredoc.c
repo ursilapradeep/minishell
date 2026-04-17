@@ -43,11 +43,9 @@ static int	read_heredoc_lines(int write_fd, char *delimiter,
 			line = read_non_interactive_line();
 		if (g_signal == SIGINT)
 		{
-			if (get_last_status() == 130)
-				return (free(line), -1);
+			set_last_status(130);
+			return (free(line), -1);
 		}
-		if (!line)
-			break ;
 		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
 			&& line[ft_strlen(delimiter)] == '\0')
 		{

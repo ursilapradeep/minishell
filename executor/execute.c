@@ -12,47 +12,6 @@
 
 #include "../minishell.h"
 
-int	count_commands(t_cmd *cmds)
-{
-	int		count;
-	t_cmd	*current;
-
-	count = 0;
-	current = cmds;
-	while (current)
-	{
-		count++;
-		current = current->next;
-	}
-	return (count);
-}
-
-int	wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid)
-{
-	int		exit_status;
-	int		last_status;
-	pid_t	waited_pid;
-	int		i;
-
-	close_all_pipes(cmds);
-	exit_status = 0;
-	last_status = 1;
-	i = 0;
-	while (i < child_count)
-	{
-		waited_pid = waitpid(-1, &exit_status, 0);
-		if (waited_pid == last_pid)
-			last_status = exit_status;
-		i++;
-	}
-	setup_signal_handlers();
-	if (WIFEXITED(last_status))
-		return (WEXITSTATUS(last_status));
-	if (WIFSIGNALED(last_status))
-		return (128 + WTERMSIG(last_status));
-	return (1);
-}
-
 static int	restore_std_io(int saved_stdin, int saved_stdout, int saved_stderr)
 {
 	dup2(saved_stdin, STDIN_FILENO);
@@ -75,7 +34,7 @@ static int	exec_single_logic(t_cmd *cmd, t_env **my_env)
 	return (run_external(cmd->args, my_env));
 }
 
-static int handle_variable_assignment_if_needed(t_cmd *cmd, t_env **my_env)
+static int	handle_variable_assignment_if_needed(t_cmd *cmd, t_env **my_env)
 {
 	if (cmd->args && cmd->args[0]
 		&& ft_strchr(cmd->args[0], '=')
@@ -83,33 +42,38 @@ static int handle_variable_assignment_if_needed(t_cmd *cmd, t_env **my_env)
 		&& !cmd->args[1])
 	{
 		set_env_value(my_env, cmd->args[0], NULL);
-		return 1;
+		return (1);
 	}
-	return 0;
+	return (0);
+}
+
+static int	backup_std_io(int *saved)
+{
+	saved[0] = dup(STDIN_FILENO);
+	saved[1] = dup(STDOUT_FILENO);
+	saved[2] = dup(STDERR_FILENO);
+	if (saved[0] < 0 || saved[1] < 0 || saved[2] < 0)
+		return (1);
+	return (0);
 }
 
 int	execute_single_command(t_cmd *cmd, t_env **my_env)
 {
-	int saved_stdin = dup(STDIN_FILENO);
-	int saved_stdout = dup(STDOUT_FILENO);
-	int saved_stderr = dup(STDERR_FILENO);
-	int status;
-	if (saved_stdin < 0 || saved_stdout < 0 || saved_stderr < 0)
-		return 1;
+	int	saved[3];
+	int	status;
+
+	if (backup_std_io(saved))
+		return (1);
 	if (cmd->infd == -2 || cmd->outfd == -2 || cmd->errfd == -2)
-		return (restore_std_io(saved_stdin, saved_stdout, saved_stderr), 1);
+		return (restore_std_io(saved[0], saved[1], saved[2]), 1);
 	setup_redirections(cmd);
-	if (!cmd->args || !cmd->args[0])
+	if (!cmd->args || !cmd->args[0]
+		|| handle_variable_assignment_if_needed(cmd, my_env))
 	{
-		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
-		return 0;
-	}
-	if (handle_variable_assignment_if_needed(cmd, my_env))
-	{
-		restore_std_io(saved_stdin, saved_stdout, saved_stderr);
-		return 0;
+		restore_std_io(saved[0], saved[1], saved[2]);
+		return (0);
 	}
 	status = exec_single_logic(cmd, my_env);
-	restore_std_io(saved_stdin, saved_stdout, saved_stderr);
-	return status;
+	restore_std_io(saved[0], saved[1], saved[2]);
+	return (status);
 }

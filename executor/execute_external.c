@@ -49,9 +49,9 @@ static int	wait_and_cleanup_external(pid_t pid, char **env_array,
 
 void	execute_child(const char *cmd_path, char **args, char **env_array)
 {
-	int	exit_code;
-	int	saved_errno;
-	struct stat st;
+	int			exit_code;
+	int			saved_errno;
+	struct stat	st;
 
 	if (stat(cmd_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{

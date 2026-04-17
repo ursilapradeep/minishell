@@ -63,7 +63,6 @@ const char	*extract_var_name(const char *input, int *len, int *is_braced)
 	}
 	start = input;
 	end = start;
-	// Handle positional parameters: $0, $1, ..., $9
 	if (*end && ft_isdigit(*end))
 	{
 		*len = 1;

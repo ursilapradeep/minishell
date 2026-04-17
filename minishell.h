@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/17 15:22:07 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/17 17:48:41 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,13 @@ typedef enum e_token_check
 	TOKEN_VALID_ARGUMENT,
 	TOKEN_REDIRECT
 }	t_token_check;
+
+typedef struct s_export
+{
+	char	*key;
+	char	*value;
+	int		is_append;
+}	t_export;
 
 // process input 
 void		minishell_loop(t_env *my_env);

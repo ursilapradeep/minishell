@@ -27,11 +27,11 @@ void	signal_handler_sigint(int sig)
 	write(STDOUT_FILENO, "\n", 1);
 	if (was_in_heredoc)
 	{
-		//rl_replace_line("", 0);
-		//rl_done = 1;
+		rl_replace_line("", 0);
+		rl_done = 1;
 		return ;
 	}
-	//rl_replace_line("", 0);
+	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
 }
@@ -55,7 +55,7 @@ void	signal_handler_sigquit(int sig)
 void	setup_signal_handlers(void)
 {
 	signal(SIGINT, signal_handler_sigint);
-	signal(SIGQUIT, SIG_IGN); 
+	signal(SIGQUIT, SIG_IGN);
 }
 
 /*
