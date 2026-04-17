@@ -51,10 +51,19 @@ void	execute_child(const char *cmd_path, char **args, char **env_array)
 {
 	int	exit_code;
 	int	saved_errno;
+	struct stat st;
 
+	if (stat(cmd_path, &st) == 0 && S_ISDIR(st.st_mode))
+	{
+		ft_putstr_fd("bash: ", STDERR_FILENO);
+		ft_putstr_fd(args[0], STDERR_FILENO);
+		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+		free_env_array(env_array);
+		exit(126);
+	}
 	execve(cmd_path, args, env_array);
 	saved_errno = errno;
-	perror("execve");
+	perror(args[0]);
 	free_env_array(env_array);
 	exit_code = 127;
 	if (saved_errno == EACCES || saved_errno == EPERM

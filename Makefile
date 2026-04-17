@@ -34,7 +34,7 @@ SRCS = main.c \
        builtins/builtin_export_option.c \
        builtins/builtin_unset.c \
        builtins/builtin_env.c \
-       signal/Signals.c \
+       signal/signals.c \
        tokenizer/tokenize.c\
        tokenizer/tokenize_utils_I.c\
        tokenizer/tokenize_utils_II.c\
@@ -49,11 +49,11 @@ SRCS = main.c \
        expander/variable_expansion_utils_VI.c \
        expander/variable_expansion_split.c \
        expander/quote_removal.c \
-        parser/command_builder.c\
-        parser/command_builder_utils.c\
-        parser/command_err_handler.c\
-        parser/build_args_utils.c\
-        parser/build_args_utils_II.c\
+       parser/command_builder.c\
+       parser/command_builder_utils.c\
+       parser/command_err_handler.c\
+       parser/build_args_utils.c\
+       parser/build_args_utils_II.c\
        parser/build_redirections.c\
        parser/build_redirections_utils.c\
        parser/build_pipeline.c\
