@@ -81,7 +81,7 @@ static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
-		write(STDERR_FILENO, "syntax error near unexpected token `newline'\n", 43);
+		write(STDERR_FILENO, "syntax error near unexpected token `newline'\n", 45);
 		return (-1);
 	}
 	if (current->next->quoted)
@@ -110,7 +110,7 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 		return (handle_heredoc_token(cmd, current));
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
-		write(STDERR_FILENO, "syntax error near unexpected token \n", 43);
+		write(STDERR_FILENO, "syntax error near unexpected token \n", 37);
 		return (-1);
 	}
 	filename = current->next->value;

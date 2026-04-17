@@ -17,14 +17,14 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-# include <sys/wait.h>
-# include <signal.h>
-# include <sys/signal.h>
 # include <fcntl.h>
 # include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
+# include <sys/wait.h>
+# include <sys/signal.h>
+# include <sys/stat.h>
 
 typedef struct s_env
 {
