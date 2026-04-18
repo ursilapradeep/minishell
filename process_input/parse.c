@@ -12,36 +12,33 @@
 
 #include "../minishell.h"
 
-static int	is_pipe_syntax_error(char *input)
+static char	*get_pipe_error_token(char *input)
 {
-	int	index;
+	int	i;
 	int	left;
 	int	right;
 
-	index = 0;
-	while (input[index])
+	i = 0;
+	while (input[i])
 	{
-		if (input[index] == '|')
+		if (input[i] == '|')
 		{
-			left = index - 1;
+			left = i - 1;
 			while (left >= 0 && (input[left] == ' ' || input[left] == '\t'))
 				left--;
-			right = index + 1;
+			right = i + 1;
 			while (input[right] == ' ' || input[right] == '\t')
 				right++;
-			if (left < 0 || input[right] == '\0'
-				|| input[left] == '|' || input[right] == '|')
-				return (1);
+			if (input[right] == '\0')
+				return ("newline");
+			if (input[right] == '|')
+				return ("|");
+			if (left < 0)
+				return ("|");
 		}
-		index++;
+		i++;
 	}
-	return (0);
-}
-
-static void	print_pipe_syntax_error(char *input)
-{
-	(void)input;
-	ft_putstr_fd("bash: syntax error near unexpected token `|'\n", 2);
+	return (NULL);
 }
 
 static int	print_logical_syntax_error(t_token *tokens, char *input)
@@ -51,10 +48,22 @@ static int	print_logical_syntax_error(t_token *tokens, char *input)
 		return (0);
 	if (tokens->type != TOKEN_AND && tokens->type != TOKEN_OR)
 		return (0);
-	ft_putstr_fd("bash: syntax error near unexpected token `", 2);
+	ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
 	ft_putstr_fd(tokens->value, 2);
 	ft_putstr_fd("'\n", 2);
 	return (1);
+}
+
+static void	print_pipe_error(char *input)
+{
+	char	*token;
+
+	token = get_pipe_error_token(input);
+	if (!token)
+		return ;
+	ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+	ft_putstr_fd(token, 2);
+	ft_putstr_fd("'\n", 2);
 }
 
 static int	execute_single_input(char *input, t_env **my_env)
@@ -71,11 +80,7 @@ static int	execute_single_input(char *input, t_env **my_env)
 	cmds = build_commands(tokens);
 	free_tokens(tokens);
 	if (!cmds)
-	{
-		if (is_pipe_syntax_error(input))
-			print_pipe_syntax_error(input);
-		return (2);
-	}
+		return (print_pipe_error(input), 2);
 	if (process_heredocs(cmds, *my_env) < 0)
 		return (free_cmd_list(cmds), 2 + (128 * (g_signal == SIGINT)));
 	status = execute_commands(cmds, my_env);

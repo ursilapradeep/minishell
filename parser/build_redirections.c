@@ -11,6 +11,44 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <errno.h>
+
+static void	print_file_error(char *filename)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(filename, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd(strerror(errno), STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+}
+
+int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
+{
+	int	fd;
+
+	if (type == TOKEN_REDIRECT_IN)
+	{
+		if (cmd->infd > 2)
+			close(cmd->infd);
+		fd = open(filename, O_RDONLY);
+	}
+	else if (type == TOKEN_REDIRECT_OUT || type == TOKEN_REDIRECT_APPEND)
+	{
+		if (target_fd == STDERR_FILENO && cmd->errfd > 2)
+			close(cmd->errfd);
+		else if (cmd->outfd > 2)
+			close(cmd->outfd);
+		if (type == TOKEN_REDIRECT_OUT)
+			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		else
+			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	}
+	else
+		return (-1);
+	if (fd < 0)
+		print_file_error(filename);
+	return (fd);
+}
 
 static int	set_error_fd(t_cmd *cmd, int type, int target_fd)
 {

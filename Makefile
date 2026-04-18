@@ -20,6 +20,7 @@ SRCS = main.c \
        executor/execute_operators.c \
        executor/execute_operators_utils.c \
        executor/execute_utils.c \
+       executor/execute_utils_II.c \
        executor/execute_redirections.c\
        executor/execute_builtins.c\
        executor/execute_single_cmds.c\
@@ -29,8 +30,9 @@ SRCS = main.c \
        builtins/builtin_cd.c \
        builtins/builtin_exit.c \
        builtins/builtin_echo_pwd.c \
-       builtins/builtin_export.c \
+       builtins/builtins_export.c \
        builtins/builtin_export_utils.c \
+       builtins/builtin_export_utils_II.c \
        builtins/builtin_export_option.c \
        builtins/builtin_unset.c \
        builtins/builtin_env.c \

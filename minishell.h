@@ -146,6 +146,8 @@ int			is_redirect_type(t_token_type type);
 int			is_valid_arg_type(t_token *curr);
 int			handle_redirection(t_cmd *cmd, t_token *current, int type);
 int			process_file_fd(t_cmd *cmd, int fd, int type, int target_fd);
+int			open_redirection_file(t_cmd *cmd, char *filename,
+				int type, int target_fd);
 void		free_cmd_list(t_cmd *cmd);
 t_token		*find_next_pipe(t_token *tokens);
 t_token		*find_next_separator(t_token *tokens);
@@ -168,6 +170,8 @@ int			builtin_exit(char **args);
 int			builtin_env(char **args, t_env *env);
 void		print_sorted_export(t_env *env);
 int			handle_export_option_error(char *arg);
+int			export_with_equal(char *arg, t_env **env);
+int			export_without_equal(char *arg, t_env **env);
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);

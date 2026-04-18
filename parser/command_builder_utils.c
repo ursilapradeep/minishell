@@ -65,11 +65,7 @@ static int	process_new_cmd(t_cmd **new_cmd, t_cmd **commands,
 		*last_cmd = *new_cmd;
 	}
 	else if (!*commands)
-	{
-		write(STDERR_FILENO, "syntax error near unexpected token `newline'\n",
-			43);
 		return (-1);
-	}
 	return (0);
 }
 

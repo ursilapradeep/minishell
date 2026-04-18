@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <errno.h>
 
 static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
 {
@@ -37,41 +36,15 @@ static char	**copy_heredoc_delimiters(t_cmd *cmd, char *delimiter)
 	return (new_delimiters);
 }
 
-static void	print_file_error(char *filename)
+static void	print_syntax_error_token(t_token *current)
 {
-	ft_putstr_fd("bash: ", STDERR_FILENO);
-	ft_putstr_fd(filename, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(strerror(errno), STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
-}
-
-int	open_redirection_file(t_cmd *cmd, char *filename, int type, int target_fd)
-{
-	int	fd;
-
-	if (type == TOKEN_REDIRECT_IN)
-	{
-		if (cmd->infd > 2)
-			close(cmd->infd);
-		fd = open(filename, O_RDONLY);
-	}
-	else if (type == TOKEN_REDIRECT_OUT || type == TOKEN_REDIRECT_APPEND)
-	{
-		if (target_fd == STDERR_FILENO && cmd->errfd > 2)
-			close(cmd->errfd);
-		else if (cmd->outfd > 2)
-			close(cmd->outfd);
-		if (type == TOKEN_REDIRECT_OUT)
-			fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		else
-			fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
-	}
+	ft_putstr_fd("minishell: syntax error near unexpected token '",
+		STDERR_FILENO);
+	if (!current->next)
+		ft_putstr_fd("newline", STDERR_FILENO);
 	else
-		return (-1);
-	if (fd < 0)
-		print_file_error(filename);
-	return (fd);
+		ft_putstr_fd(current->next->value, STDERR_FILENO);
+	ft_putstr_fd("'\n", STDERR_FILENO);
 }
 
 static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
@@ -81,8 +54,7 @@ static int	handle_heredoc_token(t_cmd *cmd, t_token *current)
 
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
-		write(STDERR_FILENO, "syntax error near unexpected token `newline'\n",
-			43);
+		print_syntax_error_token(current);
 		return (-1);
 	}
 	if (current->next->quoted)
@@ -111,7 +83,7 @@ int	handle_redirection(t_cmd *cmd, t_token *current, int type)
 		return (handle_heredoc_token(cmd, current));
 	if (!current->next || current->next->type != TOKEN_WORD)
 	{
-		write(STDERR_FILENO, "syntax error near unexpected token \n", 37);
+		print_syntax_error_token(current);
 		return (-1);
 	}
 	filename = current->next->value;

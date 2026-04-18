@@ -62,7 +62,7 @@ static int	handle_append(t_export *exp, t_env *env)
 	return (0);
 }
 
-static int	export_with_equal(char *arg, t_env **env)
+int	export_with_equal(char *arg, t_env **env)
 {
 	t_export	exp;
 	char		*eq;
@@ -85,7 +85,7 @@ static int	export_with_equal(char *arg, t_env **env)
 	return (free(exp.key), free(exp.value), 0);
 }
 
-static int	export_without_equal(char *arg, t_env **env)
+int	export_without_equal(char *arg, t_env **env)
 {
 	if (!is_valid_identifier(arg))
 	{
