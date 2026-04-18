@@ -30,6 +30,8 @@ int	is_builtin(char *cmd)
 		return (1);
 	if (ft_strncmp(cmd, "exit", 5) == 0 && cmd[4] == '\0')
 		return (1);
+	if (cmd[0] == '.' && cmd[1] == '\0')
+		return (1);
 	return (0);
 }
 

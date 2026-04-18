@@ -33,8 +33,8 @@ int	execute_builtin(char **args, t_env **my_env)
 		return (builtin_env(args, *my_env));
 	}
 	if (ft_strncmp(args[0], "exit", 5) == 0 && args[0][4] == '\0')
-	{
 		return (builtin_exit(args));
-	}
+	if (args[0][0] == '.' && args[0][1] == '\0')
+		return (0);
 	return (0);
 }

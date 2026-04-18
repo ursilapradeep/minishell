@@ -55,7 +55,7 @@ void	execute_child(const char *cmd_path, char **args, char **env_array)
 
 	if (stat(cmd_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
-		ft_putstr_fd("bash: ", STDERR_FILENO);
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(args[0], STDERR_FILENO);
 		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
 		free_env_array(env_array);

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <errno.h>
 
 static char	*get_cd_env_target(t_env *env, char *key,
 	char *err_msg, int *status)
@@ -34,15 +35,16 @@ static char	*resolve_cd_target(char **args, t_env *env, int *status)
 	*status = 0;
 	if (args[1] && args[2])
 	{
-		ft_putstr_fd("cd: too many arguments\n", 2);
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		*status = 1;
 		return (NULL);
 	}
 	if (!args[1] || ft_strncmp(args[1], "--", 3) == 0)
-		return (get_cd_env_target(env, "HOME", "cd: HOME not set\n", status));
+		return (get_cd_env_target(env, "HOME",
+				"minishell: cd: HOME not set\n", status));
 	if (ft_strncmp(args[1], "-", 2) == 0)
 		return (get_cd_env_target(env, "OLDPWD",
-				"cd: OLDPWD not set\n", status));
+				"minishell: cd: OLDPWD not set\n", status));
 	target_dir = args[1];
 	return (target_dir);
 }
@@ -68,13 +70,17 @@ static int	change_dir_and_set_oldpwd(t_env **env,
 
 	if (getcwd(cwd, 4096) == NULL)
 	{
-		perror("cd");
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n", 2);
 		return (1);
 	}
 	old_pwd = ft_strdup(cwd);
 	if (chdir(target_dir) == -1)
 	{
-		perror("cd");
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n", 2);
 		free(old_pwd);
 		return (1);
 	}
