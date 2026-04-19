@@ -6,12 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 20:02:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/18 22:00:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/19 10:00:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <errno.h>
 
 static void	exit_numeric_error(char *arg)
 {
@@ -43,10 +42,50 @@ static void	exit_validate_arg(char *arg)
 	}
 }
 
+static int	check_overflow(char *digits, int neg)
+{
+	int		len;
+	char	*max;
+
+	len = ft_strlen(digits);
+	if (len > 19)
+		return (1);
+	if (len < 19)
+		return (0);
+	if (neg)
+		max = "9223372036854775808";
+	else
+		max = "9223372036854775807";
+	return (ft_strncmp(digits, max, 19) > 0);
+}
+
+static long long	parse_exit_code(char *arg, int *overflow)
+{
+	long long	result;
+	int			neg;
+	int			i;
+
+	result = 0;
+	neg = 0;
+	i = 0;
+	if (arg[0] == '-')
+		neg = 1;
+	if (arg[0] == '+' || arg[0] == '-')
+		i = 1;
+	*overflow = check_overflow(arg + i, neg);
+	if (*overflow)
+		return (0);
+	while (arg[i])
+		result = result * 10 + (arg[i++] - '0');
+	if (neg)
+		return (-result);
+	return (result);
+}
+
 int	builtin_exit(char **args)
 {
 	long long	exit_code;
-	char		*end;
+	int			overflow;
 
 	if (isatty(STDIN_FILENO))
 		ft_putstr_fd("exit\n", STDERR_FILENO);
@@ -58,9 +97,8 @@ int	builtin_exit(char **args)
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);
 	}
-	errno = 0;
-	exit_code = strtoll(args[1], &end, 10);
-	if (errno == ERANGE)
+	exit_code = parse_exit_code(args[1], &overflow);
+	if (overflow)
 	{
 		exit_numeric_error(args[1]);
 		exit(2);
