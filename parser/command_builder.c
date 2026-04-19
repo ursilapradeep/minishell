@@ -78,3 +78,20 @@ t_cmd	*build_commands(t_token *tokens)
 		return (free_cmd_list(commands), NULL);
 	return (commands);
 }
+
+int	process_heredocs(t_cmd *cmds, t_env *env)
+{
+	t_cmd	*current;
+
+	if (!cmds)
+		return (0);
+	current = cmds;
+	while (current)
+	{
+		if (current->heredoc_count > 0
+			&& process_cmd_heredocs(current, env) < 0)
+			return (-1);
+		current = current->next;
+	}
+	return (0);
+}

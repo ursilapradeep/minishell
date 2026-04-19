@@ -153,6 +153,7 @@ t_token		*find_next_pipe(t_token *tokens);
 t_token		*find_next_separator(t_token *tokens);
 int			process_redirections_in_tokens(t_cmd *cmd, t_token *tokens);
 int			process_heredocs(t_cmd *cmds, t_env *env);
+int			process_cmd_heredocs(t_cmd *cmd, t_env *env);
 int			process_tokens_into_commands(t_token *tokens, t_cmd **commands);
 t_cmd		*build_single_cmd(t_token **tokens);
 void		add_cmd(t_cmd **head, t_cmd *new_cmd);

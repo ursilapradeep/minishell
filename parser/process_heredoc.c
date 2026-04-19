@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/18 22:00:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,13 @@ static void	write_heredoc_line(int write_fd, char *line, int do_expand,
 		free(expanded);
 }
 
+static char	*get_heredoc_line(void)
+{
+	if (isatty(STDIN_FILENO))
+		return (readline("> "));
+	return (read_non_interactive_line());
+}
+
 static int	read_heredoc_lines(int write_fd, char *delimiter,
 		int do_expand, t_env *env)
 {
@@ -37,24 +44,24 @@ static int	read_heredoc_lines(int write_fd, char *delimiter,
 
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-			line = readline("> ");
-		else
-			line = read_non_interactive_line();
+		line = get_heredoc_line();
 		if (g_signal == SIGINT)
 		{
 			set_last_status(130);
 			return (free(line), -1);
 		}
-		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
-			&& line[ft_strlen(delimiter)] == '\0')
-		{
-			free(line);
+		if (!line || (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+				&& line[ft_strlen(delimiter)] == '\0'))
 			break ;
-		}
 		write_heredoc_line(write_fd, line, do_expand, env);
 		free(line);
 	}
+	if (line)
+		return (free(line), 0);
+	ft_putstr_fd("minishell: warning: here-document at line 1"
+		" delimited by end-of-file (wanted '", 2);
+	ft_putstr_fd(delimiter, 2);
+	ft_putstr_fd("')\n", 2);
 	return (0);
 }
 
@@ -87,7 +94,7 @@ static int	create_heredoc_fd(char *delimiter, t_env *env)
 	return (pipefd[0]);
 }
 
-static int	process_cmd_heredocs(t_cmd *cmd, t_env *env)
+int	process_cmd_heredocs(t_cmd *cmd, t_env *env)
 {
 	int	fd;
 	int	i;
@@ -107,23 +114,6 @@ static int	process_cmd_heredocs(t_cmd *cmd, t_env *env)
 		else
 			close(fd);
 		i++;
-	}
-	return (0);
-}
-
-int	process_heredocs(t_cmd *cmds, t_env *env)
-{
-	t_cmd	*current;
-
-	if (!cmds)
-		return (0);
-	current = cmds;
-	while (current)
-	{
-		if (current->heredoc_count > 0
-			&& process_cmd_heredocs(current, env) < 0)
-			return (-1);
-		current = current->next;
 	}
 	return (0);
 }

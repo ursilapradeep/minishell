@@ -73,8 +73,10 @@ static int	execute_single_input(char *input, t_env **my_env)
 	int		status;
 
 	tokens = tokenize(input);
-	if (!tokens || expand_token_list(tokens, *my_env) < 0)
-		return (free_tokens(tokens), 2);
+	if (!tokens)
+		return (2);
+	if (expand_token_list(tokens, *my_env) < 0)
+		return (free_tokens(tokens), 1);
 	if (print_logical_syntax_error(tokens, input))
 		return (free_tokens(tokens), 2);
 	cmds = build_commands(tokens);

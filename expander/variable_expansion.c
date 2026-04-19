@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/13 12:37:49 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/18 22:00:00 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,24 @@ static int	has_unquoted_space(const char *value)
 	return (0);
 }
 
-static char	*expand_token_word(t_token *current, t_token *prev, t_env *env)
+static int	handle_ambiguous_redirect(char *original,
+		char *expanded, t_token *prev)
 {
-	if (prev && prev->type == TOKEN_HEREDOC)
-		return (ft_strdup(current->value));
-	return (expand_string(current->value, env));
+	int	should_split;
+
+	should_split = has_unquoted_dollar(original);
+	if (should_split)
+		should_split = has_unquoted_space(expanded);
+	if (should_split && prev && prev->type == TOKEN_HEREDOC)
+		should_split = 0;
+	if (should_split && prev && is_redirect_type(prev->type))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(original, STDERR_FILENO);
+		ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+		return (-1);
+	}
+	return (should_split);
 }
 
 static int	process_word_token(t_token *current, t_token *prev, t_env *env)
@@ -65,14 +78,15 @@ static int	process_word_token(t_token *current, t_token *prev, t_env *env)
 	char	*unquoted;
 	int		should_split;
 
-	expanded = expand_token_word(current, prev, env);
+	if (prev && prev->type == TOKEN_HEREDOC)
+		expanded = ft_strdup(current->value);
+	else
+		expanded = expand_string(current->value, env);
 	if (!expanded)
 		return (-1);
-	should_split = has_unquoted_dollar(current->value);
-	if (should_split)
-		should_split = has_unquoted_space(expanded);
-	if (should_split && prev && prev->type == TOKEN_HEREDOC)
-		should_split = 0;
+	should_split = handle_ambiguous_redirect(current->value, expanded, prev);
+	if (should_split < 0)
+		return (free(expanded), -1);
 	unquoted = remove_quotes_string(expanded);
 	free(expanded);
 	if (!unquoted)
