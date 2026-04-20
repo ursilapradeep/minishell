@@ -3,31 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 11:54:57 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/20 11:56:06 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/20 13:28:55 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-char	*get_env_value(t_env *env, char *key)
-{
-	t_env	*current;
-
-	if (!env || !key)
-		return (NULL);
-	current = env;
-	while (current)
-	{
-		if (current->key
-			&& ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-			return (current->value);
-		current = current->next;
-	}
-	return (NULL);
-}
 
 static int	update_existing_env_value(t_env *env, char *key, char *value)
 {
@@ -69,4 +52,21 @@ void	set_env_value(t_env **env, char *key, char *value)
 		return ;
 	add_env_node(env, entry);
 	free(entry);
+}
+
+char	*get_env_value(t_env *env, char *key)
+{
+	t_env	*current;
+
+	if (!env || !key)
+		return (NULL);
+	current = env;
+	while (current)
+	{
+		if (current->key
+			&& ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+			return (current->value);
+		current = current->next;
+	}
+	return (NULL);
 }

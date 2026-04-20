@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_export.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 18:16:33 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/20 11:41:22 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/20 13:33:36 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,22 @@ int	builtin_export(char **args, t_env **env)
 			ret = 1;
 	}
 	return (ret);
+}
+
+int	builtin_env(char **args, t_env *env)
+{
+	t_env	*current;
+
+	if (!args[1])
+	{
+		current = env;
+		while (current)
+		{
+			if (current->key && current->value)
+				printf("%s=%s\n", current->key, current->value);
+			current = current->next;
+		}
+		return (0);
+	}
+	return (1);
 }

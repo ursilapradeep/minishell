@@ -27,11 +27,10 @@ SRCS = main.c \
        builtins/builtin_cd.c \
        builtins/builtin_exit.c \
        builtins/builtin_echo_pwd.c \
-       builtins/builtins_export.c \
+       builtins/builtins_env_export.c \
        builtins/builtin_export_utils.c \
        builtins/builtin_export_utils_II.c \
        builtins/builtin_unset.c \
-       builtins/builtin_env.c \
        signal/signals.c \
        tokenizer/tokenize.c\
        tokenizer/tokenize_utils_I.c\
