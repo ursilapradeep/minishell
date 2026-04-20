@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/17 17:48:41 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/19 20:03:33 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,6 @@ int			handle_special_cases(const char *in, int *args,
 char		*remove_quotes_string(const char *str);
 char		*get_env_variable(t_env *env, const char *var_name, int len);
 int			is_word_start(const char *pos, const char *input);
-int			expand_tilde_helper(const char **current, char *result,
-				int *result_len, t_env *env);
 int			expand_variable_helper(const char **current, char *result,
 				int *result_len, t_env *env);
 char		*expand_string(const char *input, t_env *env);

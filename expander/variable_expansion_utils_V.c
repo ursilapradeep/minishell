@@ -1,64 +1,64 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variable_expansion_utils_V.c                       :+:      :+:    :+:   */
+/*   variable_expansion_utils_III.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 17:34:45 by spaipur-         ###   ########.fr       */
+/*   Created: 2026/03/30 13:10:00 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/04/14 13:32:44 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	allocate_expanded_value(const char *value, char **expanded)
+int	handle_status_special_case(const char *input, char **exp, int *con)
 {
-	int	value_len;
+	if (input[1] != '?')
+		return (0);
+	*exp = ft_itoa(get_last_status());
+	if (!*exp)
+		return (-1);
+	*con = 2;
+	return (1);
+}
 
-	if (value)
+static int	handle_empty_cases(int *args, char **exp, int *con)
+{
+	int	len;
+	int	is_brac;
+
+	len = args[0];
+	is_brac = args[1];
+	if (len == 0 && !is_brac)
 	{
-		value_len = ft_strlen(value);
-		*expanded = ft_calloc(value_len + 1, sizeof(char));
-		if (!*expanded)
+		*exp = ft_calloc(2, sizeof(char));
+		if (!*exp)
 			return (-1);
-		ft_strlcpy(*expanded, value, value_len + 1);
+		(*exp)[0] = '$';
+		return (*con = 1);
 	}
-	else
+	if (len == 0)
 	{
-		*expanded = ft_calloc(1, sizeof(char));
-		if (!*expanded)
+		*exp = ft_calloc(1, sizeof(char));
+		if (!*exp)
 			return (-1);
-		(*expanded)[0] = '\0';
+		if (is_brac)
+			*con = 3;
+		else
+			*con = 1;
+		return (1);
 	}
 	return (0);
 }
 
-int	expand_variable(const char *input, t_env *env, char **exp, int *con)
+int	handle_special_cases(const char *in, int *args,
+	char **exp, int *con)
 {
-	const char	*v[3];
-	int			i[3];
-	char		*value;
+	int	status_case;
 
-	if (!input || input[0] != '$' || !exp || !con)
-		return (-1);
-	v[0] = input + 1;
-	v[1] = extract_var_name(v[0], &i[0], &i[1]);
-	if (!v[1])
-		return (-1);
-	i[2] = handle_special_cases(input, i, exp, con);
-	if (i[2] != 0)
-	{
-		if (i[2] == 1)
-			return (0);
-		return (-1);
-	}
-	v[2] = v[0];
-	if (i[1])
-		v[2] = v[0] + 1;
-	value = get_env_variable(env, v[2], i[0]);
-	if (allocate_expanded_value(value, exp) == -1)
-		return (-1);
-	*con = (v[1] - input);
-	return (0);
+	status_case = handle_status_special_case(in, exp, con);
+	if (status_case != 0)
+		return (status_case);
+	return (handle_empty_cases(args, exp, con));
 }

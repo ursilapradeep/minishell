@@ -1,71 +1,75 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variable_expansion_utils_IV.c                      :+:      :+:    :+:   */
+/*   variable_expansion_utils_II.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/13 12:05:34 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/03/19 16:18:36 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/03/31 15:45:49 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	is_word_start(const char *pos, const char *input)
+/**
+ * is_valid_var_char - Check if character is valid in variable name
+ * @c: Character to check
+ * Return: 1 if valid, 0 otherwise
+ */
+static int	is_valid_var_char(char c)
 {
-	if (pos == input)
-		return (1);
-	if (*(pos - 1) == ' ' || *(pos - 1) == '\t' || *(pos - 1) == '\n')
-		return (1);
-	return (0);
+	return (ft_isalnum(c) || c == '_');
 }
 
-int	expand_tilde_helper(const char **current, char *result,
-	int *result_len, t_env *env)
+// Helper function to handle braced variable names
+static const char	*handle_braced_var(const char *input, int *len)
 {
-	char	*tilde_result;
-	int		consumed;
+	const char	*start;
+	const char	*end;
 
-	consumed = 0;
-	tilde_result = ft_calloc(4096, sizeof(char));
-	if (!tilde_result)
-		return (0);
-	if (expand_tilde(*current, env, tilde_result, &consumed))
+	start = input + 1;
+	end = start;
+	while (*end && *end != '}')
+		end++;
+	if (!*end)
 	{
-		ft_strlcpy(result + *result_len, tilde_result, 4096 - *result_len);
-		*result_len += ft_strlen(tilde_result);
-		*current += consumed;
-		free(tilde_result);
-		return (1);
+		write(STDERR_FILENO, "Error: Unclosed brace in variable\n", 35);
+		return (NULL);
 	}
-	free(tilde_result);
-	return (0);
+	*len = end - start;
+	return (end + 1);
 }
 
-int	expand_variable_helper(const char **current, char *result,
-	int *result_len, t_env *env)
+/**
+ * extract_var_name - Extract variable name after $ or ${}
+ * @input: String starting after $
+ * @len: Pointer to store length of variable name
+ * @is_braced: 1 if ${VAR} format, 0 if $VAR format
+ * Return: Pointer after variable name
+ */
+const char	*extract_var_name(const char *input, int *len, int *is_braced)
 {
-	char	*var_value;
-	char	*temp;
-	int		consumed;
+	const char	*start;
+	const char	*end;
 
-	var_value = NULL;
-	consumed = 0;
-	if (expand_variable(*current, env, &var_value, &consumed) == 0)
+	if (!input || !len)
+		return (NULL);
+	*is_braced = 0;
+	*len = 0;
+	if (*input == '{')
 	{
-		if (var_value)
-		{
-			temp = var_value;
-			while (*temp && *result_len < 4095)
-			{
-				result[(*result_len)++] = *temp;
-				temp++;
-			}
-			free(var_value);
-		}
-		*current += consumed;
-		return (1);
+		*is_braced = 1;
+		return (handle_braced_var(input, len));
 	}
-	return (0);
+	start = input;
+	end = start;
+	if (*end && ft_isdigit(*end))
+	{
+		*len = 1;
+		return (end + 1);
+	}
+	while (*end && is_valid_var_char(*end))
+		end++;
+	*len = end - start;
+	return (end);
 }

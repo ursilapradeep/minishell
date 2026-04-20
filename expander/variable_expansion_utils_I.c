@@ -1,94 +1,106 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   variable_expansion_utils_I.c                       :+:      :+:    :+:   */
+/*   variable_expansion_utils_VI.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 11:00:00 by spaipur-          #+#    #+#             */
+/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
 /*   Updated: 2026/04/12 17:34:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	*get_env_variable(t_env *env, const char *var_name, int len)
+int	is_word_start(const char *pos, const char *input)
 {
-	t_env	*current;
-
-	if (!var_name || len <= 0 || !env)
-		return (NULL);
-	current = env;
-	while (current)
-	{
-		if (current->key && (int)ft_strlen(current->key) == len
-			&& ft_strncmp(current->key, var_name, len) == 0)
-		{
-			return (current->value);
-		}
-		current = current->next;
-	}
-	return (NULL);
-}
-
-static int	handle_tilde_plus(t_env *env, char *result, int *consumed)
-{
-	char	*value;
-	int		value_len;
-
-	value = get_env_variable(env, "PWD", 3);
-	if (value)
-	{
-		value_len = ft_strlen(value);
-		ft_strlcpy(result, value, value_len + 1);
-		*consumed = 2;
+	if (pos == input)
 		return (1);
-	}
+	if (*(pos - 1) == ' ' || *(pos - 1) == '\t' || *(pos - 1) == '\n')
+		return (1);
 	return (0);
 }
 
-static int	handle_tilde_minus(t_env *env, char *result, int *consumed)
+static int	expand_tilde_helper(const char **current, char *result,
+	int *result_len, t_env *env)
 {
-	char	*value;
-	int		value_len;
+	char	*tilde_result;
+	int		consumed;
 
-	value = get_env_variable(env, "OLDPWD", 6);
-	if (value)
-	{
-		value_len = ft_strlen(value);
-		ft_strlcpy(result, value, value_len + 1);
-		*consumed = 2;
-		return (1);
-	}
-	return (0);
-}
-
-static int	handle_tilde_home(t_env *env, char *result, int *consumed)
-{
-	char	*home;
-	int		value_len;
-
-	home = get_env_variable(env, "HOME", 4);
-	if (home)
-	{
-		value_len = ft_strlen(home);
-		ft_strlcpy(result, home, value_len + 1);
-		*consumed = 1;
-		return (1);
-	}
-	return (0);
-}
-
-int	expand_tilde(const char *input, t_env *env, char *result, int *consumed)
-{
-	*consumed = 0;
-	if (!input || input[0] != '~')
+	consumed = 0;
+	tilde_result = ft_calloc(4096, sizeof(char));
+	if (!tilde_result)
 		return (0);
-	if (input[1] == '+' && (input[2] == '/' || input[2] == '\0'))
-		return (handle_tilde_plus(env, result, consumed));
-	else if (input[1] == '-' && (input[2] == '/' || input[2] == '\0'))
-		return (handle_tilde_minus(env, result, consumed));
-	else if (input[1] == '/' || input[1] == '\0')
-		return (handle_tilde_home(env, result, consumed));
+	if (expand_tilde(*current, env, tilde_result, &consumed))
+	{
+		ft_strlcpy(result + *result_len, tilde_result, 4096 - *result_len);
+		*result_len += ft_strlen(tilde_result);
+		*current += consumed;
+		free(tilde_result);
+		return (1);
+	}
+	free(tilde_result);
 	return (0);
+}
+
+static int	handle_dollar_special(const char **current, char *result,
+		int *result_len, int state)
+{
+	if (**current == '$' && ((*current)[1] == '"' || (*current)[1] == '\'')
+		&& !(state & 1))
+	{
+		if (state & 2 && (*current)[1] == '"')
+			result[(*result_len)++] = '$';
+		(*current)++;
+		return (1);
+	}
+	return (0);
+}
+
+static int	proc_input(const char *input, char *result,
+		int *result_len, t_env *env)
+{
+	const char	*current;
+	int			in_sq;
+	int			in_dq;
+
+	current = input;
+	in_sq = 0;
+	in_dq = 0;
+	while (current && *current && *result_len < 4095)
+	{
+		update_quote_state(*current, &in_sq, &in_dq);
+		if (handle_dollar_special(&current, result, result_len,
+				in_sq + (in_dq << 1)))
+			continue ;
+		if (*current == '~' && !in_sq && is_word_start(current, input))
+			if (expand_tilde_helper(&current, result, result_len, env))
+				continue ;
+		if (*current == '$' && !in_sq
+			&& expand_variable_helper(&current, result, result_len, env))
+			continue ;
+		result[(*result_len)++] = *current;
+		current++;
+	}
+	return (0);
+}
+
+char	*expand_string(const char *input, t_env *env)
+{
+	char	*result;
+	int		result_len;
+
+	if (!input || !env)
+		return (ft_strdup(input));
+	result = ft_calloc(4096, sizeof(char));
+	if (!result)
+		return (NULL);
+	result_len = 0;
+	if (proc_input(input, result, &result_len, env) == -1)
+	{
+		free(result);
+		return (NULL);
+	}
+	result[result_len] = '\0';
+	return (result);
 }

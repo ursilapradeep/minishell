@@ -48,7 +48,6 @@ SRCS = main.c \
        expander/variable_expansion_utils_III.c \
        expander/variable_expansion_utils_IV.c \
        expander/variable_expansion_utils_V.c \
-       expander/variable_expansion_utils_VI.c \
        expander/variable_expansion_split.c \
        expander/quote_removal.c \
        parser/command_builder.c\

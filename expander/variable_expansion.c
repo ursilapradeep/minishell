@@ -6,31 +6,11 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 12:54:24 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/18 22:00:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/19 20:23:55 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static int	has_unquoted_dollar(const char *value)
-{
-	int		in_sq;
-	int		in_dq;
-
-	in_sq = 0;
-	in_dq = 0;
-	while (value && *value)
-	{
-		if (*value == '\'' && !in_dq)
-			in_sq = !in_sq;
-		else if (*value == '"' && !in_sq)
-			in_dq = !in_dq;
-		else if (*value == '$' && !in_sq && !in_dq)
-			return (1);
-		value++;
-	}
-	return (0);
-}
 
 static int	has_unquoted_space(const char *value)
 {
@@ -46,6 +26,26 @@ static int	has_unquoted_space(const char *value)
 		else if (*value == '"' && !in_sq)
 			in_dq = !in_dq;
 		else if ((*value == ' ' || *value == '\t') && !in_sq && !in_dq)
+			return (1);
+		value++;
+	}
+	return (0);
+}
+
+static int	has_unquoted_dollar(const char *value)
+{
+	int		in_sq;
+	int		in_dq;
+
+	in_sq = 0;
+	in_dq = 0;
+	while (value && *value)
+	{
+		if (*value == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (*value == '"' && !in_sq)
+			in_dq = !in_dq;
+		else if (*value == '$' && !in_sq && !in_dq)
 			return (1);
 		value++;
 	}
