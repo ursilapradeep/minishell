@@ -35,6 +35,19 @@ int	process_token_for_args(t_token *current, char **args, int *i)
 	return (0);
 }
 
+static int print_paren_syntax_error(t_token *tokens)
+{
+	if (tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN) {
+		ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+		if (tokens->next && tokens->next->type == TOKEN_WORD)
+			ft_putstr_fd(tokens->next->value, 2);
+		else
+			ft_putstr_fd(tokens->value, 2);
+		return (-2);
+	}
+	return (0);
+}
+
 int	iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
 {
 	int	i;
@@ -47,6 +60,9 @@ int	iterate_tokens_for_args(t_token *tokens, char **args, int arg_count)
 		&& tokens->type != TOKEN_AND
 		&& tokens->type != TOKEN_OR)
 	{
+		int err = print_paren_syntax_error(tokens);
+		if (err)
+			return err;
 		if (skip_next)
 		{
 			skip_next = 0;

@@ -41,17 +41,20 @@ static char	*get_pipe_error_token(char *input)
 	return (NULL);
 }
 
-static int	print_logical_syntax_error(t_token *tokens, char *input)
+static int print_syntax_error_token(t_token *tokens, char *input)
 {
 	(void)input;
 	if (!tokens)
 		return (0);
-	if (tokens->type != TOKEN_AND && tokens->type != TOKEN_OR)
-		return (0);
-	ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
-	ft_putstr_fd(tokens->value, 2);
-	ft_putstr_fd("'\n", 2);
-	return (1);
+	if (tokens->type == TOKEN_AND || tokens->type == TOKEN_OR ||
+        tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+		ft_putstr_fd(tokens->value, 2);
+		ft_putstr_fd("'\n", 2);
+		return (1);
+	}
+	return (0);
 }
 
 static void	print_pipe_error(char *input)
@@ -66,19 +69,22 @@ static void	print_pipe_error(char *input)
 	ft_putstr_fd("'\n", 2);
 }
 
-static int	execute_single_input(char *input, t_env **my_env)
+static int execute_single_input(char *input, t_env **my_env)
 {
-	t_token	*tokens;
-	t_cmd	*cmds;
-	int		status;
+	t_token *tokens;
+	t_cmd   *cmds;
+	int     status;
 
 	tokens = tokenize(input);
 	if (!tokens)
 		return (2);
 	if (expand_token_list(tokens, *my_env) < 0)
 		return (free_tokens(tokens), 1);
-	if (print_logical_syntax_error(tokens, input))
-		return (free_tokens(tokens), 2);
+	if (print_syntax_error_token(tokens, input))
+	{
+		free_tokens(tokens);
+		return (2);
+	}
 	cmds = build_commands(tokens);
 	free_tokens(tokens);
 	if (!cmds)
