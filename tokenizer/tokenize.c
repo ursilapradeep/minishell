@@ -12,15 +12,6 @@
 
 #include "../minishell.h"
 
-static const char	*skip_whitespace_simple(const char *input)
-{
-	if (!input)
-		return (NULL);
-	while (*input && (*input == ' ' || *input == '	' || *input == '\n'))
-		input++;
-	return (input);
-}
-
 static t_token	*process_token(const char **current, t_token **tokens)
 {
 	t_token			*new_token;
@@ -61,6 +52,15 @@ static void	mark_whitespace_boundary(t_token **tokens,
 			last_token = last_token->next;
 		last_token->prev = last_token;
 	}
+}
+
+static const char	*skip_whitespace_simple(const char *input)
+{
+	if (!input)
+		return (NULL);
+	while (*input && (*input == ' ' || *input == '	' || *input == '\n'))
+		input++;
+	return (input);
 }
 
 t_token	*tokenize(const char *input)

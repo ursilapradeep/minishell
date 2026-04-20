@@ -1,0 +1,97 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_cmds.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/04/14 22:27:17 by spaipur-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+int	wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid)
+{
+	int		exit_status;
+	int		last_status;
+	pid_t	waited_pid;
+	int		i;
+
+	close_all_pipes(cmds);
+	exit_status = 0;
+	last_status = 1;
+	i = 0;
+	while (i < child_count)
+	{
+		waited_pid = waitpid(-1, &exit_status, 0);
+		if (waited_pid == last_pid)
+			last_status = exit_status;
+		i++;
+	}
+	setup_signal_handlers();
+	if (WIFEXITED(last_status))
+		return (WEXITSTATUS(last_status));
+	if (WIFSIGNALED(last_status))
+		return (128 + WTERMSIG(last_status));
+	return (1);
+}
+
+static t_cmd	*get_pipeline_end(t_cmd *current)
+{
+	while (current->has_pipe && current->next)
+		current = current->next;
+	return (current);
+}
+
+static t_cmd	*advance_current(t_cmd *current, int status)
+{
+	t_cmd	*end;
+
+	end = get_pipeline_end(current);
+	while (should_short_circuit(status, end->next_op))
+	{
+		if (!end->next)
+			return (NULL);
+		end = get_pipeline_end(end->next);
+	}
+	return (end->next);
+}
+static int	execute_current_cmd(t_cmd **current, t_env **my_env)
+{
+	int		pipeline_count;
+	int		child_count;
+	int		status;
+	pid_t	last_pid;
+
+	pipeline_count = count_pipeline_cmds(*current);
+	if (pipeline_count == 1)
+		status = execute_single_command(*current, my_env);
+	else
+	{
+		last_pid = -1;
+		child_count = fork_and_execute_pipeline(*current, my_env, &last_pid);
+		status = wait_for_children(child_count, *current, last_pid);
+	}
+	return (status);
+}
+
+int	execute_commands(t_cmd *cmds, t_env **my_env)
+{
+	int		status;
+	t_cmd	*current;
+
+	if (!cmds)
+		return (0);
+	status = 0;
+	current = cmds;
+	while (current)
+	{
+		status = execute_current_cmd(&current, my_env);
+		current = advance_current(current, status);
+		if (!current)
+			return (status);
+	}
+	return (status);
+}

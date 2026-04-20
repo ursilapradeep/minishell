@@ -12,17 +12,14 @@
 
 #include "../minishell.h"
 
-static int	env_count(t_env *env)
+static void	print_export_entry(t_env *entry)
 {
-	int	count;
-
-	count = 0;
-	while (env)
-	{
-		count++;
-		env = env->next;
-	}
-	return (count);
+	if (ft_strncmp(entry->key, "_", 2) == 0)
+		return ;
+	if (entry->value)
+		printf("declare -x %s=\"%s\"\n", entry->key, entry->value);
+	else
+		printf("declare -x %s\n", entry->key);
 }
 
 static int	key_cmp(t_env *left, t_env *right)
@@ -57,14 +54,17 @@ static void	sort_env_array(t_env **arr, int count)
 	}
 }
 
-static void	print_export_entry(t_env *entry)
+static int	env_count(t_env *env)
 {
-	if (ft_strncmp(entry->key, "_", 2) == 0)
-		return ;
-	if (entry->value)
-		printf("declare -x %s=\"%s\"\n", entry->key, entry->value);
-	else
-		printf("declare -x %s\n", entry->key);
+	int	count;
+
+	count = 0;
+	while (env)
+	{
+		count++;
+		env = env->next;
+	}
+	return (count);
 }
 
 void	print_sorted_export(t_env *env)

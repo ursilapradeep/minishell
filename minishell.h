@@ -6,7 +6,7 @@
 /*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/19 20:03:33 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/20 12:18:10 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ int			get_last_status(void);
 void		set_last_status(int status);
 t_env		*init_env(char **envp);
 void		add_env_node(t_env **env_list, char *env_str);
+char		*get_env_value(t_env *env, char *key);
+void		set_env_value(t_env **env, char *key, char *value);
 
 //tokenizer
 t_token		*tokenize(const char *input);
@@ -158,7 +160,6 @@ void		add_cmd(t_cmd **head, t_cmd *new_cmd);
 char		**build_args_array(t_token *tokens, int arg_count);
 
 //built- ins
-int			is_builtin(char *cmd);
 int			execute_builtin(char **args, t_env **my_env);
 int			builtin_cd(char **args, t_env **env);
 int			builtin_pwd(char **args);
@@ -168,11 +169,8 @@ int			builtin_unset(char **args, t_env **env);
 int			builtin_exit(char **args);
 int			builtin_env(char **args, t_env *env);
 void		print_sorted_export(t_env *env);
-int			handle_export_option_error(char *arg);
 int			export_with_equal(char *arg, t_env **env);
 int			export_without_equal(char *arg, t_env **env);
-char		*get_env_value(t_env *env, char *key);
-void		set_env_value(t_env **env, char *key, char *value);
 char		**build_env_array(t_env *env);
 
 //executor
@@ -186,15 +184,11 @@ void		close_all_pipes(t_cmd *cmds);
 void		execute_ast_command_child(t_cmd *cmd, t_env **my_env);
 void		execute_child(const char *cmd_path, char **args, char **env_array);
 int			is_builtin(char *cmd);
-int			count_commands(t_cmd *cmds);
 int			fork_and_execute_pipeline(t_cmd *cmds, t_env **my_env,
 				pid_t *last_pid);
 int			wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid);
-int			wait_for_pipeline_children(int cmd_count, pid_t last_pid);
 void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
-int			execute_pipeline(t_cmd *cmds, t_env **envp);
 int			count_pipeline_cmds(t_cmd *cmd);
-t_cmd		*skip_pipeline(t_cmd *cmd);
 int			should_short_circuit(int status, t_operator op);
 
 // Signal handling
@@ -209,7 +203,6 @@ int			handle_status_special_case(const char *input, char **exp, int *con);
 char		*find_command(char *cmd, t_env **envp);
 char		*process_directory(char *path_copy,
 				char **dir_start, int i, char *cmd);
-char		*check_command_in_dir(char *dir, char *cmd);
 char		*check_command_in_dir(char *dir, char *cmd);
 
 //error handling

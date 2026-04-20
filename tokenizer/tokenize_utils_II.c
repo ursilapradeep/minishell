@@ -3,78 +3,76 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_II.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/19 15:59:07 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/12 12:01:52 by spaipur-         ###   ########.fr       */
+/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/04/13 10:42:19 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-/**
- * free_tokens - Free entire token list
- * @tokens: Token list head
- */
-void	free_tokens(t_token *tokens)
-{
-	t_token	*current;
-	t_token	*next;
 
-	if (!tokens)
-		return ;
-	current = tokens;
-	while (current)
+static char	*handle_and_operator(const char **current,
+			t_token_type *token_type, int *consumed)
+{
+	if (**current == '&' && *(*current + 1) == '&')
 	{
-		next = current->next;
-		if (current->value)
-			free(current->value);
-		free(current);
-		current = next;
+		*token_type = TOKEN_AND;
+		*consumed = 2;
+		return (ft_strdup("&&"));
 	}
+	return (NULL);
 }
 
-/**
- * add_token - Add token to end of linked list
- * @head: Pointer to list head
- * @new_token: Token to add
- */
-void	add_token(t_token **head, t_token *new_token)
+static char	*handle_or_operator(const char **current,
+			t_token_type *token_type, int *consumed)
 {
-	t_token	*current;
-
-	if (!head || !new_token)
-		return ;
-	if (!*head)
+	if (**current == '|' && *(*current + 1) == '|')
 	{
-		*head = new_token;
-		return ;
+		*token_type = TOKEN_OR;
+		*consumed = 2;
+		return (ft_strdup("||"));
 	}
-	current = *head;
-	while (current->next)
-		current = current->next;
-	current->next = new_token;
-	new_token->prev = current;
+	return (NULL);
 }
 
-/**
- * create_token - Create a new token node
- * @value: Token string value
- * @type: Token type enum
- * Return: New token pointer, NULL on error
- */
-t_token	*create_token(char *value, t_token_type type)
+static char	*handle_pipe_token(const char **current,
+			t_token_type *token_type, int *consumed)
 {
-	t_token	*token;
+	char	*token_value;
 
-	if (!value)
-		return (NULL);
-	token = ft_calloc(1, sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->value = value;
-	token->type = type;
-	token->quoted = 0;
-	token->next = NULL;
-	token->prev = NULL;
-	return (token);
+	if (**current == '|')
+	{
+		token_value = ft_calloc(2, sizeof(char));
+		if (token_value)
+		{
+			token_value[0] = '|';
+			token_value[1] = '\0';
+		}
+		*token_type = TOKEN_PIPE;
+		*consumed = 1;
+		return (token_value);
+	}
+	return (NULL);
+}
+
+char	*determine_token_value(const char **current,
+			t_token_type *token_type, int *consumed)
+{
+	char	*token_value;
+
+	token_value = handle_and_operator(current, token_type, consumed);
+	if (token_value)
+		return (token_value);
+	token_value = handle_or_operator(current, token_type, consumed);
+	if (token_value)
+		return (token_value);
+	token_value = handle_pipe_token(current, token_type, consumed);
+	if (token_value)
+		return (token_value);
+	if (**current == '>' || **current == '<')
+		return (handle_redirection_token(current, token_type, consumed));
+	if (is_quote(**current))
+		return (extract_quoted_string(*current, consumed));
+	return (extract_word(*current, consumed));
 }

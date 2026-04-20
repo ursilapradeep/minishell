@@ -14,17 +14,14 @@ NAME = minishell
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
-       executor/env_utils.c \
-       executor/env_executor.c \
-       executor/execute.c \
-       executor/execute_operators.c \
-       executor/execute_operators_utils.c \
-       executor/execute_utils.c \
-       executor/execute_utils_II.c \
-       executor/execute_redirections.c\
+       executor/execute_cmds.c \
+       executor/execute_cmds_utils.c \
        executor/execute_builtins.c\
-       executor/execute_single_cmds.c\
        executor/execute_external.c\
+       executor/env_executor.c \
+       executor/exe_cmds_without_pipe.c\
+       executor/exe_cmds_with_pipes.c\
+       executor/exe_cmds_with_pipes_utils.c\
        handle_path/find_path.c \
        handle_path/path_helpers.c \
        builtins/builtin_cd.c \
@@ -33,7 +30,6 @@ SRCS = main.c \
        builtins/builtins_export.c \
        builtins/builtin_export_utils.c \
        builtins/builtin_export_utils_II.c \
-       builtins/builtin_export_option.c \
        builtins/builtin_unset.c \
        builtins/builtin_env.c \
        signal/signals.c \
@@ -63,6 +59,8 @@ SRCS = main.c \
        process_input/parse.c \
        process_input/parse_input.c \
        process_input/shell_status.c \
+       process_input/init_env.c \
+       process_input/env_utils.c \
        
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
@@ -88,8 +86,4 @@ fclean: clean
 
 re: fclean all
 
-test_parser:
-	$(CC) $(CFLAGS) parser/test_parser.c parser/parser_redirect.o parser/parser_utils.o libft/libft.a -o test_parser
-	./test_parser
-
-.PHONY: all clean fclean re test_parser
+.PHONY: all clean fclean re

@@ -1,78 +1,92 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenize_utils_V.c                                 :+:      :+:    :+:   */
+/*   tokenize_utils_IV.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/13 10:42:19 by uvadakku         ###   ########.fr       */
+/*   Created: 2026/04/10 13:35:00 by spaipur-          #+#    #+#             */
+/*   Updated: 2026/04/12 17:34:45 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	*handle_and_operator(const char **current,
-			t_token_type *token_type, int *consumed)
+/**
+ * merge_tokens_values - Merge two token values into one
+ * @current: Current token to merge into
+ * @next: Next token to merge from
+ * Return: 1 on success, 0 on error
+ */
+static int	merge_tokens_values(t_token *current, t_token *next)
 {
-	if (**current == '&' && *(*current + 1) == '&')
-	{
-		*token_type = TOKEN_AND;
-		*consumed = 2;
-		return (ft_strdup("&&"));
-	}
-	return (NULL);
+	char	*merged_value;
+	int		merged_len;
+	int		had_boundary;
+
+	had_boundary = (next->prev == next);
+	merged_len = ft_strlen(current->value) + ft_strlen(next->value) + 1;
+	merged_value = ft_calloc(merged_len, sizeof(char));
+	if (!merged_value)
+		return (0);
+	ft_strlcpy(merged_value, current->value, merged_len);
+	ft_strlcat(merged_value, next->value, merged_len);
+	free(current->value);
+	current->value = merged_value;
+	if (next->quoted)
+		current->quoted = 1;
+	current->next = next->next;
+	if (next->next && next->next->prev != next->next)
+		next->next->prev = current;
+	if (had_boundary)
+		current->prev = current;
+	free(next);
+	return (1);
 }
 
-static char	*handle_or_operator(const char **current,
-			t_token_type *token_type, int *consumed)
+/**
+ * process_merge_iteration - Process one iteration of merge
+ * @current: Current token pointer
+ * Return: Next token to process, or NULL if no more
+ */
+static t_token	*process_merge_iteration(t_token *current)
 {
-	if (**current == '|' && *(*current + 1) == '|')
-	{
-		*token_type = TOKEN_OR;
-		*consumed = 2;
-		return (ft_strdup("||"));
-	}
-	return (NULL);
-}
+	t_token	*next;
+	int		should_stop_merge;
 
-static char	*handle_pipe_token(const char **current,
-			t_token_type *token_type, int *consumed)
-{
-	char	*token_value;
-
-	if (**current == '|')
+	next = current->next;
+	if (next && current->type == TOKEN_WORD && next->type == TOKEN_WORD)
 	{
-		token_value = ft_calloc(2, sizeof(char));
-		if (token_value)
+		should_stop_merge = (current->prev == current);
+		if (!should_stop_merge)
 		{
-			token_value[0] = '|';
-			token_value[1] = '\0';
+			if (!merge_tokens_values(current, next))
+				return (current->next);
+			return (current);
 		}
-		*token_type = TOKEN_PIPE;
-		*consumed = 1;
-		return (token_value);
+		return (next);
 	}
-	return (NULL);
+	return (next);
 }
 
-char	*determine_token_value(const char **current,
-			t_token_type *token_type, int *consumed)
+/**
+ * merge_consecutive_words - Merge consecutive TOKEN_WORD tokens
+ * @tokens: Head of token list
+ *
+ * Description:
+ *   Merges adjacent quoted/unquoted strings into single argument.
+ *   Respects whitespace boundaries marked by prev==prev.
+ *
+ * Return: Head of the merged token list
+ */
+t_token	*merge_consecutive_words(t_token *tokens)
 {
-	char	*token_value;
+	t_token	*current;
 
-	token_value = handle_and_operator(current, token_type, consumed);
-	if (token_value)
-		return (token_value);
-	token_value = handle_or_operator(current, token_type, consumed);
-	if (token_value)
-		return (token_value);
-	token_value = handle_pipe_token(current, token_type, consumed);
-	if (token_value)
-		return (token_value);
-	if (**current == '>' || **current == '<')
-		return (handle_redirection_token(current, token_type, consumed));
-	if (is_quote(**current))
-		return (extract_quoted_string(*current, consumed));
-	return (extract_word(*current, consumed));
+	if (!tokens)
+		return (tokens);
+	current = tokens;
+	while (current)
+		current = process_merge_iteration(current);
+	return (tokens);
 }

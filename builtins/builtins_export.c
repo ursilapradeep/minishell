@@ -3,14 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_export.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/17 18:16:33 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/17 18:19:17 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/20 11:41:22 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static int	handle_export_option_error(char *arg)
+{
+	if (arg[0] != '-' || arg[1] == '\0' || ft_strncmp(arg, "-p", 3) == 0)
+		return (0);
+	ft_putstr_fd("export: ", 2);
+	if (arg[1] == '-')
+		ft_putstr_fd("--", 2);
+	else
+	{
+		ft_putchar_fd('-', 2);
+		ft_putchar_fd(arg[1], 2);
+	}
+	ft_putstr_fd(": invalid option\n", 2);
+	ft_putstr_fd("export: usage: export [-fn] [name[=value] ...] ", 2);
+	ft_putstr_fd("or export -p\n", 2);
+	return (1);
+}
 
 int	builtin_export(char **args, t_env **env)
 {
