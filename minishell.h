@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/20 18:04:36 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/21 11:10:38 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,8 @@ typedef enum e_token_type
 	TOKEN_HEREDOC,
 	TOKEN_AND,
 	TOKEN_OR,
-	TOKEN_LPAREN, // (
-	TOKEN_RPAREN, // )
-	TOKEN_SPECIAL,
+	TOKEN_LPAREN,
+	TOKEN_RPAREN,
 }   t_token_type;
 
 typedef enum e_operator

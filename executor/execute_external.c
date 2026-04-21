@@ -78,9 +78,8 @@ static int	prepare_external(char **args, t_env **envp, char **cmd_path,
 	*cmd_path = find_command(args[0], envp);
 	if (!*cmd_path)
 	{
-		ft_putstr_fd("minishell: command not found: ", STDERR_FILENO);
 		ft_putstr_fd(args[0], STDERR_FILENO);
-		ft_putstr_fd("\n", STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		return (127);
 	}
 	set_env_value(envp, "_", *cmd_path);
