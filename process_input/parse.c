@@ -12,42 +12,13 @@
 
 #include "../minishell.h"
 
-static char	*get_pipe_error_token(char *input)
-{
-	int	i;
-	int	left;
-	int	right;
-
-	i = 0;
-	while (input[i])
-	{
-		if (input[i] == '|')
-		{
-			left = i - 1;
-			while (left >= 0 && (input[left] == ' ' || input[left] == '\t'))
-				left--;
-			right = i + 1;
-			while (input[right] == ' ' || input[right] == '\t')
-				right++;
-			if (input[right] == '\0')
-				return ("newline");
-			if (input[right] == '|')
-				return ("|");
-			if (left < 0)
-				return ("|");
-		}
-		i++;
-	}
-	return (NULL);
-}
-
-static int print_syntax_error_token(t_token *tokens, char *input)
+static int	print_syntax_error_token(t_token *tokens, char *input)
 {
 	(void)input;
 	if (!tokens)
 		return (0);
-	if (tokens->type == TOKEN_AND || tokens->type == TOKEN_OR ||
-        tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN)
+	if (tokens->type == TOKEN_AND || tokens->type == TOKEN_OR
+		|| tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN)
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
 		ft_putstr_fd(tokens->value, 2);
@@ -57,34 +28,45 @@ static int print_syntax_error_token(t_token *tokens, char *input)
 	return (0);
 }
 
-static void	print_pipe_error(char *input)
+static int	check_consecutive_operators(t_token *tokens)
 {
-	char	*token;
+	t_token	*curr;
 
-	token = get_pipe_error_token(input);
-	if (!token)
-		return ;
-	ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
-	ft_putstr_fd(token, 2);
-	ft_putstr_fd("'\n", 2);
+	curr = tokens;
+	while (curr)
+	{
+		if (curr->type == TOKEN_AND || curr->type == TOKEN_OR
+			|| curr->type == TOKEN_PIPE)
+		{
+			if (curr->next && (curr->next->type == TOKEN_AND
+					|| curr->next->type == TOKEN_OR))
+			{
+				ft_putstr_fd("minishell: syntax error near"
+					" unexpected token '", 2);
+				ft_putstr_fd(curr->next->value, 2);
+				ft_putstr_fd("'\n", 2);
+				return (1);
+			}
+		}
+		curr = curr->next;
+	}
+	return (0);
 }
 
-static int execute_single_input(char *input, t_env **my_env)
+static int	execute_single_input(char *input, t_env **my_env)
 {
-	t_token *tokens;
-	t_cmd   *cmds;
-	int     status;
+	t_token	*tokens;
+	t_cmd	*cmds;
+	int		status;
 
 	tokens = tokenize(input);
 	if (!tokens)
 		return (2);
 	if (expand_token_list(tokens, *my_env) < 0)
 		return (free_tokens(tokens), 1);
-	if (print_syntax_error_token(tokens, input))
-	{
-		free_tokens(tokens);
-		return (2);
-	}
+	if (print_syntax_error_token(tokens, input)
+		|| check_consecutive_operators(tokens))
+		return (free_tokens(tokens), 2);
 	cmds = build_commands(tokens);
 	free_tokens(tokens);
 	if (!cmds)

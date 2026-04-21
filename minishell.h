@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/21 11:10:38 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/21 12:40:47 by spaipur-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,10 @@ typedef enum e_token_type
 	TOKEN_HEREDOC,
 	TOKEN_AND,
 	TOKEN_OR,
-	TOKEN_LPAREN,
-	TOKEN_RPAREN,
-}   t_token_type;
+	TOKEN_LPAREN, // (
+	TOKEN_RPAREN, // )
+	TOKEN_SPECIAL,
+}	t_token_type;
 
 typedef enum e_operator
 {
@@ -101,6 +102,7 @@ char		*read_input(void);
 char		*read_non_interactive_line(void);
 void		update_quote_state(char c, int *in_sq, int *in_dq);
 int			parse_input(char *input, t_env **my_env);
+void		print_pipe_error(char *input);
 int			get_last_status(void);
 void		set_last_status(int status);
 t_env		*init_env(char **envp);

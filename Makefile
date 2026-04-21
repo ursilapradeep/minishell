@@ -56,6 +56,7 @@ SRCS = main.c \
        parser/build_args.c\
        parser/process_heredoc.c\
        process_input/parse.c \
+       process_input/parse_utils.c \
        process_input/parse_input.c \
        process_input/shell_status.c \
        process_input/init_env.c \

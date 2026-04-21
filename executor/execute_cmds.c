@@ -58,6 +58,7 @@ static t_cmd	*advance_current(t_cmd *current, int status)
 	}
 	return (end->next);
 }
+
 static int	execute_current_cmd(t_cmd **current, t_env **my_env)
 {
 	int		pipeline_count;

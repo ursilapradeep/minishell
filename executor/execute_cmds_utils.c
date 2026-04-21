@@ -37,4 +37,3 @@ int	count_pipeline_cmds(t_cmd *cmd)
 	}
 	return (count);
 }
-

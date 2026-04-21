@@ -115,5 +115,7 @@ int	process_tokens_into_commands(t_token *tokens, t_cmd **commands)
 		if (process_new_cmd(&new_cmd, commands, &last_cmd, &prev_had_pipe) < 0)
 			return (-1);
 	}
+	if (last_cmd && last_cmd->next_op != OP_NONE)
+		return (-1);
 	return (0);
 }

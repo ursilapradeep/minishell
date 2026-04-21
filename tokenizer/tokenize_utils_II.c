@@ -56,45 +56,44 @@ static char	*handle_pipe_token(const char **current,
 	return (NULL);
 }
 
-static char *handle_special_token(const char **current, t_token_type *token_type, int *consumed)
+static char	*handle_special_token(const char **current,
+			t_token_type *token_type, int *consumed)
 {
-	char *token_value = NULL;
 	if (**current == '(')
 	{
 		*token_type = TOKEN_LPAREN;
 		*consumed = 1;
-		token_value = ft_strdup("(");
-		return token_value;
+		return (ft_strdup("("));
 	}
 	if (**current == ')')
 	{
 		*token_type = TOKEN_RPAREN;
 		*consumed = 1;
-		token_value = ft_strdup(")");
-		return token_value;
+		return (ft_strdup(")"));
 	}
-	return NULL;
+	return (NULL);
 }
 
-char *determine_token_value(const char **current, t_token_type *token_type, int *consumed)
+char	*determine_token_value(const char **current,
+		t_token_type *token_type, int *consumed)
 {
-	char *token_value;
+	char	*token_value;
 
 	token_value = handle_and_operator(current, token_type, consumed);
 	if (token_value)
-		return token_value;
+		return (token_value);
 	token_value = handle_or_operator(current, token_type, consumed);
 	if (token_value)
-		return token_value;
+		return (token_value);
 	token_value = handle_pipe_token(current, token_type, consumed);
 	if (token_value)
-		return token_value;
+		return (token_value);
 	token_value = handle_special_token(current, token_type, consumed);
 	if (token_value)
-		return token_value;
+		return (token_value);
 	if (**current == '>' || **current == '<')
-		return handle_redirection_token(current, token_type, consumed);
+		return (handle_redirection_token(current, token_type, consumed));
 	if (is_quote(**current))
-		return extract_quoted_string(*current, consumed);
-	return extract_word(*current, consumed);
+		return (extract_quoted_string(*current, consumed));
+	return (extract_word(*current, consumed));
 }
