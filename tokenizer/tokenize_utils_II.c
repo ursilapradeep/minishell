@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 22:53:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/20 18:07:20 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/21 13:14:59 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,12 @@ static char	*handle_special_token(const char **current,
 		*token_type = TOKEN_RPAREN;
 		*consumed = 1;
 		return (ft_strdup(")"));
+	}
+	if (**current == '&')
+	{
+		*token_type = TOKEN_SPECIAL;
+		*consumed = 1;
+		return (ft_strdup("&"));
 	}
 	return (NULL);
 }

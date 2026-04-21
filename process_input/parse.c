@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 16:33:08 by uvadakku          #+#    #+#             */
-/*   Updated: 2026/04/15 05:50:19 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/21 13:13:26 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static int	print_syntax_error_token(t_token *tokens, char *input)
 	if (!tokens)
 		return (0);
 	if (tokens->type == TOKEN_AND || tokens->type == TOKEN_OR
-		|| tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN)
+		|| tokens->type == TOKEN_LPAREN || tokens->type == TOKEN_RPAREN
+		|| tokens->type == TOKEN_SPECIAL)
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
 		ft_putstr_fd(tokens->value, 2);
