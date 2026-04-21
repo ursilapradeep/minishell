@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/21 12:56:45 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/21 15:47:32 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ int			wait_for_children(int child_count, t_cmd *cmds, pid_t last_pid);
 void		execute_pipeline_child(t_cmd *cmd, t_cmd *cmds, t_env **my_env);
 int			count_pipeline_cmds(t_cmd *cmd);
 int			should_short_circuit(int status, t_operator op);
+int			builtin_dot(char **args);
 
 // Signal handling
 void		setup_signal_handlers(void);

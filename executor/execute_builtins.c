@@ -12,6 +12,17 @@
 
 #include "../minishell.h"
 
+int builtin_dot(char **args)
+{
+    if (!args[1])
+    {
+        ft_putstr_fd(".: filename argument required\n", 2);
+        ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
+        return (2);
+    }
+    return (0);
+}
+
 int	is_builtin(char *cmd)
 {
 	if (!cmd)
@@ -58,6 +69,6 @@ int	execute_builtin(char **args, t_env **my_env)
 	if (ft_strncmp(args[0], "exit", 5) == 0 && args[0][4] == '\0')
 		return (builtin_exit(args));
 	if (args[0][0] == '.' && args[0][1] == '\0')
-		return (0);
+		return (builtin_dot(args));
 	return (0);
 }
