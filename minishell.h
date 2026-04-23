@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/23 11:21:28 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/23 16:02:51 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,7 @@ void		restore_signals(void);
 void		signal_handler_sigint(int sig);
 void		signal_handler_sigquit(int sig);
 int			handle_status_special_case(const char *input, char **exp, int *con);
+int			heredoc_sigint_hook(void);
 
 // path handling
 char		*find_command(char *cmd, t_env **envp);

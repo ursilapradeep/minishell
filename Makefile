@@ -32,6 +32,7 @@ SRCS = main.c \
        builtins/builtin_export_utils_II.c \
        builtins/builtin_unset.c \
        signal/signals.c \
+       signal/signal_utils.c \
        tokenizer/tokenize.c\
        tokenizer/tokenize_utils_I.c\
        tokenizer/tokenize_utils_II.c\

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_heredoc.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spaipur- <spaipur-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:00:00 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/18 22:00:00 by spaipur-         ###   ########.fr       */
+/*   Updated: 2026/04/23 16:02:01 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,15 @@ static void	write_heredoc_line(int write_fd, char *line, int do_expand,
 
 static char	*get_heredoc_line(void)
 {
+	char	*line;
+
 	if (isatty(STDIN_FILENO))
-		return (readline("> "));
+	{
+		rl_event_hook = heredoc_sigint_hook;
+		line = readline("> ");
+		rl_event_hook = NULL;
+		return (line);
+	}
 	return (read_non_interactive_line());
 }
 
@@ -46,10 +53,7 @@ static int	read_heredoc_lines(int write_fd, char *delimiter,
 	{
 		line = get_heredoc_line();
 		if (g_signal == SIGINT)
-		{
-			set_last_status(130);
 			return (free(line), -1);
-		}
 		if (!line || (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
 				&& line[ft_strlen(delimiter)] == '\0'))
 			break ;
@@ -84,7 +88,6 @@ static int	create_heredoc_fd(char *delimiter, t_env *env)
 	g_signal = -1;
 	if (read_heredoc_lines(pipefd[1], delimiter, do_expand, env) == -1)
 	{
-		g_signal = 0;
 		close(pipefd[0]);
 		close(pipefd[1]);
 		return (-1);
