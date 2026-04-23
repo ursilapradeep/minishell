@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <errno.h>
 
 static char	*get_cd_env_target(t_env *env, char *key,
 	char *err_msg, int *status)

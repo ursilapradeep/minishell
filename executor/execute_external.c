@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <signal.h>
-#include <sys/signal.h>
-#include <errno.h>
 
 int	wait_and_get_exit_status(pid_t pid)
 {

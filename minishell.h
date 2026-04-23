@@ -6,7 +6,7 @@
 /*   By: uvadakku <uvadakku@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 09:28:29 by spaipur-          #+#    #+#             */
-/*   Updated: 2026/04/21 15:47:32 by uvadakku         ###   ########.fr       */
+/*   Updated: 2026/04/23 11:21:28 by uvadakku         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <readline/history.h>
 # include "libft/libft.h"
 # include <sys/stat.h>
+# include <errno.h>
 
 typedef struct s_env
 {

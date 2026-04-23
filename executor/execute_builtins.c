@@ -12,15 +12,15 @@
 
 #include "../minishell.h"
 
-int builtin_dot(char **args)
+int	builtin_dot(char **args)
 {
-    if (!args[1])
-    {
-        ft_putstr_fd(".: filename argument required\n", 2);
-        ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
-        return (2);
-    }
-    return (0);
+	if (!args[1])
+	{
+		ft_putstr_fd(".: filename argument required\n", 2);
+		ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
+		return (2);
+	}
+	return (0);
 }
 
 int	is_builtin(char *cmd)
